@@ -1,6 +1,6 @@
 import { LoginResponse } from ".";
 
-export type AuthResponse = LoginResponse<User>;
+export type AuthResponse = LoginResponse<User | null>;
 
 type User = {
   bearerToken: string;
