@@ -1,6 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import Modal from '@/components/modal/modal';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import AccessTimeRoundedIcon from '@mui/icons-material/AccessTimeRounded';
 
 interface DashBoardProps {
     Area: string;
@@ -144,12 +147,14 @@ export default function DashBoard() {
                 <div className='flex flex-col max-w-56 bg-white min-w-52 min-h-32 max-h-40 items-center justify-evenly rounded-md border shadow-lg'>
                     <div className='flex flex-col items-center justify-center'>
                         <p className='text-wrap'>Total Cars Parked Today</p>
+                        <DirectionsCarIcon />
                     </div>
                     <p>0</p>
                 </div>
                 <div className='flex flex-col max-w-56 bg-white min-w-52 min-h-32 max-h-40 items-center justify-evenly rounded-md border shadow-lg'>
                     <div className='flex flex-col items-center justify-center'>
                         <p className='text-wrap'>Occupancy Rate</p>
+                        <AccessTimeRoundedIcon />
                     </div>
                     <p>0%</p>
                 </div>
@@ -158,32 +163,32 @@ export default function DashBoard() {
 
             <div className='w-full bg-white rounded-md border shadow-lg gap-4 flex flex-col p-5'>
                 <div className='pl-20'>
-                    <p className='text-lg font-medium'>Parking Area</p>
+                    <p className='text-lg font-medium text-slate-600'>Parking Area</p>
                 </div>
-                <div className='pl-10 pr-10'>
-                    <table className='w-full'>
-                        <thead className='border-b-2 border-gray-200'>
-                            <tr>
-                                <th className='font-medium text-slate-500 text-start'>Area</th>
-                                <th className='font-medium text-slate-500 text-start'>Capacity</th>
-                                <th className='font-medium text-slate-500 text-start'>Available</th>
-                                <th className='font-medium text-slate-500 text-start'>Mode</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map((item, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td>{item.Area}</td>
-                                        <td>{item.Capacity}</td>
-                                        <td>{item.Available}</td>
-                                        <td>{item.Mode}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                <TableContainer component={Paper}>
+                    <Table className='w-full' aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell className='text-base text-slate-600'>Area</TableCell>
+                                <TableCell align="right" className='text-base text-slate-600'>Capacity</TableCell>
+                                <TableCell align="right" className='text-base text-slate-600'>Available</TableCell>
+                                <TableCell align="right" className='text-base text-slate-600'>Mode</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody >
+                            {data.map((item, index) => (
+                                <TableRow key={index}>
+                                    <TableCell component="th" scope="row">
+                                        {item.Area}
+                                    </TableCell>
+                                    <TableCell align="right">{item.Capacity}</TableCell>
+                                    <TableCell align="right">{item.Available}</TableCell>
+                                    <TableCell align="right">{item.Mode}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </div>
 
             {/* <h1>Dashboard</h1> */}

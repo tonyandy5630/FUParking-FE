@@ -1,8 +1,16 @@
 'use client';
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 
-export default function Header() {
+interface HeaderProps {
+    isOpen: boolean;
+    setIsOpen: (value: boolean) => void;
+    height: number;
+}
+
+export default function Header({ isOpen, setIsOpen, height }: HeaderProps) {
     const router = usePathname();
     let title;
 
@@ -52,10 +60,13 @@ export default function Header() {
 
     return (
         <header
-            className="flex flex-row items-center p-2.5 bg-white shadow-md"
-            style={{ backgroundColor: '#111827' }}
+            className="flex flex-row items-center p-2.5 shadow-md"
+            style={{ backgroundColor: '#111827', height: `${height}px` }}
         >
-            <Image src="/Bai_logo.svg" alt="Bai Logo" width={60} height={60} />
+            <IconButton onClick={() => setIsOpen(!isOpen)} color="warning">
+                <MenuIcon />
+            </IconButton>
+            <Image src="/bai_logo.svg" alt="Bai Logo" width={60} height={60} />
             <p
                 className="text-2xl font-bold text-white ml-4"
             >{title}</p>
