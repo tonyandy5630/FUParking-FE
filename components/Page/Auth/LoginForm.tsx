@@ -7,8 +7,10 @@ import { useMutation } from "@tanstack/react-query";
 import { loginAPI } from "@/api/auth";
 import FormInput from "@/components/Form/Input";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
+  let router = useRouter();
   const methods = useForm<UserSchemaType>({
     defaultValues: {
       email: "",
@@ -36,8 +38,8 @@ export default function LoginForm() {
       await loginMutation.mutateAsync(data, {
         onSuccess: (data) => {
           toast.success(data.data.message);
-          console.log(data.data);
-          //   reset();
+          // Redirect depending on user role
+
         },
       });
     } catch (error) {
