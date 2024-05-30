@@ -1,3 +1,3 @@
-const baseURL = process.env.NEXT_PUBLIC_SERVER_URL;
+const baseURL = "https://localhost:7041/api";
 
 export default baseURL;

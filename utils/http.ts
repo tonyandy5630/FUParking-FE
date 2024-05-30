@@ -15,7 +15,7 @@ class Http {
     this.instance = axios.create({
       baseURL: process.env.NEXT_PUBLIC_AZURE_API,
       timeout: 10000,
-      withCredentials: true,
+      // withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
