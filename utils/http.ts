@@ -36,12 +36,6 @@ class Http {
 
     this.instance.interceptors.response.use(
       (response) => {
-        const { url } = response.config;
-        this.accessToken = (response.data as AuthResponse).data.bearerToken;
-        setAccessTokenToLS(this.accessToken);
-        if (url === "/logout") {
-          clearLS();
-        }
         return response;
       },
       (error: AxiosError) => {

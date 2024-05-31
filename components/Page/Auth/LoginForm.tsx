@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import UserSchema, { UserSchemaType } from "@/utils/schemas/loginSchema";
@@ -8,6 +7,8 @@ import { loginAPI } from "@/api/auth";
 import FormInput from "@/components/Form/Input";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { EnumAuthRole } from "@/constant/enum";
+import { setAccessTokenToLS } from "@/utils/localStorage";
 
 export default function LoginForm() {
   let router = useRouter();
@@ -37,9 +38,20 @@ export default function LoginForm() {
     try {
       await loginMutation.mutateAsync(data, {
         onSuccess: (data) => {
-          toast.success(data.data.message);
-          // Redirect depending on user role
-
+          switch (data.data.data.role) {
+            case EnumAuthRole.MANAGER:
+              toast.success(data.data.message);
+              setAccessTokenToLS(data.data.data.bearerToken);
+              router.push("/manager");
+              break;
+            case EnumAuthRole.SUPERVISOR:
+              toast.success(data.data.message);
+              setAccessTokenToLS(data.data.data.bearerToken);
+              router.push("/supervisor");
+              break;
+            default:
+              toast.error("You don't have permission to access this page");
+          }
         },
       });
     } catch (error) {

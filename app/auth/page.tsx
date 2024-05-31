@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <main className='flex flex-col justify-center w-full items-center p-14 h-full space-y-5'>
       <Image
-        src='/Bai_Logo.svg'
+        src='/bai_logo.svg'
         alt='logo'
         width={150}
         height={150}
