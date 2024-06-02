@@ -1,6 +1,7 @@
 export type ResponseAPI<Data> = {
   message?: string;
   data?: Data;
+  totalRecord?: number;
 };
 
 export type SuccessResponse<Data> = {

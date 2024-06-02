@@ -35,7 +35,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     onSuccess: (data) => {
                         if (data.data.data.role == EnumAuthRole.MANAGER) {
                             setIsAuthRole(true);
-                            console.log('isAuthRole', isAuthRole);
                         } else {
                             setIsAuthRole(false);
                         }
@@ -65,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div className='overflow-auto bg-gray-800'>
                     <LeftNavbar open={isOpen} />
                 </div>
-                <main className="flex-grow overflow-auto mt-5 mb-5 pl-10 pr-10">
+                <main className="flex-grow overflow-auto mt-5 mb-5 pt-2 pb-2 pl-10 pr-10">
                     {children}
                 </main>
             </div>
