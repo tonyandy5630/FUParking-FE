@@ -5,4 +5,4 @@ export const LENGTH_WARNING = (min: Number, max: Number) =>
   `At least ${min} - ${max} characters`;
 export const EMPTY_WARNING = "Required";
 
-export const PHONE_LENGTH_WARNING = "Phone number is from 10 - 13 number";
+export const PHONE_LENGTH_WARNING = "Phone number is from 10 number";

@@ -5,9 +5,10 @@ import SearchField from './searchField';
 import { CustomerWithFillerKey } from '@/types/customer.type';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { changeStatusCustomerAPI, getListCustomerWithFillerAPI } from '@/api/customer';
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from '@mui/material';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Button } from '@mui/material';
 import Loading from '../LoadingPage/Loading';
-
+import { toast } from 'react-toastify';
+import AddCustomer from './addCustomer';
 
 export default function Customer() {
     const [page, setPage] = useState(1);
@@ -54,14 +55,14 @@ export default function Customer() {
 
     const onStatusChange = async (isActive: boolean, customerId: string) => {
         try {
-            console.log(isActive, customerId);
             await changeStatusCustomerMutation.mutateAsync({ isActive, customerId }, {
-                onSuccess: () => {
+                onSuccess: (data) => {
                     refetch();
+                    toast.success(data.data.message);
                 },
             });
-        } catch (error) {
-            console.log(error);
+        } catch (error: any) {
+            toast.error(error.message);
         }
     }
 
@@ -72,6 +73,17 @@ export default function Customer() {
             <div className='flex flex-row gap-3 justify-between'>
                 <SelectFilter filterAttribute={filterAttribute} setFilterAttribute={setFilterAttribute} />
                 <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+            </div>
+            <div className='flex flex-row gap-3 items-center justify-center w-full'>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => refetch()}
+                    disabled={changeStatusCustomerMutation.isPending}
+                >
+                    Refresh
+                </Button>
+                <AddCustomer disabled={changeStatusCustomerMutation.isPending} refetch={refetch} />
             </div>
             {isLoading && <Loading />}
             {isError && <p>Error: {error.message}</p>}
@@ -118,22 +130,44 @@ export default function Customer() {
                                     <TableCell>
                                         <div className='flex flex-row gap-3'>
                                             {row.statusCustomer === 'INACTIVE' &&
-                                                <button
-                                                    className='p-1 rounded-md bg-blue-500 text-white w-20'
+                                                <Button
+                                                    sx={{
+                                                        backgroundColor: '#3b82f6',
+                                                        color: 'white',
+                                                        width: '80px',
+                                                        '&:disabled': {
+                                                            backgroundColor: 'grey',
+                                                            color: 'white',
+                                                        },
+                                                        '&:hover': {
+                                                            backgroundColor: '#2563eb',
+                                                        }
+                                                    }}
                                                     onClick={() => onStatusChange(true, row.customerId)}
                                                     disabled={changeStatusCustomerMutation.isPending}
                                                 >
                                                     Active
-                                                </button>
+                                                </Button>
                                             }
                                             {row.statusCustomer === 'ACTIVE' &&
-                                                <button
-                                                    className='p-1 rounded-md bg-red-500 text-white w-20'
+                                                <Button
+                                                    sx={{
+                                                        backgroundColor: '#ef4444',
+                                                        color: 'white',
+                                                        width: '80px',
+                                                        '&:disabled': {
+                                                            backgroundColor: 'grey',
+                                                            color: 'white',
+                                                        },
+                                                        '&:hover': {
+                                                            backgroundColor: '#dc2626',
+                                                        }
+                                                    }}
                                                     onClick={() => onStatusChange(false, row.customerId)}
                                                     disabled={changeStatusCustomerMutation.isPending}
                                                 >
                                                     Deactive
-                                                </button>
+                                                </Button>
                                             }
                                         </div>
                                     </TableCell>

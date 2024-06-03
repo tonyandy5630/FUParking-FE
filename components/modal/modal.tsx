@@ -25,8 +25,8 @@ export default function Modal({ open, setOpen, onClose = () => { }, children }: 
             ref={overlayRef}
             sx={{
                 "& .MuiDialog-paper": {
-                    borderRadius: 0,
-                    boxShadow: 0,
+                    borderRadius: '10px', // adjust this value to change the roundness of the corners
+                    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)', // adjust these values to change the shadow
                     margin: 0,
                     maxHeight: "100vh",
                     maxWidth: "100vw",
