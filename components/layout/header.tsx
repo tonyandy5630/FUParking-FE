@@ -60,16 +60,18 @@ export default function Header({ isOpen, setIsOpen, height }: HeaderProps) {
 
     return (
         <header
-            className="flex flex-row items-center p-2.5 shadow-md"
+            className="flex flex-row items-center pl-5 gap-5 shadow-md"
             style={{ backgroundColor: '#111827', height: `${height}px` }}
         >
             <IconButton onClick={() => setIsOpen(!isOpen)} color="warning">
                 <MenuIcon />
             </IconButton>
-            <Image src="/bai_logo.svg" alt="Bai Logo" width={60} height={60} />
-            <p
-                className="text-2xl font-bold text-white ml-4"
-            >{title}</p>
+            <div className="flex flex-row justify-center items-center">
+                <Image src="/bai_logo.svg" alt="Bai Logo" width={60} height={60} />
+                <p
+                    className="text-2xl font-bold text-white ml-4"
+                >{title}</p>
+            </div>
         </header>
     )
 }
