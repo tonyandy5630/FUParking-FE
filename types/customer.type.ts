@@ -5,7 +5,6 @@ export type ListCustomerWithFillerReponse = ResponseAPI<
 >;
 
 export interface CustomerWithFillerProps {
-  [key: string]: any;
   customerId: string;
   fullName: string;
   email: string;

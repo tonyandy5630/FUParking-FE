@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
-import SelectFilter from './selecterMenuFilter';
-import SearchField from './searchField';
-import { CustomerWithFillerKey } from '@/types/customer.type';
+import SelectFilter from '../../Common/selectFilter';
+import SearchField from '../../Common/searchField';
+import { CustomerWithFillerProps } from '@/types/customer.type';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { changeStatusCustomerAPI, getListCustomerWithFillerAPI } from '@/api/customer';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, Button } from '@mui/material';
@@ -15,7 +15,7 @@ export default function Customer() {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [inputValue, setInputValue] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterAttribute, setFilterAttribute] = useState<CustomerWithFillerKey>('fullName');
+    const [filterAttribute, setFilterAttribute] = useState<keyof CustomerWithFillerProps>('fullName');
     const {
         data,
         isLoading,
@@ -66,12 +66,26 @@ export default function Customer() {
         }
     }
 
+    const filterOptions = [
+        { display: 'Name', value: 'fullName' },
+        { display: 'Email', value: 'email' },
+        { display: 'Type Customer', value: 'customerType' },
+        { display: 'Status', value: 'statusCustomer' },
+    ];
+
+    const handleFilterAttributeChange = (value: string) => {
+        setFilterAttribute(value as keyof CustomerWithFillerProps);
+    };
 
     return (
         <div className='bg-white h-full w-full flex flex-col items-center justify-center p-5 gap-5 border rounded-md shadow-md'>
             <h1 className='text-2xl font-semibold'>Customer List</h1>
-            <div className='flex flex-row gap-3 justify-between'>
-                <SelectFilter filterAttribute={filterAttribute} setFilterAttribute={setFilterAttribute} />
+            <div className='flex flex-row gap-3 justify-center'>
+                <SelectFilter
+                    filterAttribute={filterAttribute}
+                    setFilterAttribute={handleFilterAttributeChange}
+                    listFilter={filterOptions}
+                />
                 <SearchField inputValue={inputValue} setInputValue={setInputValue} />
             </div>
             <div className='flex flex-row gap-3 items-center justify-center w-full'>
