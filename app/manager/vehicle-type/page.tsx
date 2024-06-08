@@ -1,9 +1,10 @@
+import VehicleType from '@/components/Page/VehicleType/VehicleType';
 import { NextPage } from 'next';
 
 const Page: NextPage = () => {
     return (
         <div>
-            <h1>Hello, Next.js!</h1>
+            <VehicleType />
         </div>
     );
 };

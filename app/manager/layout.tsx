@@ -48,7 +48,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
 
     if (isLoading) {
-        return Loading();
+        return (
+            <div className='h-screen'>
+                <Loading />
+            </div>
+        )
     }
 
     if (!isAuthRole) {
