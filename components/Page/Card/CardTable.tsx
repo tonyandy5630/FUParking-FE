@@ -11,8 +11,6 @@ import EditCard from "./EditCard";
 import DeleteCard from "./DeleteCard";
 import AddCard from "./AddCard";
 
-export type CardKey = keyof CardProps;
-
 export default function CardTable() {
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);

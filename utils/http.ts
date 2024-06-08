@@ -1,12 +1,6 @@
-import { ResponseAPI, SuccessResponse } from "@/types";
-import { AuthResponse } from "@/types/auth.type";
 import axios, { AxiosError, HttpStatusCode, type AxiosInstance } from "axios";
 import { toast } from "react-toastify";
-import {
-  clearLS,
-  getAccessTokenFromLS,
-  setAccessTokenToLS,
-} from "./localStorage";
+import { getAccessTokenFromLS } from "./localStorage";
 class Http {
   instance: AxiosInstance;
   private accessToken: string;
