@@ -1,9 +1,10 @@
+import Transaction from '@/components/Page/Transaction/Transaction';
 import { NextPage } from 'next';
 
 const Page: NextPage = () => {
     return (
         <div>
-            <h1>Hello, Next.js!</h1>
+            <Transaction />
         </div>
     );
 };
