@@ -100,105 +100,107 @@ export default function Customer() {
                 <AddCustomer disabled={changeStatusCustomerMutation.isPending} refetch={refetch} />
             </div>
             {isLoading && <Loading />}
-            {isError && <p>Error: {error.message}</p>}
+            {isError && <p>Something wrong, please trying again later...</p>}
             {isSuccess && (
-                <TableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Full Name</TableCell>
-                                <TableCell>Email</TableCell>
-                                <TableCell>Phone</TableCell>
-                                <TableCell>Type</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Action</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.data.data?.map((row) => (
-                                <TableRow key={row.customerId}>
-                                    <TableCell>{row.fullName}</TableCell>
-                                    <TableCell>{row.email}</TableCell>
-                                    <TableCell>{row.phone}</TableCell>
-                                    <TableCell>
-                                        {row.customerType === 'PAID' ? (
-                                            <span className="inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center">
-                                                Paid
-                                            </span>
-                                        ) : row.customerType === 'FREE' ? (
-                                            <span className="inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center">
-                                                Free
-                                            </span>
-                                        ) : (
-                                            <span>{row.customerType}</span>
-                                        )}</TableCell>
-                                    <TableCell>
-                                        {row.statusCustomer === 'ACTIVE' ? (
-                                            <span className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center" style={{ color: '#62a34f', backgroundColor: '#dcfce7' }}>Active</span>
-                                        ) : row.statusCustomer === 'INACTIVE' ? (
-                                            <span className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center" style={{ color: '#fcca46', backgroundColor: '#fef9c3' }}>Inactive</span>
-                                        ) : (
-                                            <span>{row.statusCustomer}</span>
-                                        )}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className='flex flex-row gap-3'>
-                                            {row.statusCustomer === 'INACTIVE' &&
-                                                <Button
-                                                    sx={{
-                                                        backgroundColor: '#3b82f6',
-                                                        color: 'white',
-                                                        width: '80px',
-                                                        '&:disabled': {
-                                                            backgroundColor: 'grey',
-                                                            color: 'white',
-                                                        },
-                                                        '&:hover': {
-                                                            backgroundColor: '#2563eb',
-                                                        }
-                                                    }}
-                                                    onClick={() => onStatusChange(true, row.customerId)}
-                                                    disabled={changeStatusCustomerMutation.isPending}
-                                                >
-                                                    Active
-                                                </Button>
-                                            }
-                                            {row.statusCustomer === 'ACTIVE' &&
-                                                <Button
-                                                    sx={{
-                                                        backgroundColor: '#ef4444',
-                                                        color: 'white',
-                                                        width: '80px',
-                                                        '&:disabled': {
-                                                            backgroundColor: 'grey',
-                                                            color: 'white',
-                                                        },
-                                                        '&:hover': {
-                                                            backgroundColor: '#dc2626',
-                                                        }
-                                                    }}
-                                                    onClick={() => onStatusChange(false, row.customerId)}
-                                                    disabled={changeStatusCustomerMutation.isPending}
-                                                >
-                                                    Deactive
-                                                </Button>
-                                            }
-                                        </div>
-                                    </TableCell>
+                data.data.totalRecord === 0 ? (
+                    <p>There is no data to show.</p>
+                ) : (
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Full Name</TableCell>
+                                    <TableCell>Email</TableCell>
+                                    <TableCell>Type</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell>Action</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={data.data.totalRecord || -1}
-                        page={page - 1}
-                        onPageChange={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {data.data.data?.map((row) => (
+                                    <TableRow key={row.customerId}>
+                                        <TableCell>{row.fullName}</TableCell>
+                                        <TableCell>{row.email}</TableCell>
+                                        <TableCell>
+                                            {row.customerType === 'PAID' ? (
+                                                <span className="inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center">
+                                                    Paid
+                                                </span>
+                                            ) : row.customerType === 'FREE' ? (
+                                                <span className="inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center">
+                                                    Free
+                                                </span>
+                                            ) : (
+                                                <span>{row.customerType}</span>
+                                            )}</TableCell>
+                                        <TableCell>
+                                            {row.statusCustomer === 'ACTIVE' ? (
+                                                <span className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center" style={{ color: '#62a34f', backgroundColor: '#dcfce7' }}>Active</span>
+                                            ) : row.statusCustomer === 'INACTIVE' ? (
+                                                <span className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center" style={{ color: '#fcca46', backgroundColor: '#fef9c3' }}>Inactive</span>
+                                            ) : (
+                                                <span>{row.statusCustomer}</span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            <div className='flex flex-row gap-3'>
+                                                {row.statusCustomer === 'INACTIVE' &&
+                                                    <Button
+                                                        sx={{
+                                                            backgroundColor: '#3b82f6',
+                                                            color: 'white',
+                                                            width: '80px',
+                                                            '&:disabled': {
+                                                                backgroundColor: 'grey',
+                                                                color: 'white',
+                                                            },
+                                                            '&:hover': {
+                                                                backgroundColor: '#2563eb',
+                                                            }
+                                                        }}
+                                                        onClick={() => onStatusChange(true, row.customerId)}
+                                                        disabled={changeStatusCustomerMutation.isPending}
+                                                    >
+                                                        Active
+                                                    </Button>
+                                                }
+                                                {row.statusCustomer === 'ACTIVE' &&
+                                                    <Button
+                                                        sx={{
+                                                            backgroundColor: '#ef4444',
+                                                            color: 'white',
+                                                            width: '80px',
+                                                            '&:disabled': {
+                                                                backgroundColor: 'grey',
+                                                                color: 'white',
+                                                            },
+                                                            '&:hover': {
+                                                                backgroundColor: '#dc2626',
+                                                            }
+                                                        }}
+                                                        onClick={() => onStatusChange(false, row.customerId)}
+                                                        disabled={changeStatusCustomerMutation.isPending}
+                                                    >
+                                                        Deactive
+                                                    </Button>
+                                                }
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={data.data.totalRecord || -1}
+                            page={page - 1}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </TableContainer>
+                )
             )}
         </div>
     );

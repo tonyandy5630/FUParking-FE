@@ -8,7 +8,6 @@ export interface CustomerWithFillerProps {
   customerId: string;
   fullName: string;
   email: string;
-  phone: string;
   statusCustomer: string;
   customerType: string;
   createdDate: string;

@@ -62,68 +62,68 @@ export default function CardTable() {
 
     return (
         <div className="flex flex-col gap-5">
+            <div className='flex flex-row gap-3 justify-center'>
+                <SelectFilter
+                    filterAttribute={filterAttribute}
+                    setFilterAttribute={handleFilterAttributeChange}
+                    listFilter={filterOptions}
+                />
+                <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+            </div>
+            <div className='flex flex-row gap-3 items-center justify-center w-full'>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => refetch()}
+                    disabled={false}
+                >
+                    Refresh
+                </Button>
+                <AddCard refetch={refetch} setIsPending={setDisable} disable={disable} />
+            </div>
             {isLoading && <Loading />}
-            {isError && <p>Error: {error.message}</p>}
+            {isError && <p>Something wrong, please trying again later...</p>}
             {isSuccess && (
-                <>
-                    <div className='flex flex-row gap-3 items-center justify-center w-full'>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={() => refetch()}
-                            disabled={false}
-                        >
-                            Refresh
-                        </Button>
-                        <AddCard refetch={refetch} setIsPending={setDisable} disable={disable} />
-                    </div>
-                    <div >
-                        <div className='flex flex-row gap-3 justify-center'>
-                            <SelectFilter
-                                filterAttribute={filterAttribute}
-                                setFilterAttribute={handleFilterAttributeChange}
-                                listFilter={filterOptions}
-                            />
-                            <SearchField inputValue={inputValue} setInputValue={setInputValue} />
-                        </div>
-                        <TableContainer>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        {keys.map((key) => (
-                                            <TableCell key={key} className='text-left text-sm font-medium text-slate-600'>{key}</TableCell>
-                                        ))}
-                                        <TableCell className='text-left text-sm font-medium text-slate-600'>Action</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {data?.data.data?.map((card: CardProps) => (
-                                        <TableRow key={card.id}>
-                                            <TableCell>{card.cardNumber}</TableCell>
-                                            <TableCell>{card.plateNumber}</TableCell>
-                                            <TableCell>{new Date(card.createdDate).toLocaleDateString('en-GB')}</TableCell>
-                                            <TableCell>
-                                                <div className='flex flex-row space-x-2'>
-                                                    <EditCard id={card.id} refetch={refetch} setIsPending={setDisable} disable={disable} />
-                                                    <DeleteCard id={card.id} refetch={refetch} setIsPending={setDisable} disable={disable} />
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
+                data.data.totalRecord === 0 ? (
+                    <p>There is no data to show.</p>
+                ) : (
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    {keys.map((key) => (
+                                        <TableCell key={key} className='text-left text-sm font-medium text-slate-600'>{key}</TableCell>
                                     ))}
-                                </TableBody>
-                            </Table>
-                            <TablePagination
-                                rowsPerPageOptions={[5, 10, 25]}
-                                component="div"
-                                count={data?.data.totalRecord || -1}
-                                page={page - 1}
-                                onPageChange={handleChangePage}
-                                rowsPerPage={rowsPerPage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                        </TableContainer>
-                    </div>
-                </>
+                                    <TableCell className='text-left text-sm font-medium text-slate-600'>Action</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {data?.data.data?.map((card: CardProps) => (
+                                    <TableRow key={card.id}>
+                                        <TableCell>{card.cardNumber}</TableCell>
+                                        <TableCell>{card.plateNumber}</TableCell>
+                                        <TableCell>{new Date(card.createdDate).toLocaleDateString('en-GB')}</TableCell>
+                                        <TableCell>
+                                            <div className='flex flex-row space-x-2'>
+                                                <EditCard id={card.id} refetch={refetch} setIsPending={setDisable} disable={disable} />
+                                                <DeleteCard id={card.id} refetch={refetch} setIsPending={setDisable} disable={disable} />
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={data?.data.totalRecord || -1}
+                            page={page - 1}
+                            onPageChange={handleChangePage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
+                    </TableContainer>
+                )
             )}
         </div>
     )
