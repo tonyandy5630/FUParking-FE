@@ -9,7 +9,7 @@ interface data {
 
 export default function TemplateDivDashboard({ text, data, image: Icon, textImage }: data) {
     return (
-        <div className='flex flex-col max-w-56 bg-white min-w-52 min-h-32 max-h-40 items-center justify-evenly rounded-md border shadow-lg'>
+        <div className='flex flex-col max-w-57 bg-white min-w-52 min-h-32 max-h-40 items-center justify-evenly rounded-md border shadow-lg'>
             <div className='flex flex-col items-center justify-center'>
                 <p className='text-wrap'>{text}</p>
                 {Icon && <Icon />}
@@ -18,4 +18,4 @@ export default function TemplateDivDashboard({ text, data, image: Icon, textImag
             <p>{data}</p>
         </div>
     )
-}
+}                                                                                                   
