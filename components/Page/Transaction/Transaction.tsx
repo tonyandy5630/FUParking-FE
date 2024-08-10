@@ -1,3 +1,4 @@
+'use client';
 import TransactionTable from "./TransactionTable";
 
 export default function Transaction() {
