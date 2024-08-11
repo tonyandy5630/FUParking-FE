@@ -13,6 +13,9 @@ export interface ParkingAreas {
   block: string;
   statusParkingArea: string;
   createdDate: string;
+  createBy: string;
+  lastModifyBy: string;
+  lastModifyDate: string;
 }
 
 export type ParkingAreaWithFillerKey = keyof ParkingAreas;

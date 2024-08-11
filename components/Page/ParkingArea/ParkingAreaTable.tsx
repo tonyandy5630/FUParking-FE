@@ -27,7 +27,10 @@ export default function ParkingAreaTable (){
         'Block',
         'Mode',
         'Status',
-        'Created Date'        
+        'Created Date',      
+        'Create By',
+        'Last Modify By',
+        'Last Modify Date',
     ];
     const [filterAttribute, setFilterAttribute] = useState<keyof ParkingAreas>('name');   
 
@@ -102,7 +105,10 @@ export default function ParkingAreaTable (){
                                         <TableCell>{area.block}</TableCell>
                                         <TableCell>{area.mode}</TableCell>
                                         <TableCell>{area.statusParkingArea}</TableCell>
-                                        <TableCell>{new Date(area.createdDate).toLocaleDateString('en-GB')}</TableCell>                                        
+                                        <TableCell>{new Date(area.createdDate).toLocaleDateString('en-GB')}</TableCell>    
+                                        <TableCell>{area.createBy}</TableCell>
+                                        <TableCell>{area.lastModifyBy}</TableCell>
+                                        <TableCell>{new Date(area.lastModifyDate).toLocaleDateString('en-GB')}</TableCell>                                    
                                     </TableRow>
                                 ))}
                             </TableBody>
