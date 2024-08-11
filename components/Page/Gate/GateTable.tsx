@@ -1,7 +1,7 @@
 "use client";
 
-import { getListPackage } from "@/api/package";
-import { Packages } from "@/types/package.type";
+import { getGate } from "@/api/gate";
+import { Gates } from "@/types/gate.type";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CardProps, TablePagination } from "@mui/material";
@@ -14,27 +14,26 @@ type FilterOption = {
     value: string;
 };
 
-export default function PackageTable (){
+export default function GateTable (){
 
     const [inputValue, setInputValue] = useState('');
     const filterOptions: FilterOption[] = [
         { display: 'Name', value: 'name' },
-        { display: 'Coin Amount', value: 'coinAmount' },
-        { display: 'Extra Coin', value: 'extraCoin' },
-        { display: 'Exp Package', value: 'expPackage' },
-        { display: 'Status', value: 'packageStatus' },
+        { display: 'Parking Area', value: 'parkingAreaName' },
+        { display: 'Description', value: 'description' },
+        { display: 'Gate Type', value: 'gateTypeName' },
+        { display: 'Status', value: 'statusGate' },
     ];
     const headTables = [
         'Name',
-        'Coin Amount',
-        'Extra Coin',
-        'Exp Package',
-        'Price',
+        'Parking Area',
+        'Description',
+        'Gate Type',
         'Status',
-        'Created By',    
-        'Deleted Date'    
+        'Created Date',    
+        'Last Modify By'    
     ];
-    const [filterAttribute, setFilterAttribute] = useState<keyof Packages>('name'); 
+    const [filterAttribute, setFilterAttribute] = useState<keyof Gates>('name'); 
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage + 1);
@@ -45,7 +44,7 @@ export default function PackageTable (){
     };
 
     const handleFilterAttributeChange = (value: string) => {
-        setFilterAttribute(value as keyof Packages);
+        setFilterAttribute(value as keyof Gates);
     };
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -53,8 +52,8 @@ export default function PackageTable (){
     const {
         data, isLoading, isError, isSuccess, error, refetch
     } = useQuery({
-        queryKey: ['/packages', rowsPerPage, page, inputValue, filterAttribute],
-        queryFn: () => getListPackage(rowsPerPage, page, inputValue, filterAttribute),
+        queryKey: ['/gates', rowsPerPage, page, inputValue, filterAttribute],
+        queryFn: () => getGate(rowsPerPage, page, inputValue, filterAttribute),
         retry: 1
     });
 
@@ -99,16 +98,15 @@ export default function PackageTable (){
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data?.data.data?.map((packs: Packages) => (
-                                    <TableRow key={packs.id}>
-                                        <TableCell>{packs.name}</TableCell>
-                                        <TableCell>{packs.coinAmount}</TableCell>
-                                        <TableCell>{packs.extraCoin}</TableCell>                                        
-                                        <TableCell>{packs.expPackage}</TableCell>
-                                        <TableCell>{packs.price}</TableCell>
-                                        <TableCell>{packs.packageStatus}</TableCell>
-                                        <TableCell>{new Date(packs.createdDate).toLocaleDateString('en-GB')}</TableCell>  
-                                        <TableCell>{new Date(packs.deletedDate).toLocaleDateString('en-GB')}</TableCell>                                       
+                                {data?.data.data?.map((gate: Gates) => (
+                                    <TableRow key={gate.id}>
+                                        <TableCell>{gate.name}</TableCell>
+                                        <TableCell>{gate.parkingAreaName}</TableCell>
+                                        <TableCell>{gate.description}</TableCell>                                        
+                                        <TableCell>{gate.gateTypeName}</TableCell>
+                                        <TableCell>{gate.statusGate}</TableCell>
+                                        <TableCell>{gate.createdBy}</TableCell>
+                                        <TableCell>{gate.lastModifyBy}</TableCell>                                   
                                     </TableRow>
                                 ))}
                             </TableBody>

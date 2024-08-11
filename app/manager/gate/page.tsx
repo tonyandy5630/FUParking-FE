@@ -1,9 +1,10 @@
+import Gate from '@/components/Page/Gate/Gate';
 import { NextPage } from 'next';
 
 const Page: NextPage = () => {
     return (
         <div>
-            <h1>Hello, Next.js!</h1>
+            <Gate />
         </div>
     );
 };
