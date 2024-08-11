@@ -29,7 +29,7 @@ export default function OccupancyRate() {
             </div>
             <div className='h-16 w-px' style={{backgroundColor: '#D9D9D9'}}></div>
             <div className='flex flex-col gap-2'>
-                <p>Total customers</p>
+                <p>Total vehicles</p>
                 <div className='flex items-center justify-between gap-5'>
                     <div className='flex'>
                         <TwoWheelerRoundedIcon />
