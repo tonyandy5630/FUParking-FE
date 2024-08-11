@@ -1,9 +1,10 @@
+import ParkingArea from '@/components/Page/ParkingArea/ParkingArea';
 import { NextPage } from 'next';
 
 const Page: NextPage = () => {
     return (
         <div>
-            <h1>Hello, Next.js!</h1>
+            <ParkingArea/>
         </div>
     );
 };
