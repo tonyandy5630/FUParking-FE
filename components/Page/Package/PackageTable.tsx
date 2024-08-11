@@ -31,7 +31,7 @@ export default function PackageTable (){
         'Exp Package',
         'Price',
         'Status',
-        'Created By',    
+        'Created Date',    
         'Deleted Date'    
     ];
     const [filterAttribute, setFilterAttribute] = useState<keyof Packages>('name'); 
@@ -107,8 +107,8 @@ export default function PackageTable (){
                                         <TableCell>{packs.expPackage}</TableCell>
                                         <TableCell>{packs.price}</TableCell>
                                         <TableCell>{packs.packageStatus}</TableCell>
-                                        <TableCell>{new Date(packs.createdDate).toLocaleDateString('en-GB')}</TableCell>  
-                                        <TableCell>{new Date(packs.deletedDate).toLocaleDateString('en-GB')}</TableCell>                                       
+                                        <TableCell>{new Date(packs.createDate).toLocaleDateString('vi-VN')}</TableCell>  
+                                        <TableCell>{new Date(packs.deletedDate).toLocaleDateString('vi-VN') ? packs.deletedDate == null : 0}</TableCell>                                       
                                     </TableRow>
                                 ))}
                             </TableBody>

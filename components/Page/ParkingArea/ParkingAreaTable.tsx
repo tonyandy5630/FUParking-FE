@@ -105,10 +105,10 @@ export default function ParkingAreaTable (){
                                         <TableCell>{area.block}</TableCell>
                                         <TableCell>{area.mode}</TableCell>
                                         <TableCell>{area.statusParkingArea}</TableCell>
-                                        <TableCell>{new Date(area.createdDate).toLocaleDateString('en-GB')}</TableCell>    
+                                        <TableCell>{new Date(area.createDate).toLocaleDateString('vi-VN')}</TableCell>    
                                         <TableCell>{area.createBy}</TableCell>
                                         <TableCell>{area.lastModifyBy}</TableCell>
-                                        <TableCell>{new Date(area.lastModifyDate).toLocaleDateString('en-GB')}</TableCell>                                    
+                                        <TableCell>{new Date(area.lastModifyDate).toLocaleDateString('vi-VN') ? area.lastModifyDate == null : 0 }</TableCell>                                    
                                     </TableRow>
                                 ))}
                             </TableBody>

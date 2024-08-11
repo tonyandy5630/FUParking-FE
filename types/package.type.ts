@@ -12,6 +12,6 @@ export interface Packages {
   expPackage: string;
   price: string;
   packageStatus: string;
-  createdDate: string;
+  createDate: string;
   deletedDate: string;
 }
