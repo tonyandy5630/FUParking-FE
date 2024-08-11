@@ -1,9 +1,10 @@
+import Package from '@/components/Page/Package/Package';
 import { NextPage } from 'next';
 
 const Page: NextPage = () => {
     return (
         <div>
-            <h1>Hello, Next.js!</h1>
+            <Package />
         </div>
     );
 };
