@@ -1,38 +1,39 @@
-'use client';
-import { useQuery } from "@tanstack/react-query";
-import SearchField from "@/components/Common/searchField";
-import { useEffect, useState } from "react";
-import Loading from "../LoadingPage/Loading";
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CardProps, TablePagination } from "@mui/material";
-import { ParkingAreas } from "@/types/parkingArea.type";
-import { getListParkingArea } from "@/api/parkingArea";
-import SelectFilter from "@/components/Common/selectFilter";
+"use client";
 
+import { getGate } from "@/api/gate";
+import { Gates } from "@/types/gate.type";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CardProps, TablePagination } from "@mui/material";
+import SelectFilter from "@/components/Common/selectFilter";
+import SearchField from "@/components/Common/searchField";
+import Loading from "../LoadingPage/Loading";
 
 type FilterOption = {
     display: string;
     value: string;
 };
 
-export default function ParkingAreaTable (){
+export default function GateTable (){
 
     const [inputValue, setInputValue] = useState('');
     const filterOptions: FilterOption[] = [
         { display: 'Name', value: 'name' },
+        { display: 'Parking Area', value: 'parkingAreaName' },
+        { display: 'Description', value: 'description' },
+        { display: 'Gate Type', value: 'gateTypeName' },
+        { display: 'Status', value: 'statusGate' },
     ];
     const headTables = [
         'Name',
+        'Parking Area',
         'Description',
-        'Max capacity',
-        'Block',
-        'Mode',
+        'Gate Type',
         'Status',
-        'Created Date',      
-        'Create By',
-        'Last Modify By',
-        'Last Modify Date',
+        'Created Date',    
+        'Last Modify By'    
     ];
-    const [filterAttribute, setFilterAttribute] = useState<keyof ParkingAreas>('name');   
+    const [filterAttribute, setFilterAttribute] = useState<keyof Gates>('name'); 
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage + 1);
@@ -43,7 +44,7 @@ export default function ParkingAreaTable (){
     };
 
     const handleFilterAttributeChange = (value: string) => {
-        setFilterAttribute(value as keyof ParkingAreas);
+        setFilterAttribute(value as keyof Gates);
     };
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -51,8 +52,8 @@ export default function ParkingAreaTable (){
     const {
         data, isLoading, isError, isSuccess, error, refetch
     } = useQuery({
-        queryKey: ['/areas', rowsPerPage, page, inputValue, filterAttribute],
-        queryFn: () => getListParkingArea(rowsPerPage, page, inputValue, filterAttribute),
+        queryKey: ['/gates', rowsPerPage, page, inputValue, filterAttribute],
+        queryFn: () => getGate(rowsPerPage, page, inputValue, filterAttribute),
         retry: 1
     });
 
@@ -68,7 +69,7 @@ export default function ParkingAreaTable (){
 
     return (
         <>
-            <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5">
                 <div className='flex flex-row gap-3 justify-center'>
                     <SelectFilter
                         filterAttribute={filterAttribute}
@@ -97,18 +98,15 @@ export default function ParkingAreaTable (){
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data?.data.data?.map((area: ParkingAreas) => (
-                                    <TableRow key={area.id}>
-                                        <TableCell>{area.name}</TableCell>
-                                        <TableCell>{area.description}</TableCell>
-                                        <TableCell>{area.maxCapacity}</TableCell>                                        
-                                        <TableCell>{area.block}</TableCell>
-                                        <TableCell>{area.mode}</TableCell>
-                                        <TableCell>{area.statusParkingArea}</TableCell>
-                                        <TableCell>{new Date(area.createdDate).toLocaleDateString('en-GB')}</TableCell>    
-                                        <TableCell>{area.createBy}</TableCell>
-                                        <TableCell>{area.lastModifyBy}</TableCell>
-                                        <TableCell>{new Date(area.lastModifyDate).toLocaleDateString('en-GB')}</TableCell>                                    
+                                {data?.data.data?.map((gate: Gates) => (
+                                    <TableRow key={gate.id}>
+                                        <TableCell>{gate.name}</TableCell>
+                                        <TableCell>{gate.parkingAreaName}</TableCell>
+                                        <TableCell>{gate.description}</TableCell>                                        
+                                        <TableCell>{gate.gateTypeName}</TableCell>
+                                        <TableCell>{gate.statusGate}</TableCell>
+                                        <TableCell>{gate.createdBy}</TableCell>
+                                        <TableCell>{gate.lastModifyBy}</TableCell>                                   
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -127,8 +125,4 @@ export default function ParkingAreaTable (){
             )}
         </>
     )
-}
-
-function setFilterAttribute(arg0: string) {
-    throw new Error("Function not implemented.");
 }

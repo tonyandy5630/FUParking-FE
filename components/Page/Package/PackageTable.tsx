@@ -1,38 +1,40 @@
-'use client';
-import { useQuery } from "@tanstack/react-query";
-import SearchField from "@/components/Common/searchField";
-import { useEffect, useState } from "react";
-import Loading from "../LoadingPage/Loading";
-import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CardProps, TablePagination } from "@mui/material";
-import { ParkingAreas } from "@/types/parkingArea.type";
-import { getListParkingArea } from "@/api/parkingArea";
-import SelectFilter from "@/components/Common/selectFilter";
+"use client";
 
+import { getListPackage } from "@/api/package";
+import { Packages } from "@/types/package.type";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CardProps, TablePagination } from "@mui/material";
+import SelectFilter from "@/components/Common/selectFilter";
+import SearchField from "@/components/Common/searchField";
+import Loading from "../LoadingPage/Loading";
 
 type FilterOption = {
     display: string;
     value: string;
 };
 
-export default function ParkingAreaTable (){
+export default function PackageTable (){
 
     const [inputValue, setInputValue] = useState('');
     const filterOptions: FilterOption[] = [
         { display: 'Name', value: 'name' },
+        { display: 'Coin Amount', value: 'coinAmount' },
+        { display: 'Extra Coin', value: 'extraCoin' },
+        { display: 'Exp Package', value: 'expPackage' },
+        { display: 'Status', value: 'packageStatus' },
     ];
     const headTables = [
         'Name',
-        'Description',
-        'Max capacity',
-        'Block',
-        'Mode',
+        'Coin Amount',
+        'Extra Coin',
+        'Exp Package',
+        'Price',
         'Status',
-        'Created Date',      
-        'Create By',
-        'Last Modify By',
-        'Last Modify Date',
+        'Created By',    
+        'Deleted Date'    
     ];
-    const [filterAttribute, setFilterAttribute] = useState<keyof ParkingAreas>('name');   
+    const [filterAttribute, setFilterAttribute] = useState<keyof Packages>('name'); 
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage + 1);
@@ -43,7 +45,7 @@ export default function ParkingAreaTable (){
     };
 
     const handleFilterAttributeChange = (value: string) => {
-        setFilterAttribute(value as keyof ParkingAreas);
+        setFilterAttribute(value as keyof Packages);
     };
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -51,8 +53,8 @@ export default function ParkingAreaTable (){
     const {
         data, isLoading, isError, isSuccess, error, refetch
     } = useQuery({
-        queryKey: ['/areas', rowsPerPage, page, inputValue, filterAttribute],
-        queryFn: () => getListParkingArea(rowsPerPage, page, inputValue, filterAttribute),
+        queryKey: ['/packages', rowsPerPage, page, inputValue, filterAttribute],
+        queryFn: () => getListPackage(rowsPerPage, page, inputValue, filterAttribute),
         retry: 1
     });
 
@@ -68,7 +70,7 @@ export default function ParkingAreaTable (){
 
     return (
         <>
-            <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5">
                 <div className='flex flex-row gap-3 justify-center'>
                     <SelectFilter
                         filterAttribute={filterAttribute}
@@ -97,18 +99,16 @@ export default function ParkingAreaTable (){
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data?.data.data?.map((area: ParkingAreas) => (
-                                    <TableRow key={area.id}>
-                                        <TableCell>{area.name}</TableCell>
-                                        <TableCell>{area.description}</TableCell>
-                                        <TableCell>{area.maxCapacity}</TableCell>                                        
-                                        <TableCell>{area.block}</TableCell>
-                                        <TableCell>{area.mode}</TableCell>
-                                        <TableCell>{area.statusParkingArea}</TableCell>
-                                        <TableCell>{new Date(area.createdDate).toLocaleDateString('en-GB')}</TableCell>    
-                                        <TableCell>{area.createBy}</TableCell>
-                                        <TableCell>{area.lastModifyBy}</TableCell>
-                                        <TableCell>{new Date(area.lastModifyDate).toLocaleDateString('en-GB')}</TableCell>                                    
+                                {data?.data.data?.map((packs: Packages) => (
+                                    <TableRow key={packs.id}>
+                                        <TableCell>{packs.name}</TableCell>
+                                        <TableCell>{packs.coinAmount}</TableCell>
+                                        <TableCell>{packs.extraCoin}</TableCell>                                        
+                                        <TableCell>{packs.expPackage}</TableCell>
+                                        <TableCell>{packs.price}</TableCell>
+                                        <TableCell>{packs.packageStatus}</TableCell>
+                                        <TableCell>{new Date(packs.createdDate).toLocaleDateString('en-GB')}</TableCell>  
+                                        <TableCell>{new Date(packs.deletedDate).toLocaleDateString('en-GB')}</TableCell>                                       
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -127,8 +127,4 @@ export default function ParkingAreaTable (){
             )}
         </>
     )
-}
-
-function setFilterAttribute(arg0: string) {
-    throw new Error("Function not implemented.");
 }
