@@ -12,7 +12,7 @@ export interface ParkingAreas {
   mode: string;
   block: string;
   statusParkingArea: string;
-  createdDate: string;
+  createDate: string;
   createBy: string;
   lastModifyBy: string;
   lastModifyDate: string;
