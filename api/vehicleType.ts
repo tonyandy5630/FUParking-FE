@@ -3,6 +3,7 @@ import http from "@/utils/http";
 import {
   CREATE_VEHICLE_TYPE_API_URL,
   DELETE_VEHICLE_TYPE_API_URL,
+  GET_ALL_VEHICLE_TYPE_API_URL,
   GET_LIST_VEHICLE_TYPE_API_URL,
   UPDATE_VEHICLE_TYPE_API_URL,
 } from "./url/vehicleType.url";
@@ -16,6 +17,9 @@ export const getListVehicleTypeAPI = (
   http.get<ListVehicleTypeResponse>(
     GET_LIST_VEHICLE_TYPE_API_URL(pageSize, pageIndex, SearchInput, Attribute)
   );
+
+export const getAllVehicleTypeAPI = () =>
+  http.get<ListVehicleTypeResponse>(GET_ALL_VEHICLE_TYPE_API_URL);
 
 export const createVehicleTypeAPI = (body: {
   name: string;
