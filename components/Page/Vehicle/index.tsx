@@ -20,6 +20,7 @@ import Chip from "@/components/Chip";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { getAllVehicleTypeAPI } from "@/api/vehicleType";
 import { VehicleTypeProps } from "@/types/vehicleType.type";
+import ExportToCSVButton from "@/components/ExportCSVButton";
 
 const FILTER: listFilter[] = [
   { display: "Plate Number", value: "PLATENUMBER" },
@@ -303,6 +304,9 @@ export default function VehiclePage() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
+      <div className='min-w-full flex justify-start items-center py-2'>
+        <ExportToCSVButton data={vehicleList} />
+      </div>
       <DataTable
         tableHeads={VehicleTableHeaders}
         tableRows={vehicleTableRows}
