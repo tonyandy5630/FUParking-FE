@@ -4,7 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 
 type Props = {
   name: string;
-  type?: "password" | "text";
+  type?: "password" | "text" | "number";
   placeholder: string;
   autofocus?: boolean;
   label?: string;

@@ -15,9 +15,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import PriceTableHeaders from "./table-headers";
+import AddIcon from "@mui/icons-material/Add";
+import dynamic from "next/dynamic";
+const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
 
 export default function PriceTablePage() {
   const [searchText, setSearchText] = useState("");
+  const [openCreate, setOpenCreate] = useState(false);
   const { pagination, handleChangeRowsPerPage, handlePageChange } =
     usePagination();
   const [tableList, setTableList] = useState<PriceTable[]>([]);
@@ -30,6 +34,10 @@ export default function PriceTablePage() {
     queryKey: ["/get-price-table"],
     queryFn: getPriceTableAPI,
   });
+
+  const handleOpenCreatePriceTable = () => {
+    setOpenCreate((prev) => !prev);
+  };
 
   const updateTableStatusMutation = useMutation({
     mutationKey: ["/update-table-status"],
@@ -128,6 +136,15 @@ export default function PriceTablePage() {
           placeholder={"Enter price table name"}
         />
       </SearchContainer>
+      <div className='min-w-full flex justify-start items-center py-2'>
+        <Button variant='outlined'>
+          <AddIcon /> <span>New Table</span>
+        </Button>
+      </div>
+      <AddPriceTableDialog
+        open={true}
+        onOpenChange={handleOpenCreatePriceTable}
+      />
       <Table
         onPageChange={handlePageChange}
         onPageSizeChange={handleChangeRowsPerPage}
