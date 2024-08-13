@@ -1,11 +1,16 @@
-import { NextPage } from 'next';
+import PriceTablePage from "@/components/Page/PriceTablePage";
+import { Metadata, NextPage } from "next";
+
+export const metadata: Metadata = {
+  title: "Price Table Page",
+};
 
 const Page: NextPage = () => {
-    return (
-        <div>
-            <h1>Hello, Next.js!</h1>
-        </div>
-    );
+  return (
+    <div>
+      <PriceTablePage />
+    </div>
+  );
 };
 
 export default Page;

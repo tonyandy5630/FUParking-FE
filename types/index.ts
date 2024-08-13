@@ -17,4 +17,5 @@ export type LoginResponse<Data> = {
 export type ErrorResponse<Data> = {
   message?: string;
   data?: Data;
+  totalRecord?: number;
 };

@@ -15,7 +15,7 @@ type Props = {
   tableHeads: Array<string>;
   tableRows: any;
   pagination: PaginationType;
-  totalRecord: number;
+  totalRecord?: number;
   onPageChange: any;
   onPageSizeChange: any;
 };
@@ -59,7 +59,7 @@ export default memo(function DataTable({
           <TableRow>
             <TablePagination
               rowsPerPageOptions={[5, 10, 25]}
-              count={totalRecord}
+              count={totalRecord ?? 999}
               rowsPerPage={pagination.pageSize}
               page={pagination.pageIndex}
               slotProps={{
