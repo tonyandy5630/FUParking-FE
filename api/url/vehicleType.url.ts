@@ -10,6 +10,8 @@ export const GET_LIST_VEHICLE_TYPE_API_URL = (
     SearchInput ? `&SearchInput=${SearchInput}` : ""
   }&Attribute=${Attribute}`;
 
+export const GET_ALL_VEHICLE_TYPE_API_URL = `${baseURL}/vehicles/type`;
+
 export const CREATE_VEHICLE_TYPE_API_URL = `${baseURL}/vehicles/types`;
 
 export const UPDATE_VEHICLE_TYPE_API_URL = (id: string) =>

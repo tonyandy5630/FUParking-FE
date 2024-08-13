@@ -3,7 +3,7 @@ import SearchContainer from "@/components/Common/SearchContainer";
 import SearchField from "@/components/Common/searchField";
 import PageTitle from "@/components/PageTitle";
 import { useDebounce } from "use-debounce";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { changeVehicleStatusAPI, getListVehicleAPI } from "@/api/vehicle";
 import DataTable from "@/components/Table";
@@ -18,11 +18,16 @@ import Button from "@mui/material/Button";
 import { toast } from "react-toastify";
 import Chip from "@/components/Chip";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { getAllVehicleTypeAPI } from "@/api/vehicleType";
+import { VehicleTypeProps } from "@/types/vehicleType.type";
 
 const FILTER: listFilter[] = [
   { display: "Plate Number", value: "PLATENUMBER" },
   { display: "Email", value: "EMAIL" },
+  { display: "Vehicle Type", value: "VEHICLETYPE" },
 ];
+
+const ALL_VEHICLE_TYPE_VALUE = "ALL";
 
 export default function VehiclePage() {
   const pathname = usePathname();
@@ -33,19 +38,21 @@ export default function VehiclePage() {
   });
   const searchParams = useSearchParams();
   const [searchText, setSearchText] = useState(
-    searchParams.get("keyword") ?? ""
+    searchParams.get("keyword")?.toString() ?? ""
   );
   const [filter, setFilter] = useState<SearchAttribute>(
     (searchParams.get("filter") as SearchAttribute) ?? "PLATENUMBER"
   );
+  const [vehicleTypes, setVehicleTypes] = useState<VehicleTypeProps[]>([]);
+  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState(
+    searchParams.get("vehicleType")?.toString() ?? ""
+  );
   const [vehicleList, setVehicleList] = useState<Array<VehicleProps>>([]);
-
   const [debouncePlateText] = useDebounce(searchText, 750);
   const vehicleStatusChangeMutation = useMutation({
     mutationKey: ["/status-vehicle-change"],
     mutationFn: changeVehicleStatusAPI,
   });
-
   const {
     data: vehicleData,
     isSuccess,
@@ -70,25 +77,101 @@ export default function VehiclePage() {
     placeholderData: keepPreviousData,
   });
 
+  const {
+    data: vehicleTypesData,
+    isSuccess: isTypesSuccess,
+    isLoading: isTypesLoading,
+  } = useQuery({
+    queryKey: ["/vehicles/get-all-vehicle-types"],
+    queryFn: getAllVehicleTypeAPI,
+  });
+
   const createQueryString = useCallback(
-    (name: string, value: string) => {
+    (newParam: { name: string; value: string }[]) => {
       const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
+      newParam.map(({ name, value }) => {
+        params.set(name, value);
+      });
 
       return params.toString();
     },
     [searchParams]
   );
 
+  const formatVehicleTypesFilter = useMemo(() => {
+    if (isTypesSuccess) {
+      const types = vehicleTypesData.data.data;
+      if (types) {
+        const list: listFilter[] = [
+          {
+            display: "All",
+            value: ALL_VEHICLE_TYPE_VALUE,
+          },
+        ];
+        const newList = list.concat(
+          types.map((item) => {
+            const filter: listFilter = {
+              display: item.description,
+              value: item.id,
+            };
+            return filter;
+          })
+        );
+        setVehicleTypes(types);
+
+        return newList;
+      }
+    }
+  }, [isTypesSuccess, vehicleTypesData]);
+
   const handleSearchTextChange = (value: string) => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
     setSearchText(value);
-    router.push(pathname + "?" + createQueryString("keyword", value));
+    router.push(
+      pathname + "?" + createQueryString([{ name: "keyword", value }])
+    );
   };
 
+  const handleVehicleTypeChange = (value: string) => {
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+
+    let currentFilter: SearchAttribute = "VEHICLETYPE";
+    let keyword = vehicleTypes.find((item) => item.id === value)?.name ?? "";
+    let vehicleTypeValue = value;
+    if (value === ALL_VEHICLE_TYPE_VALUE) {
+      keyword = "";
+      currentFilter = "PLATENUMBER";
+      vehicleTypeValue = "";
+    }
+    setSelectedVehicleTypes(vehicleTypeValue);
+
+    setSearchText(keyword);
+    setFilter(currentFilter);
+    router.push(
+      pathname +
+        "?" +
+        createQueryString([
+          { name: "vehicleType", value: vehicleTypeValue },
+          { name: "filter", value: currentFilter },
+          {
+            name: "keyword",
+            value: keyword,
+          },
+        ])
+    );
+  };
   const handleFilterChange = (value: string) => {
     setFilter(value as SearchAttribute);
-    router.push(pathname + "?" + createQueryString("filter", value));
+    if (value === "All") {
+      window.history.replaceState(null, "", pathname);
+    }
+
+    router.push(
+      pathname + "?" + createQueryString([{ name: "filter", value }])
+    );
   };
 
   const handlePageChange = (newPage: number) => {
@@ -118,6 +201,24 @@ export default function VehiclePage() {
       toast.error("Something went wrong");
     }
   };
+  useEffect(() => {
+    if (searchParams.get("filter") !== "") {
+      setFilter(
+        (searchParams.get("filter") as SearchAttribute) ?? "PLATENUMBER"
+      );
+    }
+
+    if (searchParams.get("vehicleType") !== "") {
+      setSelectedVehicleTypes(
+        (searchParams.get("vehicleType") as string) ?? ""
+      );
+    }
+
+    if (searchParams.get("keyword") !== "") {
+      setSearchText((searchParams.get("keyword") as string) ?? "");
+    }
+    refetch();
+  }, [pathname, searchParams]);
 
   useEffect(() => {
     if (isSuccess && vehicleData.data.data) {
@@ -186,6 +287,12 @@ export default function VehiclePage() {
     <>
       <PageTitle>Vehicle List</PageTitle>
       <SearchContainer>
+        <SelectFilter
+          label='Vehicle Type'
+          filterAttribute={selectedVehicleTypes}
+          listFilter={formatVehicleTypesFilter ?? []}
+          setFilterAttribute={handleVehicleTypeChange}
+        />
         <SelectFilter
           filterAttribute={filter}
           setFilterAttribute={handleFilterChange}
