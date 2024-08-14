@@ -25,13 +25,14 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
             <TextField
               {...register(name)}
               error={errors[name]?.message !== undefined}
-              className='test-sm w-full border rounded-sm'
+              className='w-full border rounded-sm'
               size='small'
               type={type}
               id={name}
               label={label}
               name={name}
               autoFocus={props.autoFocus}
+              defaultValue={props.defaultValue ?? ""}
               placeholder={placeholder}
               InputProps={{
                 endAdornment: endAdornment ? (

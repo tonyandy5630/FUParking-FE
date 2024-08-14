@@ -4,6 +4,4 @@ export const PriceItemsTableHeaders = [
   "To Hour",
   "Max Price",
   "Min Price",
-  "Status",
-  "Action",
 ];

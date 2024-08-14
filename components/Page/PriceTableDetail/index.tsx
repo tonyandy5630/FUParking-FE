@@ -12,12 +12,15 @@ import TableRow from "@mui/material/TableRow";
 import Table from "@/components/Table";
 import { Button } from "@mui/material";
 import Chip from "@/components/Chip";
+import UpdateIcon from "@mui/icons-material/Create";
+import UpdatePriceItemDialog from "./UpdatePriceItemDialog";
 
 export default function PriceTableDetails({
   priceTableId,
 }: {
   priceTableId: string;
 }) {
+  const [openCreatePriceItem, setOpenCreatePriceItem] = useState(false);
   const [searchText, setSearchText] = useState("");
   const {
     pagination,
@@ -40,6 +43,10 @@ export default function PriceTableDetails({
     isActive: boolean;
   }) => {};
 
+  const handleOpenCreatePriceItems = () => {
+    setOpenCreatePriceItem((prev) => !prev);
+  };
+
   const tableRows = useMemo(() => {
     if (!isSuccess) {
       return [];
@@ -57,46 +64,6 @@ export default function PriceTableDetails({
           <TableCell>{item.applyToHour}</TableCell>
           <TableCell>{item.maxPrice}</TableCell>
           <TableCell>{item.minPrice}</TableCell>
-          <TableCell>
-            <Chip variant={item.status === "ACTIVE" ? "success" : "warning"}>
-              {item.status}
-            </Chip>
-          </TableCell>
-          <TableCell>
-            {(() => {
-              switch (item.status) {
-                case "ACTIVE":
-                  return (
-                    <Button
-                      variant='contained'
-                      color='error'
-                      onClick={() =>
-                        handlePriceItemStatusChange({
-                          priceItemId: item.id,
-                          isActive: false,
-                        })
-                      }
-                    >
-                      DEACTIVATE
-                    </Button>
-                  );
-                case "INACTIVE":
-                  return (
-                    <Button
-                      variant='contained'
-                      onClick={() =>
-                        handlePriceItemStatusChange({
-                          priceItemId: item.id,
-                          isActive: true,
-                        })
-                      }
-                    >
-                      RE-ACTIVE
-                    </Button>
-                  );
-              }
-            })()}
-          </TableCell>
         </TableRow>
       );
     });
@@ -108,6 +75,19 @@ export default function PriceTableDetails({
       <SearchContainer>
         <SearchField inputValue={searchText} setInputValue={setSearchText} />
       </SearchContainer>
+      <div className='min-w-full flex justify-start items-center py-2'>
+        <Button variant='outlined' onClick={handleOpenCreatePriceItems}>
+          <UpdateIcon /> <span>Update</span>
+        </Button>
+      </div>
+      {priceItemsData?.data.data && (
+        <UpdatePriceItemDialog
+          open={openCreatePriceItem}
+          tablePriceId={priceTableId}
+          onOpenChange={handleOpenCreatePriceItems}
+          priceItems={priceItemsData.data.data}
+        />
+      )}
       <Table
         onPageChange={handlePageChange}
         onPageSizeChange={handleChangeRowsPerPage}
