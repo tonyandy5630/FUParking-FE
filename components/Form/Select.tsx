@@ -60,4 +60,6 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
   }
 );
 
+FormSelect.displayName = "FormSelect";
+
 export default FormSelect;

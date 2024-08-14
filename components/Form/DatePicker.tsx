@@ -41,4 +41,6 @@ const FormDatePicker = React.forwardRef<HTMLInputTypeAttribute, Props>(
   )
 );
 
+FormDatePicker.displayName = "MyComponent";
+
 export default FormDatePicker;
