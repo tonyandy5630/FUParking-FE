@@ -117,7 +117,7 @@ export default function VehicleTypeTable() {
               {data?.data.data?.map((vehicleType: VehicleTypeProps) => (
                 <TableRow key={vehicleType.id}>
                   <TableCell>{vehicleType.name}</TableCell>
-                  <TableCell>{vehicleType.description}</TableCell>
+                  <TableCell>{vehicleType.description ?? "Nan"}</TableCell>
                   <TableCell>
                     {new Date(vehicleType.createdDate).toLocaleDateString(
                       "en-GB"
