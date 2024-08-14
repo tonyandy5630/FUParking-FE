@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Unstable_Grid2";
 import { FormProvider, useForm } from "react-hook-form";
@@ -11,10 +10,14 @@ import PriceTableTableSchema, {
   PriceTableTableSchemaType,
 } from "@/utils/schemas/priceTableSchema";
 import { getAllVehicleTypeAPI } from "@/api/vehicleType";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import FormSelect, { FormOptions } from "@/components/Form/Select";
 import { Button } from "@mui/material";
 import FormInput from "@/components/Form/Input";
+import FormDatePicker from "@/components/Form/DatePicker";
+import { createTableAPI } from "@/api/price";
+import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
 type Props = {
   open: boolean;
@@ -32,6 +35,17 @@ export default function AddPriceTable({ open, onOpenChange }: Props) {
     formState: { errors },
     getValues,
   } = methods;
+  const [vehicleType, setVehicleType] = useState("");
+
+  const handleVehicleTypeChange = (e: any) => {
+    console.log(e.target.value);
+    setVehicleType(e.target.value);
+  };
+
+  const createTableMutation = useMutation({
+    mutationKey: ["/create-table"],
+    mutationFn: createTableAPI,
+  });
 
   const {
     data: vehicleTypesData,
@@ -60,10 +74,16 @@ export default function AddPriceTable({ open, onOpenChange }: Props) {
 
   const handleAddPriceTable = async (data: PriceTableTableSchemaType) => {
     try {
-      console.log(data);
-    } catch (error) {
-      console.log(error);
-    }
+      await createTableMutation.mutateAsync(data, {
+        onSuccess: (res) => {
+          toast.success("Create table successfully");
+          reset();
+        },
+        onError: (err) => {
+          toast.error("Something went wrong");
+        },
+      });
+    } catch (error) {}
   };
 
   return (
@@ -75,7 +95,12 @@ export default function AddPriceTable({ open, onOpenChange }: Props) {
             <Grid container spacing={2}>
               <Grid xs={12}>
                 <div className='min-w-full'>
-                  <FormInput name='name' placeholder='Enter table name' />
+                  <FormInput
+                    name='name'
+                    autoFocus={true}
+                    label='Table name'
+                    placeholder='Table name'
+                  />
                 </div>
               </Grid>
               <Grid xs={6}>
@@ -83,22 +108,96 @@ export default function AddPriceTable({ open, onOpenChange }: Props) {
                   name='vehicleTypeId'
                   options={vehicleTypeOptions}
                   label='Vehicle Types'
+                  error={errors.vehicleTypeId?.message}
                 />
               </Grid>
               <Grid xs={6}>
                 <div className='w-full'>
                   <FormInput
+                    label='Priority'
                     name='priority'
                     type='number'
-                    placeholder='Enter priority'
+                    placeholder='Priority'
                   />
                 </div>
               </Grid>
+              <Grid xs={6}>
+                <FormDatePicker
+                  minDate={dayjs()}
+                  name='applyFromDate'
+                  label='Apply From'
+                  error={errors.applyFromDate?.message}
+                />
+              </Grid>
+              <Grid xs={6}>
+                <FormDatePicker
+                  name='applyToDate'
+                  label='Apply To'
+                  error={errors.applyToDate?.message}
+                />
+              </Grid>
+              <Grid xs={12}>
+                <div className='min-w-full'>
+                  <FormInput
+                    label='Price per Block'
+                    name='pricePerBlock'
+                    placeholder='Price per Block'
+                    type='number'
+                    endAdornment='VND'
+                  />
+                </div>
+              </Grid>
+              <Grid xs={6}>
+                <div className='min-w-full'>
+                  <FormInput
+                    name='maxPrice'
+                    label='Max Price'
+                    placeholder='Max Price'
+                    type='number'
+                    endAdornment='VND'
+                  />
+                </div>
+              </Grid>
+              <Grid xs={6}>
+                <div className='min-w-full'>
+                  <FormInput
+                    name='minPrice'
+                    label='Min Price'
+                    placeholder='Min Price'
+                    type='number'
+                    endAdornment='VND'
+                  />
+                </div>
+              </Grid>
+              <DialogActions className='flex justify-end min-w-full'>
+                <Button
+                  type='button'
+                  onClick={onOpenChange}
+                  color='error'
+                  variant='outlined'
+                  disabled={createTableMutation.isPending}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type='button'
+                  variant='contained'
+                  color='warning'
+                  onClick={() => reset()}
+                  disabled={createTableMutation.isPending}
+                >
+                  {createTableMutation.isPending ? "Loading..." : "Reset"}
+                </Button>
+                <Button
+                  type='submit'
+                  variant='contained'
+                  disabled={createTableMutation.isPending}
+                >
+                  {createTableMutation.isPending ? "Loading..." : "Create"}
+                </Button>
+              </DialogActions>
             </Grid>
           </DialogContent>
-          <DialogActions>
-            <Button type='submit'>Create</Button>
-          </DialogActions>
         </form>
       </FormProvider>
     </Dialog>

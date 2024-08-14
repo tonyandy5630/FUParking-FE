@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import PriceTableHeaders from "./table-headers";
 import AddIcon from "@mui/icons-material/Add";
 import dynamic from "next/dynamic";
+import { UPDATE_SUCCEED_MESSAGE } from "@/constant/message";
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
 
 export default function PriceTablePage() {
@@ -57,8 +58,8 @@ export default function PriceTablePage() {
     try {
       await updateTableStatusMutation.mutateAsync(data, {
         onSuccess: () => {
-          toast.success(UPDATE_SUCCEED_MESSAGE);
           refetch();
+          toast.success(UPDATE_SUCCEED_MESSAGE);
         },
       });
     } catch (error) {
@@ -69,7 +70,10 @@ export default function PriceTablePage() {
   const tableRows = useMemo(() => {
     return tableList.map((item) => {
       return (
-        <TableRow key={item.priceTableId}>
+        <TableRow
+          key={item.priceTableId}
+          className='hover:bg-slate-300 transition  ease-in-out cursor-pointer'
+        >
           <TableCell>{item.name}</TableCell>
           <TableCell>{item.priority}</TableCell>
           <TableCell>{item.vehicleType}</TableCell>
@@ -137,12 +141,12 @@ export default function PriceTablePage() {
         />
       </SearchContainer>
       <div className='min-w-full flex justify-start items-center py-2'>
-        <Button variant='outlined'>
+        <Button variant='outlined' onClick={handleOpenCreatePriceTable}>
           <AddIcon /> <span>New Table</span>
         </Button>
       </div>
       <AddPriceTableDialog
-        open={true}
+        open={openCreate}
         onOpenChange={handleOpenCreatePriceTable}
       />
       <Table

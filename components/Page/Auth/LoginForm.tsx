@@ -69,13 +69,10 @@ export default function LoginForm() {
           <FormInput
             name='email'
             placeholder='Enter email'
-            autofocus={true}
+            autoFocus={true}
             key='email'
             label='Email'
           />
-          {errors.email && (
-            <p className='text-red-500'>{errors.email.message}</p>
-          )}
         </div>
         <div className='flex flex-col space-y-2'>
           <FormInput
@@ -88,9 +85,10 @@ export default function LoginForm() {
         </div>
         <button
           type='submit'
+          disabled={loginMutation.isPending}
           className='p-2 border hover:bg-orange-500 hover:text-white rounded-md font-medium'
         >
-          Sign in
+          {loginMutation.isPending ? "Loading..." : "Sign in"}
         </button>
       </form>
     </FormProvider>

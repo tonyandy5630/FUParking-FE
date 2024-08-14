@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import { Controller, UseFormReturn } from "react-hook-form";
 import ConnectForm from "./ConnectForm";
 import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
+import FormHelperText from "@mui/material/FormHelperText";
+import TextField from "@mui/material/TextField";
 
 export type FormOptions = {
   name: string;
@@ -15,10 +15,12 @@ interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
   label?: string;
   options: Array<FormOptions>;
+  error?: string;
 }
 
 const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
-  ({ label, value = "", onChange, options, name, ...props }, ref) => {
+  ({ label, error, options, name, ...props }, ref) => {
+    const [select, setSelected] = useState(options[0].value);
     return (
       <ConnectForm>
         {({ control, formState: { errors } }: UseFormReturn) => {
@@ -26,18 +28,30 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
             <Controller
               control={control}
               name={name}
-              render={({ field }) => (
-                <FormControl fullWidth size='small'>
-                  <InputLabel id='demo'>{label}</InputLabel>
-                  <Select labelId='demo' label={label} {...field} value={value}>
-                    {options.map((item, index) => (
-                      <MenuItem key={item.value} value={item.value}>
-                        {item.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+              render={({ field }) => {
+                return (
+                  <FormControl
+                    fullWidth
+                    size='small'
+                    error={errors[name]?.message !== undefined}
+                  >
+                    <TextField
+                      select
+                      size='small'
+                      defaultValue=''
+                      label={label}
+                      {...field}
+                    >
+                      {options.map((item, index) => (
+                        <MenuItem key={item.value} value={item.value}>
+                          {item.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                    <FormHelperText>{error}</FormHelperText>
+                  </FormControl>
+                );
+              }}
             />
           );
         }}
