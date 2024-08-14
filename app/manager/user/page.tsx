@@ -1,9 +1,10 @@
 import { NextPage } from 'next';
+import User from "@/components/Page/User/User";
 
 const Page: NextPage = () => {
     return (
         <div>
-            <h1>Hello, Next.js!</h1>
+            <User/>
         </div>
     );
 };
