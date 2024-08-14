@@ -1,41 +1,42 @@
 "use client";
 
-import { getListPackage } from "@/api/package";
-import { Packages } from "@/types/package.type";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CardProps, TablePagination } from "@mui/material";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
 import Loading from "../LoadingPage/Loading";
-import {formatPrice} from "@/utils/price";
+import {Packages} from "@/types/package.type";
+import {getListPackage} from "@/api/package";
+import {User} from "@/types/user.type";
+import {getListUser} from "@/api/user";
 
 type FilterOption = {
     display: string;
     value: string;
 };
 
-export default function PackageTable (){
-
+export default function UserTable () {
     const [inputValue, setInputValue] = useState('');
     const filterOptions: FilterOption[] = [
         { display: 'Name', value: 'name' },
-        { display: 'Coin Amount', value: 'coinAmount' },
-        { display: 'Extra Coin', value: 'extraCoin' },
-        { display: 'Exp Package', value: 'expPackage' },
+        { display: 'Role', value: 'role' },
         { display: 'Status', value: 'packageStatus' },
     ];
+
     const headTables = [
         'No.',
-        'Name',
-        'Coin Amount',
-        'Extra Coin',
-        'Exp Package',
-        'Price',
+        'Full Name',
+        'Email',
+        'Role',
         'Status',
         'Created Date',
+        'Created By',
+        'Last Modified Date',
+        'Last Modified By',
     ];
-    const [filterAttribute, setFilterAttribute] = useState<keyof Packages>('name');
+
+    const [filterAttribute, setFilterAttribute] = useState<keyof User>('fullName');
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage + 1);
@@ -46,16 +47,17 @@ export default function PackageTable (){
     };
 
     const handleFilterAttributeChange = (value: string) => {
-        setFilterAttribute(value as keyof Packages);
+        setFilterAttribute(value as keyof User);
     };
+
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [searchTerm, setSearchTerm] = useState('');    
+    const [searchTerm, setSearchTerm] = useState('');
     const {
         data, isLoading, isError, isSuccess, error, refetch
     } = useQuery({
-        queryKey: ['/packages', rowsPerPage, page, inputValue, filterAttribute],
-        queryFn: () => getListPackage(rowsPerPage, page, inputValue, filterAttribute),
+        queryKey: ['/user', rowsPerPage, page, inputValue, filterAttribute],
+        queryFn: () => getListUser(rowsPerPage, page, inputValue, filterAttribute),
         retry: 1
     });
 
@@ -68,10 +70,9 @@ export default function PackageTable (){
             clearTimeout(timeoutId);
         };
     }, [inputValue]);
-
     return (
         <>
-        <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-5">
                 <div className='flex flex-row gap-3 justify-center'>
                     <SelectFilter
                         filterAttribute={filterAttribute}
@@ -96,22 +97,22 @@ export default function PackageTable (){
                                 <TableRow>
                                     {headTables.map((headTable) => (
                                         <TableCell key={headTable} className='text-left text-sm font-medium text-slate-600'>{headTable}</TableCell>
-                                    ))}                                    
+                                    ))}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data?.data.data?.map((packs: Packages, index) => (
+                                {data?.data.data?.map((packs: User, index) => (
                                     <TableRow key={packs.id}>
                                         <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{packs.name}</TableCell>
-                                        <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
-                                        <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
-                                        <TableCell>
-                                            {parseInt(packs.expPackage) > 1 ? `${packs.expPackage} days` : `${packs.expPackage} day`}
-                                        </TableCell>
-                                        <TableCell>{formatPrice(parseInt(packs.price))}</TableCell>
-                                        <TableCell>{packs.packageStatus}</TableCell>
-                                        <TableCell>{new Date(packs.createDate).toLocaleDateString('vi-VN')}</TableCell>
+                                        <TableCell>{packs.fullName}</TableCell>
+                                        <TableCell>{packs.fullName}</TableCell>
+                                        <TableCell>{packs.email}</TableCell>
+                                        <TableCell>{packs.role}</TableCell>
+                                        <TableCell>{packs.statusUser}</TableCell>
+                                        <TableCell>{packs.createdDate}</TableCell>
+                                        <TableCell>{packs.createdBy}</TableCell>
+                                        <TableCell>{packs.lastModifiedDate}</TableCell>
+                                        <TableCell>{packs.lastModifiedBy}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
