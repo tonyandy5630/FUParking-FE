@@ -18,14 +18,12 @@ import PriceTableHeaders from "./table-headers";
 import AddIcon from "@mui/icons-material/Add";
 import dynamic from "next/dynamic";
 import { UPDATE_SUCCEED_MESSAGE } from "@/constant/message";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
 
 export default function PriceTablePage() {
   const [searchText, setSearchText] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
-  const router = useRouter();
   const { pagination, handleChangeRowsPerPage, handlePageChange } =
     usePagination();
   const [tableList, setTableList] = useState<PriceTable[]>([]);
