@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useMemo } from "react";
 import { usePathname } from "next/navigation";
 import GridViewRoundedIcon from "@mui/icons-material/GridViewRounded";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
@@ -25,121 +25,124 @@ interface LeftNavbarProps {
   }[];
 }
 
+const menuManager: LeftNavbarProps["menu"] = [
+  {
+    name: "Dashboard",
+    path: "/manager",
+    icon: GridViewRoundedIcon,
+  },
+  {
+    name: "Customer",
+    path: "/manager/customer",
+    icon: AccountCircleOutlinedIcon,
+  },
+  {
+    name: "Card",
+    path: "/manager/card",
+    icon: CreditCardOutlinedIcon,
+  },
+  {
+    name: "Transaction",
+    path: "/manager/transaction",
+    icon: AssessmentIcon,
+  },
+  {
+    name: "Vehicle",
+    path: "/manager/vehicle",
+    icon: TwoWheelerOutlinedIcon,
+  },
+  {
+    name: "Parking Area",
+    path: "/manager/parking-area",
+    icon: LocalParkingTwoToneIcon,
+  },
+  {
+    name: "Session",
+    path: "/manager/session",
+    icon: ReceiptOutlinedIcon,
+  },
+  {
+    name: "Feedback",
+    path: "/manager/feedback",
+    icon: ChatTwoToneIcon,
+  },
+  {
+    name: "Gate",
+    path: "/manager/gate",
+    icon: CameraRearTwoToneIcon,
+  },
+  {
+    name: "Price",
+    path: "/manager/price",
+    icon: PriceChangeTwoToneIcon,
+  },
+  {
+    name: "Package",
+    path: "/manager/package",
+    icon: Inventory2TwoToneIcon,
+  },
+  {
+    name: "User",
+    path: "/manager/user",
+    icon: PersonOutlineTwoToneIcon,
+  },
+  {
+    name: "Vehicle Type",
+    path: "/manager/vehicle-type",
+    icon: MinorCrashTwoToneIcon,
+  },
+];
+
 export default function LeftNavbar({ open = true }: { open?: boolean }) {
   const router = usePathname();
-  const menuManager: LeftNavbarProps["menu"] = [
-    {
-      name: "Dashboard",
-      path: "/manager",
-      icon: GridViewRoundedIcon,
-    },
-    {
-      name: "Customer",
-      path: "/manager/customer",
-      icon: AccountCircleOutlinedIcon,
-    },
-    {
-      name: "Card",
-      path: "/manager/card",
-      icon: CreditCardOutlinedIcon,
-    },
-    {
-      name: "Transaction",
-      path: "/manager/transaction",
-      icon: AssessmentIcon,
-    },
-    {
-      name: "Vehicle",
-      path: "/manager/vehicle",
-      icon: TwoWheelerOutlinedIcon,
-    },
-    {
-      name: "Parking Area",
-      path: "/manager/parking-area",
-      icon: LocalParkingTwoToneIcon,
-    },
-    {
-      name: "Session",
-      path: "/manager/session",
-      icon: ReceiptOutlinedIcon,
-    },
-    {
-      name: "Feedback",
-      path: "/manager/feedback",
-      icon: ChatTwoToneIcon,
-    },
-    {
-      name: "Gate",
-      path: "/manager/gate",
-      icon: CameraRearTwoToneIcon,
-    },
-    {
-      name: "Price",
-      path: "/manager/price",
-      icon: PriceChangeTwoToneIcon,
-    },
-    {
-      name: "Package",
-      path: "/manager/package",
-      icon: Inventory2TwoToneIcon,
-    },
-    {
-      name: "User",
-      path: "/manager/user",
-      icon: PersonOutlineTwoToneIcon,
-    },
-    {
-      name: "Vehicle Type",
-      path: "/manager/vehicle-type",
-      icon: MinorCrashTwoToneIcon,
-    },
-  ];
-
+  const menu = useMemo(() => {
+    return menuManager.map((item, index) => (
+      <Link
+        href={item.path}
+        key={index}
+        className={`flex items-center justify-start w-full p-2 hover:bg-gray-700 rounded-lg cursor-pointer ${
+          router === item.path ? "bg-gray-700" : ""
+        }`}
+      >
+        {!open ? (
+          <Tooltip title={item.name}>
+            <item.icon
+              className={`mr-2 hover:text-orange-500 ${
+                router === item.path ? "text-orange-500" : ""
+              }`}
+            />
+          </Tooltip>
+        ) : (
+          <item.icon
+            className={`mr-2 hover:text-orange-500 ${
+              router === item.path ? "text-orange-500" : ""
+            }`}
+          />
+        )}
+        {open && (
+          <p
+            className={`hover:text-orange-500 ${
+              router === item.path ? "text-orange-500" : ""
+            }`}
+          >
+            {item.name}
+          </p>
+        )}
+      </Link>
+    ));
+  }, [router, open]);
   return (
     <div
       className={`flex flex-col ${
         open ? "w-56" : "w-20"
       } h-full text-white p-5 space-y-3 transition-all duration-200`}
       style={{
-        overflow: 'auto',
-        scrollbarWidth: 'none', /* For Firefox */
-        msOverflowStyle: 'none', /* For IE and Edge */
+        overflow: "auto",
+        scrollbarWidth: "none" /* For Firefox */,
+        msOverflowStyle: "none" /* For IE and Edge */,
       }}
-    >      
-      {menuManager.map((item, index) => (
-        <Link
-          href={item.path}
-          key={index}
-          className={`flex items-center justify-start w-full p-2 hover:bg-gray-700 rounded-lg cursor-pointer ${
-            router === item.path ? "bg-gray-700" : ""
-          }`}
-        >
-          {!open ? (
-            <Tooltip title={item.name}>
-              <item.icon
-                className={`mr-2 hover:text-orange-500 ${
-                  router === item.path ? "text-orange-500" : ""
-                }`}
-              />
-            </Tooltip>
-          ) : (
-            <item.icon
-              className={`mr-2 hover:text-orange-500 ${
-                router === item.path ? "text-orange-500" : ""
-              }`}
-            />
-          )}
-          {open && (
-            <p
-              className={`hover:text-orange-500 ${
-                router === item.path ? "text-orange-500" : ""
-              }`}
-            >
-              {item.name}
-            </p>
-          )}
-        </Link>
-      ))}
+    >
+      {menu}
     </div>
   );
 }
