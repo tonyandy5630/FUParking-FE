@@ -41,6 +41,7 @@ export default function ComboFormButton({
   };
 
   const handleCancelClick = () => {
+    onReset();
     setConfirmBox((prev) => ({
       open: true,
       title: "Cancel",

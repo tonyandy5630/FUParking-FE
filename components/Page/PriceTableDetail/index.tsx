@@ -39,14 +39,13 @@ export default function PriceTableDetails({
     queryFn: () => getPriceItemByTableAPI(priceTableId),
   });
 
-  const handlePriceItemStatusChange = (data: {
-    priceItemId: string;
-    isActive: boolean;
-  }) => {};
-
   const handleOpenUpdatePriceItems = () => {
     refetch();
     setOpenUpdatePriceItem((prev) => !prev);
+  };
+
+  const handleCloseCreatePriceItems = () => {
+    setOpenCreatePriceItem((prev) => !prev);
   };
 
   const handleOpenCreatePriceItems = () => {
