@@ -153,17 +153,6 @@ export default function AddPriceTable({ open, onClose }: Props) {
               <Grid xs={6}>
                 <div className='min-w-full'>
                   <FormInput
-                    name='maxPrice'
-                    label='Max Price'
-                    placeholder='Max Price'
-                    type='number'
-                    endAdornment='VND'
-                  />
-                </div>
-              </Grid>
-              <Grid xs={6}>
-                <div className='min-w-full'>
-                  <FormInput
                     name='minPrice'
                     label='Min Price'
                     placeholder='Min Price'
@@ -172,6 +161,18 @@ export default function AddPriceTable({ open, onClose }: Props) {
                   />
                 </div>
               </Grid>
+              <Grid xs={6}>
+                <div className='min-w-full'>
+                  <FormInput
+                    name='maxPrice'
+                    label='Max Price'
+                    placeholder='Max Price'
+                    type='number'
+                    endAdornment='VND'
+                  />
+                </div>
+              </Grid>
+
               <DialogActions className='flex justify-end min-w-full'>
                 <ComboFormButton
                   onClose={onClose}
