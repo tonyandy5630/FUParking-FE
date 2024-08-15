@@ -59,7 +59,13 @@ export default function UpdatePriceItemDialog({
   };
 
   const priceItemFields = useMemo(() => {
-    return priceItems.map((item, index) => {
+    const filteredDefaultPriceItem = priceItems.filter(
+      (item) =>
+        Number.isInteger(item.applyFromHour) ||
+        Number.isInteger(item.applyToHour)
+    );
+
+    return filteredDefaultPriceItem.map((item, index) => {
       return (
         <Grid className='flex items-start' xs={12} key={item.id}>
           <PriceItemInput
