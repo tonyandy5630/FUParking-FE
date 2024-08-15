@@ -46,7 +46,6 @@ export default memo(function DataTable({
   ) => {
     onPageChange(newPage);
   };
-
   const handleRowsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
