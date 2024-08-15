@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DialogProps } from "@/types/dialog.type";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PriceItemRequestSchema, {
   PriceItemRequestSchemaType,
@@ -16,36 +16,45 @@ import { toast } from "react-toastify";
 import PriceItemInput from "../PriceItemInput";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import { PriceItem } from "@/types/price-item.type";
+import { IconButton } from "@mui/material";
+import dynamic from "next/dynamic";
+const RemoveIcon = dynamic(() => import("@mui/icons-material/Remove"));
+import AddIcon from "@mui/icons-material/Add";
 
 interface Props extends DialogProps {
   tablePriceId: string;
-  priceItems: Array<PriceItem>;
 }
 
-export default function UpdatePriceItemDialog({
-  onOpenChange,
-  open,
-  tablePriceId,
-  priceItems,
-}: Props) {
+function AddPriceItemDialog({ onOpenChange, open, tablePriceId }: Props) {
   const methods = useForm({
     resolver: yupResolver(PriceItemRequestSchema),
     defaultValues: {
       priceTableId: tablePriceId,
     },
   });
-  const createPriceItemMutation = useMutation({
-    mutationKey: ["/update-price-items"],
-    mutationFn: updatePriceItemsAPI,
-  });
+
   const {
     handleSubmit,
     reset,
+    control,
     formState: { errors },
     getValues,
   } = methods;
 
-  const handleUpdatePriceItems = async (data: PriceItemRequestSchemaType) => {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "priceItems",
+    rules: {
+      minLength: 1,
+    },
+  });
+
+  const createPriceItemMutation = useMutation({
+    mutationKey: ["/update-price-items"],
+    mutationFn: updatePriceItemsAPI,
+  });
+
+  const handleCreatePriceItems = async (data: PriceItemRequestSchemaType) => {
     try {
       await createPriceItemMutation.mutateAsync(data, {
         onSuccess: (res) => {
@@ -58,35 +67,65 @@ export default function UpdatePriceItemDialog({
     }
   };
 
+  const handleAddField = useCallback(() => {
+    append({
+      from: 0,
+      to: 1,
+      blockPricing: 4000,
+      maxPrice: 5000,
+      minPrice: 4000,
+    });
+  }, []);
+
+  useEffect(() => {
+    //* Run twice in DEV
+    handleAddField();
+  }, []);
+
   const priceItemFields = useMemo(() => {
-    return priceItems.map((item, index) => {
+    return fields.map((item, index) => {
       return (
-        <Grid className='flex items-start' xs={12} key={item.id}>
+        <Grid
+          className='flex items-start'
+          xs={12}
+          key={item.id}
+          alignItems='center'
+        >
+          <IconButton onClick={() => remove(index)} color='error'>
+            <RemoveIcon />
+          </IconButton>
           <PriceItemInput
             fieldArrayName='priceItems'
             index={index}
-            value={item}
+            error={errors}
           />
         </Grid>
       );
     });
-  }, [priceItems.length]);
+  }, [fields.length, errors]);
 
   return (
     <Dialog open={open} onClose={onOpenChange} maxWidth='md'>
-      <DialogTitle>Update Price Items</DialogTitle>
+      <DialogTitle>Add Price Items</DialogTitle>
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(handleUpdatePriceItems)}>
+        <form onSubmit={handleSubmit(handleCreatePriceItems)}>
           <DialogContent>
             <Grid container spacing={2}>
               {priceItemFields}
+            </Grid>
+            <Grid xs={12} className='flex justify-center items-center'>
+              <IconButton onClick={handleAddField} color='primary'>
+                <AddIcon />
+              </IconButton>
             </Grid>
           </DialogContent>
           <DialogActions className='flex justify-end min-w-full'>
             <ComboFormButton
               onClose={onOpenChange}
-              onReset={() => reset()}
-              submitLabel='Update'
+              onReset={() => {
+                reset();
+              }}
+              submitLabel='Create'
               isLoading={createPriceItemMutation.isPending}
             />
           </DialogActions>
@@ -95,3 +134,5 @@ export default function UpdatePriceItemDialog({
     </Dialog>
   );
 }
+
+export default React.memo(AddPriceItemDialog);

@@ -13,12 +13,15 @@ import Table from "@/components/Table";
 import { Button } from "@mui/material";
 import UpdateIcon from "@mui/icons-material/Create";
 import UpdatePriceItemDialog from "./UpdatePriceItemDialog";
+import AddPriceItemDialog from "./AddPriceItemDialog";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function PriceTableDetails({
   priceTableId,
 }: {
   priceTableId: string;
 }) {
+  const [openUpdatePriceItem, setOpenUpdatePriceItem] = useState(false);
   const [openCreatePriceItem, setOpenCreatePriceItem] = useState(false);
   const [searchText, setSearchText] = useState("");
   const { pagination, handleChangeRowsPerPage, handlePageChange } =
@@ -29,6 +32,8 @@ export default function PriceTableDetails({
     isLoading,
     isSuccess,
     isError,
+    isRefetching,
+    refetch,
   } = useQuery({
     queryKey: ["/get-price-table-items", priceTableId],
     queryFn: () => getPriceItemByTableAPI(priceTableId),
@@ -39,7 +44,13 @@ export default function PriceTableDetails({
     isActive: boolean;
   }) => {};
 
+  const handleOpenUpdatePriceItems = () => {
+    refetch();
+    setOpenUpdatePriceItem((prev) => !prev);
+  };
+
   const handleOpenCreatePriceItems = () => {
+    refetch();
     setOpenCreatePriceItem((prev) => !prev);
   };
 
@@ -57,8 +68,8 @@ export default function PriceTableDetails({
         <TableRow key={item.id}>
           <TableCell>{item.applyFromHour ?? "NaN"}</TableCell>
           <TableCell>{item.applyToHour ?? "NaN"}</TableCell>
-          <TableCell>{item.maxPrice}</TableCell>
           <TableCell>{item.minPrice}</TableCell>
+          <TableCell>{item.maxPrice}</TableCell>
         </TableRow>
       );
     });
@@ -69,19 +80,31 @@ export default function PriceTableDetails({
       <SearchContainer>
         <SearchField inputValue={searchText} setInputValue={setSearchText} />
       </SearchContainer>
-      <div className='min-w-full flex justify-start items-center py-2'>
-        <Button variant='outlined' onClick={handleOpenCreatePriceItems}>
+      <div className='min-w-full flex justify-start items-center py-2 gap-2'>
+        <Button
+          variant='outlined'
+          onClick={handleOpenUpdatePriceItems}
+          className='max-w-40'
+        >
           <UpdateIcon /> <span>Update</span>
+        </Button>
+        <Button variant='outlined' onClick={handleOpenCreatePriceItems}>
+          <AddIcon /> <span>Add Price</span>
         </Button>
       </div>
       {priceItemsData?.data.data && (
         <UpdatePriceItemDialog
-          open={openCreatePriceItem}
+          open={openUpdatePriceItem}
           tablePriceId={priceTableId}
-          onOpenChange={handleOpenCreatePriceItems}
+          onOpenChange={handleOpenUpdatePriceItems}
           priceItems={priceItemsData.data.data}
         />
       )}
+      <AddPriceItemDialog
+        open={openCreatePriceItem}
+        tablePriceId={priceTableId}
+        onOpenChange={handleOpenCreatePriceItems}
+      />
       {isError && <>Something went wrong...</>}
       <Table
         onPageChange={handlePageChange}
@@ -90,6 +113,7 @@ export default function PriceTableDetails({
         tableHeads={PriceItemsTableHeaders}
         tableRows={tableRows}
         totalRecord={priceItemsData?.data.totalRecord}
+        isLoading={isLoading || isRefetching}
       />
     </>
   );

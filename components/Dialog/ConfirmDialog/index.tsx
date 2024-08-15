@@ -11,6 +11,7 @@ interface Props extends DialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   title: string;
+  content?: string;
 }
 export default function AlertDialog({
   open,
@@ -18,7 +19,12 @@ export default function AlertDialog({
   title,
   onConfirm,
   onCancel,
+  content,
 }: Props) {
+  const handleConfirm = () => {
+    onOpenChange();
+    onConfirm();
+  };
   return (
     <React.Fragment>
       <Dialog
@@ -28,10 +34,15 @@ export default function AlertDialog({
         aria-describedby='alert-dialog-description'
       >
         <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>{content}</DialogContentText>
+        </DialogContent>
         <DialogActions>
-          <Button onClick={onCancel}>Cancel</Button>
-          <Button onClick={onConfirm} autoFocus>
-            Agree
+          <Button color='error' onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} autoFocus>
+            Ok
           </Button>
         </DialogActions>
       </Dialog>

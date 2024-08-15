@@ -18,13 +18,14 @@ import FormDatePicker from "@/components/Form/DatePicker";
 import { createTableAPI } from "@/api/price";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import ComboFormButton from "@/components/Dialog/ComboButton";
 
 type Props = {
   open: boolean;
-  onOpenChange: any;
+  onClose: any;
 };
 
-export default function AddPriceTable({ open, onOpenChange }: Props) {
+export default function AddPriceTable({ open, onClose }: Props) {
   const methods = useForm({ resolver: yupResolver(PriceTableTableSchema) });
   const {
     register,
@@ -87,7 +88,7 @@ export default function AddPriceTable({ open, onOpenChange }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={onOpenChange}>
+    <Dialog open={open} onClose={onClose} maxWidth='xs'>
       <DialogTitle>Add New Price Table</DialogTitle>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleAddPriceTable)}>
@@ -170,31 +171,12 @@ export default function AddPriceTable({ open, onOpenChange }: Props) {
                 </div>
               </Grid>
               <DialogActions className='flex justify-end min-w-full'>
-                <Button
-                  type='button'
-                  onClick={onOpenChange}
-                  color='error'
-                  variant='outlined'
-                  disabled={createTableMutation.isPending}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type='button'
-                  variant='contained'
-                  color='warning'
-                  onClick={() => reset()}
-                  disabled={createTableMutation.isPending}
-                >
-                  {createTableMutation.isPending ? "Loading..." : "Reset"}
-                </Button>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  disabled={createTableMutation.isPending}
-                >
-                  {createTableMutation.isPending ? "Loading..." : "Create"}
-                </Button>
+                <ComboFormButton
+                  onClose={onClose}
+                  onReset={() => reset()}
+                  submitLabel='Create'
+                  isLoading={createTableMutation.isPending}
+                />
               </DialogActions>
             </Grid>
           </DialogContent>

@@ -1,18 +1,21 @@
 import FormInput from "@/components/Form/Input";
 import { PriceItem } from "@/types/price-item.type";
-import { CreatePriceItemSchemaType } from "@/utils/schemas/priceItemSchema";
+import { PriceItemRequestSchemaType } from "@/utils/schemas/priceItemSchema";
 import React from "react";
+import { FieldErrors } from "react-hook-form";
 
 type Props = {
   index: number;
   fieldArrayName: string;
   value?: PriceItem;
+  error?: FieldErrors<PriceItemRequestSchemaType>;
 };
 
 export default function PriceItemInput({
   index,
   fieldArrayName,
   value,
+  error,
 }: Props) {
   return (
     <div className='flex flex-col items-start'>
@@ -21,11 +24,14 @@ export default function PriceItemInput({
           <InputContainer>
             <FormInput
               type='number'
-              name={`${fieldArrayName}.${index}.from` as const}
+              name={`${fieldArrayName}.${index}.from`}
               autoFocus={true}
               label='From Hour'
               defaultValue={value?.applyFromHour}
               placeholder='Enter From Hour'
+              error={
+                error?.priceItems ? error.priceItems[0]?.from?.message : ""
+              }
             />
           </InputContainer>
           <span>-</span>
@@ -36,6 +42,7 @@ export default function PriceItemInput({
               label='To Hour'
               defaultValue={value?.applyToHour}
               placeholder='Enter To Hour'
+              error={error?.priceItems ? error.priceItems[0]?.to?.message : ""}
             />
           </InputContainer>
         </div>
@@ -48,6 +55,9 @@ export default function PriceItemInput({
               defaultValue={value?.minPrice}
               placeholder='Enter From Hour'
               endAdornment='VND'
+              error={
+                error?.priceItems ? error.priceItems[0]?.minPrice?.message : ""
+              }
             />
           </InputContainer>
           <span>-</span>
@@ -60,6 +70,9 @@ export default function PriceItemInput({
               defaultValue={value?.maxPrice}
               placeholder='Enter Max Price'
               endAdornment='VND'
+              error={
+                error?.priceItems ? error.priceItems[0]?.maxPrice?.message : ""
+              }
             />
           </InputContainer>
         </div>
@@ -71,6 +84,11 @@ export default function PriceItemInput({
             defaultValue={value?.blockPricing}
             placeholder='Enter Block Price'
             endAdornment='VND'
+            error={
+              error?.priceItems
+                ? error.priceItems[0]?.blockPricing?.message
+                : ""
+            }
           />
         </InputContainer>
       </div>

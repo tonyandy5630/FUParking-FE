@@ -18,7 +18,6 @@ import PriceTableHeaders from "./table-headers";
 import AddIcon from "@mui/icons-material/Add";
 import dynamic from "next/dynamic";
 import { UPDATE_SUCCEED_MESSAGE } from "@/constant/message";
-import Link from "next/link";
 import { useDebounce } from "use-debounce";
 import { DEBOUNCE_DELAY } from "@/constant/debounce";
 import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
@@ -54,6 +53,7 @@ export default function PriceTablePage() {
     isSuccess,
     isLoading,
     refetch,
+    isRefetching,
   } = useQuery({
     queryKey: ["/get-price-table", pagination, filter, debounceSearchText],
     queryFn: () =>
@@ -63,6 +63,11 @@ export default function PriceTablePage() {
         searchInput: debounceSearchText,
       }),
   });
+
+  const handleCloseCreatePriceTable = () => {
+    refetch();
+    setOpenCreate((prev) => !prev);
+  };
 
   const handleOpenCreatePriceTable = () => {
     setOpenCreate((prev) => !prev);
@@ -131,12 +136,13 @@ export default function PriceTablePage() {
                       <Button
                         variant='contained'
                         color='error'
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleTableStatusChange({
                             priceTableId: item.id,
                             isActive: false,
-                          })
-                        }
+                          });
+                        }}
                       >
                         DEACTIVATE
                       </Button>
@@ -145,12 +151,13 @@ export default function PriceTablePage() {
                     return (
                       <Button
                         variant='contained'
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleTableStatusChange({
                             priceTableId: item.id,
                             isActive: true,
-                          })
-                        }
+                          });
+                        }}
                       >
                         RE-ACTIVE
                       </Button>
@@ -162,7 +169,7 @@ export default function PriceTablePage() {
         </TableRow>
       );
     });
-  }, [tableList.length]);
+  }, [tableList]);
 
   return (
     <>
@@ -186,16 +193,19 @@ export default function PriceTablePage() {
       </div>
       <AddPriceTableDialog
         open={openCreate}
-        onOpenChange={handleOpenCreatePriceTable}
+        onClose={handleCloseCreatePriceTable}
       />
-      <Table
-        onPageChange={handlePageChange}
-        onPageSizeChange={handleChangeRowsPerPage}
-        pagination={pagination}
-        tableHeads={PriceTableHeaders}
-        tableRows={tableRows}
-        totalRecord={priceTableData?.data.totalRecord}
-      />
+      {
+        <Table
+          onPageChange={handlePageChange}
+          onPageSizeChange={handleChangeRowsPerPage}
+          pagination={pagination}
+          tableHeads={PriceTableHeaders}
+          tableRows={tableRows}
+          totalRecord={priceTableData?.data.totalRecord}
+          isLoading={isLoading || isRefetching}
+        />
+      }
     </>
   );
 }

@@ -10,6 +10,8 @@ import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TablePaginationActions from "./Pagination";
 import { PaginationType } from "@/types/pagination.type";
+import dynamic from "next/dynamic";
+const Loading = dynamic(() => import("../Page/LoadingPage/Loading"));
 
 type Props = {
   tableHeads: Array<string>;
@@ -18,6 +20,7 @@ type Props = {
   totalRecord?: number;
   onPageChange: any;
   onPageSizeChange: any;
+  isLoading?: boolean;
 };
 
 export default memo(function DataTable({
@@ -27,6 +30,7 @@ export default memo(function DataTable({
   totalRecord,
   onPageChange,
   onPageSizeChange,
+  isLoading,
 }: Props) {
   const renderTableHeads = useMemo(() => {
     return tableHeads.map((item) => (
@@ -50,33 +54,37 @@ export default memo(function DataTable({
   };
   return (
     <TableContainer component={Paper}>
-      <Table className='w-full' aria-label='simple table'>
-        <TableHead>
-          <TableRow>{renderTableHeads}</TableRow>
-        </TableHead>
-        <TableBody>{tableRows}</TableBody>
-        <TableFooter>
-          <TableRow>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              count={totalRecord ?? 999}
-              rowsPerPage={pagination.pageSize}
-              page={pagination.pageIndex}
-              slotProps={{
-                select: {
-                  inputProps: {
-                    "aria-label": "rows per page",
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <Table className='w-full' aria-label='simple table'>
+          <TableHead>
+            <TableRow>{renderTableHeads}</TableRow>
+          </TableHead>
+          <TableBody>{tableRows}</TableBody>
+          <TableFooter>
+            <TableRow>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                count={totalRecord ?? 999}
+                rowsPerPage={pagination.pageSize}
+                page={pagination.pageIndex}
+                slotProps={{
+                  select: {
+                    inputProps: {
+                      "aria-label": "rows per page",
+                    },
+                    native: true,
                   },
-                  native: true,
-                },
-              }}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handleRowsPerPageChange}
-              ActionsComponent={TablePaginationActions}
-            />
-          </TableRow>
-        </TableFooter>
-      </Table>
+                }}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleRowsPerPageChange}
+                ActionsComponent={TablePaginationActions}
+              />
+            </TableRow>
+          </TableFooter>
+        </Table>
+      )}
     </TableContainer>
   );
 });

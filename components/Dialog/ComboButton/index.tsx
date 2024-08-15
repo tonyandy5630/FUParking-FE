@@ -15,29 +15,53 @@ export default function ComboFormButton({
   isLoading,
   submitLabel,
 }: Props) {
-  const [openConfirmBox, setOpenConfirmBox] = useState(false);
+  const [confirmBox, setConfirmBox] = useState<{
+    open: boolean;
+    title: string;
+    content?: string;
+    onConfirm: () => void;
+  }>({
+    open: false,
+    title: "",
+    content: "",
+    onConfirm: () => {},
+  });
 
-  const handleOpenConfirmBoxChange = () => {
-    onReset();
-    setOpenConfirmBox((prev) => !prev);
+  const handleResetClick = () => {
+    setConfirmBox((prev) => ({
+      open: true,
+      title: "Reset",
+      content: "Click OK will reset the form",
+      onConfirm: onReset,
+    }));
   };
 
   const handleCancelConfirmBox = () => {
-    setOpenConfirmBox((prev) => !prev);
+    setConfirmBox((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleCancelClick = () => {
+    setConfirmBox((prev) => ({
+      open: true,
+      title: "Cancel",
+      content: "Click OK will reset and cancel the form",
+      onConfirm: onClose,
+    }));
   };
 
   return (
     <>
       <AlertDialog
-        open={openConfirmBox}
+        open={confirmBox.open}
         onOpenChange={handleCancelConfirmBox}
         onCancel={handleCancelConfirmBox}
-        onConfirm={handleOpenConfirmBoxChange}
-        title='Confirm reset?'
+        onConfirm={confirmBox.onConfirm}
+        title={confirmBox.title}
+        content={confirmBox.content}
       />
       <Button
         type='button'
-        onClick={onClose}
+        onClick={handleCancelClick}
         color='error'
         variant='outlined'
         disabled={isLoading}
@@ -48,7 +72,7 @@ export default function ComboFormButton({
         type='button'
         variant='contained'
         color='warning'
-        onClick={handleOpenConfirmBoxChange}
+        onClick={handleResetClick}
         disabled={isLoading}
       >
         {isLoading ? "Loading..." : "Reset"}
