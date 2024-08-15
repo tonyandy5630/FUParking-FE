@@ -42,7 +42,6 @@ export default function UpdatePriceItemDialog({
     handleSubmit,
     reset,
     formState: { errors },
-    getValues,
   } = methods;
 
   const handleUpdatePriceItems = async (data: PriceItemRequestSchemaType) => {
@@ -50,11 +49,13 @@ export default function UpdatePriceItemDialog({
       await createPriceItemMutation.mutateAsync(data, {
         onSuccess: (res) => {
           toast.success("Create items successfully");
-          reset();
         },
       });
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      const priceItemsError = error.response.data.data.PriceItems;
+      if (priceItemsError) {
+        toast.error(priceItemsError[0]);
+      }
     }
   };
 
@@ -76,7 +77,7 @@ export default function UpdatePriceItemDialog({
         </Grid>
       );
     });
-  }, [priceItems.length]);
+  }, [priceItems]);
 
   return (
     <Dialog open={open} onClose={onOpenChange} maxWidth='md'>

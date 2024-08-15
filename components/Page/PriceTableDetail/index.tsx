@@ -5,12 +5,12 @@ import SearchField from "@/components/Common/searchField";
 import PageTitle from "@/components/PageTitle";
 import usePagination from "@/hook/usePagination";
 import { useQuery } from "@tanstack/react-query";
-import React, { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PriceItemsTableHeaders } from "./table-headers";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import Table from "@/components/Table";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import UpdateIcon from "@mui/icons-material/Create";
 import UpdatePriceItemDialog from "./UpdatePriceItemDialog";
 import AddPriceItemDialog from "./AddPriceItemDialog";
@@ -21,8 +21,13 @@ export default function PriceTableDetails({
 }: {
   priceTableId: string;
 }) {
-  const [openUpdatePriceItem, setOpenUpdatePriceItem] = useState(false);
+  //* create price item
+  const [disableCreateBtn, setDisableCreateBtn] = useState(true);
   const [openCreatePriceItem, setOpenCreatePriceItem] = useState(false);
+  //* update price item
+  const [disableUpdateBtn, setDisableUpdateBtn] = useState(true);
+  const [openUpdatePriceItem, setOpenUpdatePriceItem] = useState(false);
+
   const [searchText, setSearchText] = useState("");
   const { pagination, handleChangeRowsPerPage, handlePageChange } =
     usePagination();
@@ -42,10 +47,6 @@ export default function PriceTableDetails({
   const handleOpenUpdatePriceItems = () => {
     refetch();
     setOpenUpdatePriceItem((prev) => !prev);
-  };
-
-  const handleCloseCreatePriceItems = () => {
-    setOpenCreatePriceItem((prev) => !prev);
   };
 
   const handleOpenCreatePriceItems = () => {
@@ -73,6 +74,34 @@ export default function PriceTableDetails({
       );
     });
   }, [priceItemsData]);
+
+  useEffect(() => {
+    if (!isSuccess) {
+      return;
+    }
+    console.log(true);
+    const priceItems = priceItemsData.data.data;
+
+    if (!priceItems) {
+      return;
+    }
+
+    if (priceItems.length === 0) {
+      return;
+    }
+    if (priceItems.length === 1) {
+      setDisableCreateBtn(false);
+      setDisableUpdateBtn(true);
+      return;
+    }
+
+    if (priceItems.length > 1) {
+      setDisableCreateBtn(true);
+      setDisableUpdateBtn(false);
+      return;
+    }
+  }, [tableRows.length]);
+
   return (
     <>
       <PageTitle>Price Table Details</PageTitle>
@@ -81,17 +110,22 @@ export default function PriceTableDetails({
       </SearchContainer>
       <div className='min-w-full flex justify-start items-center py-2 gap-2'>
         <Button
+          disabled={disableUpdateBtn}
           variant='outlined'
           onClick={handleOpenUpdatePriceItems}
           className='max-w-40'
         >
           <UpdateIcon /> <span>Update</span>
         </Button>
-        <Button variant='outlined' onClick={handleOpenCreatePriceItems}>
+        <Button
+          variant='outlined'
+          disabled={disableCreateBtn}
+          onClick={handleOpenCreatePriceItems}
+        >
           <AddIcon /> <span>Add Price</span>
         </Button>
       </div>
-      {priceItemsData?.data.data && (
+      {!disableUpdateBtn && priceItemsData?.data.data && (
         <UpdatePriceItemDialog
           open={openUpdatePriceItem}
           tablePriceId={priceTableId}
@@ -99,11 +133,14 @@ export default function PriceTableDetails({
           priceItems={priceItemsData.data.data}
         />
       )}
-      <AddPriceItemDialog
-        open={openCreatePriceItem}
-        tablePriceId={priceTableId}
-        onOpenChange={handleOpenCreatePriceItems}
-      />
+      {!disableCreateBtn && (
+        <AddPriceItemDialog
+          open={openCreatePriceItem}
+          tablePriceId={priceTableId}
+          onOpenChange={handleOpenCreatePriceItems}
+        />
+      )}
+
       {isError && <>Something went wrong...</>}
       <Table
         onPageChange={handlePageChange}

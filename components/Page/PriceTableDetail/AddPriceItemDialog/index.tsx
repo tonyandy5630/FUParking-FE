@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, memo } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -15,7 +15,6 @@ import { updatePriceItemsAPI } from "@/api/price-item";
 import { toast } from "react-toastify";
 import PriceItemInput from "../PriceItemInput";
 import ComboFormButton from "@/components/Dialog/ComboButton";
-import { PriceItem } from "@/types/price-item.type";
 import { IconButton } from "@mui/material";
 import dynamic from "next/dynamic";
 const RemoveIcon = dynamic(() => import("@mui/icons-material/Remove"));
@@ -135,4 +134,4 @@ function AddPriceItemDialog({ onOpenChange, open, tablePriceId }: Props) {
   );
 }
 
-export default React.memo(AddPriceItemDialog);
+export default memo(AddPriceItemDialog);

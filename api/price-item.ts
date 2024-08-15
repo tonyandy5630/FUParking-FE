@@ -12,7 +12,7 @@ export const getPriceItemByTableAPI = (id: string) =>
   http.get<ErrorResponse<PriceItem[]>>(GET_ALL_PRICE_ITEM_BY_TABLE_API_URL(id));
 
 export const createPriceItemsAPI = (data: PriceItemRequestSchemaType) =>
-  http.post(CREATE_PRICE_ITEMS_API_URL, data);
+  http.put(CREATE_PRICE_ITEMS_API_URL, data);
 
 export const updatePriceItemsAPI = (data: PriceItemRequestSchemaType) =>
-  http.post(UPDATE_PRICE_ITEMS_API_URL, data);
+  http.put(UPDATE_PRICE_ITEMS_API_URL, data);
