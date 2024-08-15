@@ -28,6 +28,32 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 900px)');
+        let timeoutId: NodeJS.Timeout;
+
+        const handleMediaQueryChange = (event: MediaQueryListEvent) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                if (event.matches) {
+                    setIsOpen(false);
+                } else {
+                    setIsOpen(true);
+                }
+            }, 100); // Adjust the debounce delay as needed
+        };
+
+        if (mediaQuery.matches) {
+            setIsOpen(false);
+        }
+
+        mediaQuery.addEventListener('change', handleMediaQueryChange);
+        return () => {
+            clearTimeout(timeoutId);
+            mediaQuery.removeEventListener('change', handleMediaQueryChange);
+        };
+    }, []);
+
     const isAuth = async () => {
         try {
             await authMutation.mutateAsync({},
@@ -45,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             setIsAuthRole(false);
             setIsLoading(false);
         }
-    };
+    };    
 
     if (isLoading) {
         return (
@@ -65,7 +91,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Headers isOpen={isOpen} setIsOpen={setIsOpen} height={headerHeight} />
             </div>
             <div className="flex flex-row h-full" style={{ height: `calc(100vh - ${headerHeight}px` }}>
-                <div className='overflow-auto bg-gray-800'>
+                <div className='bg-gray-800'>
                     <LeftNavbar open={isOpen} />
                 </div>
                 <main className="flex-grow overflow-auto mt-5 mb-5 pt-2 pb-2 pl-10 pr-10">

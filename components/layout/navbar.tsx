@@ -59,6 +59,11 @@ export default function LeftNavbar({ open = true }: { open?: boolean }) {
       icon: LocalParkingTwoToneIcon,
     },
     {
+      name: "Session",
+      path: "/manager/session",
+      icon: ReceiptOutlinedIcon,
+    },
+    {
       name: "Feedback",
       path: "/manager/feedback",
       icon: ChatTwoToneIcon,
@@ -95,7 +100,12 @@ export default function LeftNavbar({ open = true }: { open?: boolean }) {
       className={`flex flex-col ${
         open ? "w-56" : "w-20"
       } h-full text-white p-5 space-y-3 transition-all duration-200`}
-    >
+      style={{
+        overflow: 'auto',
+        scrollbarWidth: 'none', /* For Firefox */
+        msOverflowStyle: 'none', /* For IE and Edge */
+      }}
+    >      
       {menuManager.map((item, index) => (
         <Link
           href={item.path}

@@ -7,6 +7,9 @@ export interface CardProps {
   cardNumber: string;
   plateNumber: string;
   createdDate: string;
+  status: string;
+  sessionId: string;
+  plateNumberSession: string;
 }
 
 export type CardKey = keyof CardProps;
