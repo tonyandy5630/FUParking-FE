@@ -11,7 +11,6 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import Table from "@/components/Table";
 import { Button } from "@mui/material";
-import Chip from "@/components/Chip";
 import UpdateIcon from "@mui/icons-material/Create";
 import UpdatePriceItemDialog from "./UpdatePriceItemDialog";
 
@@ -22,17 +21,14 @@ export default function PriceTableDetails({
 }) {
   const [openCreatePriceItem, setOpenCreatePriceItem] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const {
-    pagination,
-    handleChangeRowsPerPage,
-    handlePageChange,
-    setPagination,
-  } = usePagination();
+  const { pagination, handleChangeRowsPerPage, handlePageChange } =
+    usePagination();
 
   const {
     data: priceItemsData,
     isLoading,
     isSuccess,
+    isError,
   } = useQuery({
     queryKey: ["/get-price-table-items", priceTableId],
     queryFn: () => getPriceItemByTableAPI(priceTableId),
@@ -59,16 +55,14 @@ export default function PriceTableDetails({
     return priceItems.map((item) => {
       return (
         <TableRow key={item.id}>
-          <TableCell>{item.priceTable}</TableCell>
-          <TableCell>{item.applyFromHour}</TableCell>
-          <TableCell>{item.applyToHour}</TableCell>
+          <TableCell>{item.applyFromHour ?? "NaN"}</TableCell>
+          <TableCell>{item.applyToHour ?? "NaN"}</TableCell>
           <TableCell>{item.maxPrice}</TableCell>
           <TableCell>{item.minPrice}</TableCell>
         </TableRow>
       );
     });
   }, [priceItemsData]);
-
   return (
     <>
       <PageTitle>Price Table Details</PageTitle>
@@ -88,6 +82,7 @@ export default function PriceTableDetails({
           priceItems={priceItemsData.data.data}
         />
       )}
+      {isError && <>Something went wrong...</>}
       <Table
         onPageChange={handlePageChange}
         onPageSizeChange={handleChangeRowsPerPage}

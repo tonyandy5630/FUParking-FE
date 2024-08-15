@@ -19,33 +19,64 @@ import AddIcon from "@mui/icons-material/Add";
 import dynamic from "next/dynamic";
 import { UPDATE_SUCCEED_MESSAGE } from "@/constant/message";
 import Link from "next/link";
+import { useDebounce } from "use-debounce";
+import { DEBOUNCE_DELAY } from "@/constant/debounce";
+import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
+import { useRouter } from "next/navigation";
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
+
+const FILTER: listFilter[] = [
+  {
+    display: "Table Name",
+    value: "name",
+  },
+  {
+    value: "vehicletype",
+    display: "Vehicle Type",
+  },
+];
 
 export default function PriceTablePage() {
   const [searchText, setSearchText] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
-  const { pagination, handleChangeRowsPerPage, handlePageChange } =
-    usePagination();
+  const router = useRouter();
+  const [filter, setFilter] = useState("");
+  const {
+    pagination,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    setPagination,
+  } = usePagination();
   const [tableList, setTableList] = useState<PriceTable[]>([]);
+  const [debounceSearchText] = useDebounce(searchText, DEBOUNCE_DELAY);
   const {
     data: priceTableData,
     isSuccess,
     isLoading,
     refetch,
   } = useQuery({
-    queryKey: ["/get-price-table"],
-    queryFn: getPriceTableAPI,
+    queryKey: ["/get-price-table", pagination, filter, debounceSearchText],
+    queryFn: () =>
+      getPriceTableAPI({
+        page: pagination,
+        attribute: filter,
+        searchInput: debounceSearchText,
+      }),
   });
 
   const handleOpenCreatePriceTable = () => {
     setOpenCreate((prev) => !prev);
   };
 
+  const handleFilterChange = (value: string) => {
+    setFilter(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
+
   const updateTableStatusMutation = useMutation({
     mutationKey: ["/update-table-status"],
     mutationFn: updatePriceTableStatusAPI,
   });
-
   useEffect(() => {
     if (isSuccess && priceTableData.data.data) {
       setTableList(priceTableData.data.data || []);
@@ -72,10 +103,10 @@ export default function PriceTablePage() {
     return tableList.map((item) => {
       return (
         <TableRow
-          component={Link}
-          key={item.priceTableId}
-          href={"price/" + item.priceTableId + "/price-item"}
-          className='hover:bg-slate-300 transition  ease-in-out cursor-pointer'
+          key={item.id}
+          hover={true}
+          onClick={() => router.push("price/" + item.id + "/price-item")}
+          className='cursor-pointer'
         >
           <TableCell>{item.name}</TableCell>
           <TableCell>{item.priority}</TableCell>
@@ -102,7 +133,7 @@ export default function PriceTablePage() {
                         color='error'
                         onClick={() =>
                           handleTableStatusChange({
-                            priceTableId: item.priceTableId,
+                            priceTableId: item.id,
                             isActive: false,
                           })
                         }
@@ -116,7 +147,7 @@ export default function PriceTablePage() {
                         variant='contained'
                         onClick={() =>
                           handleTableStatusChange({
-                            priceTableId: item.priceTableId,
+                            priceTableId: item.id,
                             isActive: true,
                           })
                         }
@@ -131,12 +162,17 @@ export default function PriceTablePage() {
         </TableRow>
       );
     });
-  }, [tableList]);
+  }, [tableList.length]);
 
   return (
     <>
       <PageTitle>Price Page</PageTitle>
       <SearchContainer>
+        <SelectFilter
+          filterAttribute={filter}
+          setFilterAttribute={handleFilterChange}
+          listFilter={FILTER}
+        />
         <SearchField
           inputValue={searchText}
           setInputValue={setSearchText}
