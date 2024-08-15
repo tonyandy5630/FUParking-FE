@@ -1,28 +1,31 @@
 'use client';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from "@mui/material";
+import { listSessionAPI } from "@/api/session";
+import SearchField from "@/components/Common/searchField";
+import SelectFilter from "@/components/Common/selectFilter";
 import { CardProps } from "@/types/card.type";
+import { Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { listCardAPI } from "@/api/card";
 import { useEffect, useState } from "react";
 import Loading from "../LoadingPage/Loading";
-import SelectFilter from "@/components/Common/selectFilter";
-import SearchField from "@/components/Common/searchField";
-import EditCard from "./EditCard";
-import DeleteCard from "./DeleteCard";
-import AddCard from "./AddCard";
-import MissCard from "./MissCard";
-import ActiveAndDeactiveCard from "./ActiveAndDeactiveCard";
+import { SessionProps } from "@/types/session.type";
+import SessionDetail from "./SessionDetail";
 
-export default function CardTable() {
+export default function SessionTable() {
+    const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const keys = [
-        'Card Number',
+        'Card Number',        
         'Plate Number',
-        'Created Date',
-        'Status',
-        'Plate Number Session'
+        'Time In',
+        'Time Out',        
+        'Vehicle Type',
+        'Payment Method',
+        'Customer Email',
+        'Status',        
+        'Parking Location',
     ];
+    const [isOpen, setIsOpen] = useState(false);
     const [disable, setDisable] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -38,9 +41,20 @@ export default function CardTable() {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(1);
     };
-    const handleFilterAttributeChange = (value: string) => {
-        setFilterAttribute(value as keyof CardProps);
-    };
+    const startDate = '';
+    const endDate = '';
+    const formatDateTimeVN = (dateString: string) => {
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        }).format(date);
+    };    
+
     const {
         data,
         isLoading,
@@ -49,11 +63,15 @@ export default function CardTable() {
         error,
         refetch
     } = useQuery({
-        queryKey: ['/cards', rowsPerPage, page, searchTerm, filterAttribute],
-        queryFn: () => listCardAPI(rowsPerPage, page, searchTerm, filterAttribute.toString()),
+        queryKey: ['/session', rowsPerPage, page, startDate, endDate, searchTerm, filterAttribute],
+        queryFn: () => listSessionAPI(rowsPerPage, page, startDate, endDate, searchTerm, filterAttribute.toString()),
         retry: 1
     })
 
+    const handleFilterAttributeChange = (value: string) => {
+        setFilterAttribute(value as keyof CardProps);
+    };
+    
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             setSearchTerm(inputValue);
@@ -64,7 +82,17 @@ export default function CardTable() {
         };
     }, [inputValue]);
 
-    return (
+    const handleClickOpen = (sessionId: string) => {
+        setSelectedSessionId(sessionId);
+        setIsOpen(true);
+    };
+
+    const handleClose = () => {
+        setIsOpen(false);
+        setSelectedSessionId(null);
+    };
+
+    return (        
         <div className="flex flex-col gap-5">
             <div className='flex flex-row gap-3 justify-center'>
                 <SelectFilter
@@ -82,8 +110,7 @@ export default function CardTable() {
                     disabled={false}
                 >
                     Refresh
-                </Button>
-                <AddCard refetch={refetch} setIsPending={setDisable} disable={disable} />
+                </Button>                
             </div>
             {isLoading && <Loading />}
             {isError && <p>Something wrong, please trying again later...</p>}
@@ -94,36 +121,27 @@ export default function CardTable() {
                             <TableRow>
                                 {keys.map((key) => (
                                     <TableCell key={key} className='text-left text-sm font-medium text-slate-600'>{key}</TableCell>
-                                ))}
-                                <TableCell className='text-left text-sm font-medium text-slate-600'>Action</TableCell>
+                                ))}                                
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {data?.data.data?.map((card: CardProps) => (
-                                <TableRow key={card.id}>
-                                    <TableCell>{card.cardNumber}</TableCell>
-                                    <TableCell>{card.plateNumber}</TableCell>
-                                    <TableCell>{new Date(card.createdDate).toLocaleDateString('en-GB')}</TableCell>
-                                    <TableCell>{card.status}</TableCell>
-                                    <TableCell>{card.plateNumberSession}</TableCell>
-                                    <TableCell>
-                                        <div className='flex flex-row space-x-2'>
-                                            <EditCard id={card.id} refetch={refetch} setIsPending={setDisable} disable={disable} />
-                                            <DeleteCard id={card.id} refetch={refetch} setIsPending={setDisable} disable={disable} />
-                                            {card.status !== 'MISSING' ? (
-                                                <>
-                                                    <MissCard id={card.id} refetch={refetch} setIsPending={setDisable} disable={disable} />
-                                                </> 
-                                            ) : 
-                                                <>
-                                                </>
-                                            }
-                                            <ActiveAndDeactiveCard id={card.id} isActive={card.status === 'ACTIVE'} refetch={refetch} setIsPending={setDisable} disable={disable} />
-                                        </div>
-                                    </TableCell>
+                            {data?.data.data?.map((session: SessionProps) => (
+                                <TableRow key={session.id} onClick={() => handleClickOpen(session.id)}>
+                                    <TableCell>{session.cardNumber}</TableCell>                                    
+                                    <TableCell>{session.plateNumber}</TableCell>
+                                    <TableCell>{formatDateTimeVN(session.timeIn)}</TableCell>
+                                    <TableCell>{formatDateTimeVN(session.timeOut)}</TableCell>                               
+                                    <TableCell>{session.vehicleTypeName}</TableCell>
+                                    <TableCell>{session.paymentMethodName}</TableCell>
+                                    <TableCell>{session.customerEmail}</TableCell>
+                                    <TableCell>{session.status}</TableCell>                         
+                                    <TableCell>{session.parkingArea}</TableCell>
                                 </TableRow>
+
                             ))}
                         </TableBody>
+
+                        <SessionDetail isOpen={isOpen} setIsOpen={setIsOpen} sessionId={selectedSessionId} />
                     </Table>
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
@@ -136,6 +154,6 @@ export default function CardTable() {
                     />
                 </TableContainer>                
             }
-        </div>
-    )
+        </div>        
+    );
 }
