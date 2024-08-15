@@ -1,5 +1,5 @@
 export type PriceTable = {
-  priceTableId: string;
+  id: string;
   vehicleType: string;
   priority: number;
   name: string;

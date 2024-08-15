@@ -1,8 +1,12 @@
 import { object, string, InferType, number, date } from "yup";
 import getRules from "../rules/price-table";
-import { MUST_BE_NUMBER_MESSAGE, REQUIRED_MESSAGE } from "@/constant/message";
+import {
+  MIN_MAX_PRICE_OVERLAP,
+  MUST_BE_NUMBER_MESSAGE,
+  REQUIRED_MESSAGE,
+} from "@/constant/message";
 
-const { name, priority } = getRules();
+const { name, priority, price } = getRules();
 
 const PriceTableTableSchema = object({
   vehicleTypeId: string().required(REQUIRED_MESSAGE),
@@ -23,15 +27,19 @@ const PriceTableTableSchema = object({
   }),
   pricePerBlock: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
+    .min(price.min.value, price.min.message)
     .required(REQUIRED_MESSAGE),
   maxPrice: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
     .required(REQUIRED_MESSAGE)
-    .integer(MUST_BE_NUMBER_MESSAGE),
+    .min(price.min.value, price.min.message),
   minPrice: number()
-    .transform((value) => (Number.isNaN(value) ? null : value))
     .required(REQUIRED_MESSAGE)
-    .integer(MUST_BE_NUMBER_MESSAGE),
+    .min(price.min.value, price.min.message)
+    .integer(MUST_BE_NUMBER_MESSAGE)
+    .when("maxPrice", ([maxPrice], schema) =>
+      maxPrice ? schema.max(maxPrice, MIN_MAX_PRICE_OVERLAP) : schema
+    ),
 });
 
 export type PriceTableTableSchemaType = InferType<typeof PriceTableTableSchema>;

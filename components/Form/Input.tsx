@@ -11,42 +11,50 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: "password" | "text" | "number";
   label?: string;
   endAdornment?: string;
+  error?: string;
 }
 
 const FormInput = forwardRef<HTMLInputElement, Props>(
   (
-    { name, type = "text", label, placeholder, endAdornment, ...props },
+    { name, type = "text", label, error, placeholder, endAdornment, ...props },
     ref
   ) => {
     return (
       <ConnectForm>
-        {({ register, formState: { errors } }: UseFormReturn) => (
-          <FormControl error={errors[name]?.message !== undefined} fullWidth>
-            <TextField
-              {...register(name)}
-              error={errors[name]?.message !== undefined}
-              className='test-sm w-full border rounded-sm'
-              size='small'
-              type={type}
-              id={name}
-              label={label}
-              name={name}
-              autoFocus={props.autoFocus}
-              placeholder={placeholder}
-              InputProps={{
-                endAdornment: endAdornment ? (
-                  <InputAdornment position='end'>{endAdornment}</InputAdornment>
-                ) : (
-                  <></>
-                ),
-              }}
-            />
-            <FormHelperText>{errors[name]?.message as string}</FormHelperText>
-          </FormControl>
-        )}
+        {({ register, formState: { errors } }: UseFormReturn) => {
+          return (
+            <FormControl error={true} fullWidth>
+              <TextField
+                {...register(name)}
+                error={errors[name]?.message !== undefined}
+                className='w-full border rounded-sm'
+                size='small'
+                type={type}
+                id={name}
+                label={label}
+                name={name}
+                autoFocus={props.autoFocus}
+                defaultValue={props.defaultValue ?? ""}
+                placeholder={placeholder}
+                InputProps={{
+                  endAdornment: endAdornment ? (
+                    <InputAdornment position='end'>
+                      {endAdornment}
+                    </InputAdornment>
+                  ) : (
+                    <></>
+                  ),
+                }}
+              />
+              <FormHelperText>
+                {(errors[name]?.message as string) ?? error}
+              </FormHelperText>
+            </FormControl>
+          );
+        }}
       </ConnectForm>
     );
   }
 );
 FormInput.displayName = "FormInput";
-export default FormInput;
+export default React.memo(FormInput);

@@ -8,7 +8,7 @@ import Table from "@/components/Table";
 import usePagination from "@/hook/usePagination";
 import { PriceTable } from "@/types/price.type";
 import toLocaleDate from "@/utils/date";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -18,33 +18,70 @@ import PriceTableHeaders from "./table-headers";
 import AddIcon from "@mui/icons-material/Add";
 import dynamic from "next/dynamic";
 import { UPDATE_SUCCEED_MESSAGE } from "@/constant/message";
+import { useDebounce } from "use-debounce";
+import { DEBOUNCE_DELAY } from "@/constant/debounce";
+import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
+import { useRouter } from "next/navigation";
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
+
+const FILTER: listFilter[] = [
+  {
+    display: "Table Name",
+    value: "name",
+  },
+  {
+    value: "vehicletype",
+    display: "Vehicle Type",
+  },
+];
 
 export default function PriceTablePage() {
   const [searchText, setSearchText] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
-  const { pagination, handleChangeRowsPerPage, handlePageChange } =
-    usePagination();
+  const router = useRouter();
+  const [filter, setFilter] = useState("");
+  const {
+    pagination,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    setPagination,
+  } = usePagination();
   const [tableList, setTableList] = useState<PriceTable[]>([]);
+  const [debounceSearchText] = useDebounce(searchText, DEBOUNCE_DELAY);
   const {
     data: priceTableData,
     isSuccess,
     isLoading,
     refetch,
+    isRefetching,
   } = useQuery({
-    queryKey: ["/get-price-table"],
-    queryFn: getPriceTableAPI,
+    queryKey: ["/get-price-table", pagination, filter, debounceSearchText],
+    queryFn: () =>
+      getPriceTableAPI({
+        page: pagination,
+        attribute: filter,
+        searchInput: debounceSearchText,
+      }),
   });
+
+  const handleCloseCreatePriceTable = () => {
+    refetch();
+    setOpenCreate((prev) => !prev);
+  };
 
   const handleOpenCreatePriceTable = () => {
     setOpenCreate((prev) => !prev);
+  };
+
+  const handleFilterChange = (value: string) => {
+    setFilter(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
   const updateTableStatusMutation = useMutation({
     mutationKey: ["/update-table-status"],
     mutationFn: updatePriceTableStatusAPI,
   });
-
   useEffect(() => {
     if (isSuccess && priceTableData.data.data) {
       setTableList(priceTableData.data.data || []);
@@ -71,8 +108,10 @@ export default function PriceTablePage() {
     return tableList.map((item) => {
       return (
         <TableRow
-          key={item.priceTableId}
-          className='hover:bg-slate-300 transition  ease-in-out cursor-pointer'
+          key={item.id}
+          hover={true}
+          onClick={() => router.push("price/" + item.id + "/price-item")}
+          className='cursor-pointer'
         >
           <TableCell>{item.name}</TableCell>
           <TableCell>{item.priority}</TableCell>
@@ -97,12 +136,13 @@ export default function PriceTablePage() {
                       <Button
                         variant='contained'
                         color='error'
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleTableStatusChange({
-                            priceTableId: item.priceTableId,
+                            priceTableId: item.id,
                             isActive: false,
-                          })
-                        }
+                          });
+                        }}
                       >
                         DEACTIVATE
                       </Button>
@@ -111,12 +151,13 @@ export default function PriceTablePage() {
                     return (
                       <Button
                         variant='contained'
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation();
                           handleTableStatusChange({
-                            priceTableId: item.priceTableId,
+                            priceTableId: item.id,
                             isActive: true,
-                          })
-                        }
+                          });
+                        }}
                       >
                         RE-ACTIVE
                       </Button>
@@ -134,6 +175,11 @@ export default function PriceTablePage() {
     <>
       <PageTitle>Price Page</PageTitle>
       <SearchContainer>
+        <SelectFilter
+          filterAttribute={filter}
+          setFilterAttribute={handleFilterChange}
+          listFilter={FILTER}
+        />
         <SearchField
           inputValue={searchText}
           setInputValue={setSearchText}
@@ -147,16 +193,19 @@ export default function PriceTablePage() {
       </div>
       <AddPriceTableDialog
         open={openCreate}
-        onOpenChange={handleOpenCreatePriceTable}
+        onClose={handleCloseCreatePriceTable}
       />
-      <Table
-        onPageChange={handlePageChange}
-        onPageSizeChange={handleChangeRowsPerPage}
-        pagination={pagination}
-        tableHeads={PriceTableHeaders}
-        tableRows={tableRows}
-        totalRecord={priceTableData?.data.totalRecord}
-      />
+      {
+        <Table
+          onPageChange={handlePageChange}
+          onPageSizeChange={handleChangeRowsPerPage}
+          pagination={pagination}
+          tableHeads={PriceTableHeaders}
+          tableRows={tableRows}
+          totalRecord={priceTableData?.data.totalRecord}
+          isLoading={isLoading || isRefetching}
+        />
+      }
     </>
   );
 }
