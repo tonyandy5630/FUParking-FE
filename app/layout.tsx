@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={inter.className}>
-        <ToastContainer />
+        <ToastContainer autoClose={1000} />
         <QueryProviders>{children}</QueryProviders>
       </body>
     </html>

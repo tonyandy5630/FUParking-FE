@@ -1,0 +1,320 @@
+"use client";
+import SearchContainer from "@/components/Common/SearchContainer";
+import SearchField from "@/components/Common/searchField";
+import PageTitle from "@/components/PageTitle";
+import { useDebounce } from "use-debounce";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { changeVehicleStatusAPI, getListVehicleAPI } from "@/api/vehicle";
+import DataTable from "@/components/Table";
+import VehicleTableHeaders from "./table-headers";
+const TableRow = dynamic(() => import("@mui/material/TableRow"));
+const TableCell = dynamic(() => import("@mui/material/TableCell"));
+import { PaginationType } from "@/types/pagination.type";
+import dynamic from "next/dynamic";
+import { SearchAttribute, VehicleProps } from "@/types/vehicle.type";
+import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
+import Button from "@mui/material/Button";
+import { toast } from "react-toastify";
+import Chip from "@/components/Chip";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { getAllVehicleTypeAPI } from "@/api/vehicleType";
+import { VehicleTypeProps } from "@/types/vehicleType.type";
+import ExportToCSVButton from "@/components/ExportCSVButton";
+
+const FILTER: listFilter[] = [
+  { display: "Plate Number", value: "PLATENUMBER" },
+  { display: "Email", value: "EMAIL" },
+  { display: "Vehicle Type", value: "VEHICLETYPE" },
+];
+
+const ALL_VEHICLE_TYPE_VALUE = "ALL";
+
+export default function VehiclePage() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [pagination, setPagination] = useState<PaginationType>({
+    pageSize: 5,
+    pageIndex: 0,
+  });
+  const searchParams = useSearchParams();
+  const [searchText, setSearchText] = useState(
+    searchParams.get("keyword")?.toString() ?? ""
+  );
+  const [filter, setFilter] = useState<SearchAttribute>(
+    (searchParams.get("filter") as SearchAttribute) ?? "PLATENUMBER"
+  );
+  const [vehicleTypes, setVehicleTypes] = useState<VehicleTypeProps[]>([]);
+  const [selectedVehicleTypes, setSelectedVehicleTypes] = useState(
+    searchParams.get("vehicleType")?.toString() ?? ""
+  );
+  const [vehicleList, setVehicleList] = useState<Array<VehicleProps>>([]);
+  const [debouncePlateText] = useDebounce(searchText, 750);
+  const vehicleStatusChangeMutation = useMutation({
+    mutationKey: ["/status-vehicle-change"],
+    mutationFn: changeVehicleStatusAPI,
+  });
+  const {
+    data: vehicleData,
+    isSuccess,
+    isError,
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: [
+      "/search-vehicle-plate-number",
+      pagination.pageSize,
+      pagination.pageIndex,
+      debouncePlateText,
+      filter,
+    ],
+    queryFn: () =>
+      getListVehicleAPI({
+        pageSize: pagination.pageSize,
+        pageIndex: pagination.pageIndex,
+        SearchInput: debouncePlateText,
+        Attribute: filter,
+      }),
+    placeholderData: keepPreviousData,
+  });
+
+  const {
+    data: vehicleTypesData,
+    isSuccess: isTypesSuccess,
+    isLoading: isTypesLoading,
+  } = useQuery({
+    queryKey: ["/vehicles/get-all-vehicle-types"],
+    queryFn: getAllVehicleTypeAPI,
+  });
+
+  const createQueryString = useCallback(
+    (newParam: { name: string; value: string }[]) => {
+      const params = new URLSearchParams(searchParams.toString());
+      newParam.map(({ name, value }) => {
+        params.set(name, value);
+      });
+
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const formatVehicleTypesFilter = useMemo(() => {
+    if (isTypesSuccess) {
+      const types = vehicleTypesData.data.data;
+      if (types) {
+        const list: listFilter[] = [
+          {
+            display: "All",
+            value: ALL_VEHICLE_TYPE_VALUE,
+          },
+        ];
+        const newList = list.concat(
+          types.map((item) => {
+            const filter: listFilter = {
+              display: item.description,
+              value: item.id,
+            };
+            return filter;
+          })
+        );
+        setVehicleTypes(types);
+
+        return newList;
+      }
+    }
+  }, [isTypesSuccess, vehicleTypesData]);
+
+  const handleSearchTextChange = (value: string) => {
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setSearchText(value);
+    router.push(
+      pathname + "?" + createQueryString([{ name: "keyword", value }])
+    );
+  };
+
+  const handleVehicleTypeChange = (value: string) => {
+    setPagination((prev) => ({
+      ...prev,
+      pageIndex: 0,
+    }));
+
+    let currentFilter: SearchAttribute = "VEHICLETYPE";
+    let keyword = vehicleTypes.find((item) => item.id === value)?.name ?? "";
+    let vehicleTypeValue = value;
+    if (value === ALL_VEHICLE_TYPE_VALUE) {
+      keyword = "";
+      currentFilter = "PLATENUMBER";
+      vehicleTypeValue = "";
+    }
+    setSelectedVehicleTypes(vehicleTypeValue);
+
+    setSearchText(keyword);
+    setFilter(currentFilter);
+    router.push(
+      pathname +
+        "?" +
+        createQueryString([
+          { name: "vehicleType", value: vehicleTypeValue },
+          { name: "filter", value: currentFilter },
+          {
+            name: "keyword",
+            value: keyword,
+          },
+        ])
+    );
+  };
+  const handleFilterChange = (value: string) => {
+    setFilter(value as SearchAttribute);
+    if (value === "All") {
+      window.history.replaceState(null, "", pathname);
+    }
+
+    router.push(
+      pathname + "?" + createQueryString([{ name: "filter", value }])
+    );
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPagination((prev) => ({ ...prev, pageIndex: newPage }));
+  };
+
+  const handleChangeRowsPerPage = (size: number) => {
+    setPagination((prev) => ({
+      ...prev,
+      pageSize: size,
+      pageIndex: 0,
+    }));
+  };
+
+  const handleVehicleStatusChange = async (vehicleData: {
+    vehicleId: string;
+    isActive: boolean;
+  }) => {
+    try {
+      await vehicleStatusChangeMutation.mutateAsync(vehicleData, {
+        onSuccess: (res) => {
+          toast.success("Update successfully");
+          refetch();
+        },
+      });
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
+  useEffect(() => {
+    if (searchParams.get("filter") !== "") {
+      setFilter(
+        (searchParams.get("filter") as SearchAttribute) ?? "PLATENUMBER"
+      );
+    }
+
+    if (searchParams.get("vehicleType") !== "") {
+      setSelectedVehicleTypes(
+        (searchParams.get("vehicleType") as string) ?? ""
+      );
+    }
+
+    if (searchParams.get("keyword") !== "") {
+      setSearchText((searchParams.get("keyword") as string) ?? "");
+    }
+    refetch();
+  }, [pathname, searchParams]);
+
+  useEffect(() => {
+    if (isSuccess && vehicleData.data.data) {
+      setVehicleList(vehicleData.data.data || []);
+    }
+  }, [isSuccess, vehicleData]);
+
+  const vehicleTableRows = useMemo(() => {
+    return vehicleList.map((item: VehicleProps) => (
+      <TableRow key={item.id}>
+        <TableCell>{item.email}</TableCell>
+        <TableCell>{item.plateNumber}</TableCell>
+        <TableCell>{item.vehicleType}</TableCell>
+        <TableCell>
+          <img width={100} height={65} src={item.plateImage} />
+        </TableCell>
+        <TableCell>
+          <Chip
+            variant={item.statusVehicle === "ACTIVE" ? "success" : "warning"}
+          >
+            {item.statusVehicle}
+          </Chip>
+        </TableCell>
+        <TableCell>
+          <div className='flex justify-evenly items-center gap-1 min-w-full'>
+            {(() => {
+              switch (item.statusVehicle) {
+                case "ACTIVE":
+                  return (
+                    <Button
+                      variant='contained'
+                      color='error'
+                      onClick={() =>
+                        handleVehicleStatusChange({
+                          vehicleId: item.id,
+                          isActive: false,
+                        })
+                      }
+                    >
+                      DEACTIVE
+                    </Button>
+                  );
+                case "INACTIVE":
+                  return (
+                    <Button
+                      variant='contained'
+                      onClick={() =>
+                        handleVehicleStatusChange({
+                          vehicleId: item.id,
+                          isActive: true,
+                        })
+                      }
+                    >
+                      Unban
+                    </Button>
+                  );
+              }
+            })()}
+          </div>
+        </TableCell>
+      </TableRow>
+    ));
+  }, [vehicleList]);
+
+  return (
+    <>
+      <PageTitle>Vehicle List</PageTitle>
+      <SearchContainer>
+        <SelectFilter
+          label='Vehicle Type'
+          filterAttribute={selectedVehicleTypes}
+          listFilter={formatVehicleTypesFilter ?? []}
+          setFilterAttribute={handleVehicleTypeChange}
+        />
+        <SelectFilter
+          filterAttribute={filter}
+          setFilterAttribute={handleFilterChange}
+          listFilter={FILTER}
+        />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
+      </SearchContainer>
+      <div className='min-w-full flex justify-start items-center py-2'>
+        <ExportToCSVButton data={vehicleList} />
+      </div>
+      <DataTable
+        tableHeads={VehicleTableHeaders}
+        tableRows={vehicleTableRows}
+        pagination={pagination}
+        totalRecord={vehicleData?.data.totalRecord ?? 999}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handleChangeRowsPerPage}
+      />
+    </>
+  );
+}

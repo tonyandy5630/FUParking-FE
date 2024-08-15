@@ -8,6 +8,7 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, CardP
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
 import Loading from "../LoadingPage/Loading";
+import {formatPrice} from "@/utils/price";
 
 type FilterOption = {
     display: string;
@@ -25,16 +26,16 @@ export default function PackageTable (){
         { display: 'Status', value: 'packageStatus' },
     ];
     const headTables = [
+        'No.',
         'Name',
         'Coin Amount',
         'Extra Coin',
         'Exp Package',
         'Price',
         'Status',
-        'Created Date',    
-        'Deleted Date'    
+        'Created Date',
     ];
-    const [filterAttribute, setFilterAttribute] = useState<keyof Packages>('name'); 
+    const [filterAttribute, setFilterAttribute] = useState<keyof Packages>('name');
 
     const handleChangePage = (event: unknown, newPage: number) => {
         setPage(newPage + 1);
@@ -99,16 +100,18 @@ export default function PackageTable (){
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {data?.data.data?.map((packs: Packages) => (
+                                {data?.data.data?.map((packs: Packages, index) => (
                                     <TableRow key={packs.id}>
+                                        <TableCell>{index + 1}</TableCell>
                                         <TableCell>{packs.name}</TableCell>
-                                        <TableCell>{packs.coinAmount}</TableCell>
-                                        <TableCell>{packs.extraCoin}</TableCell>                                        
-                                        <TableCell>{packs.expPackage}</TableCell>
-                                        <TableCell>{packs.price}</TableCell>
+                                        <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
+                                        <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
+                                        <TableCell>
+                                            {parseInt(packs.expPackage) > 1 ? `${packs.expPackage} days` : `${packs.expPackage} day`}
+                                        </TableCell>
+                                        <TableCell>{formatPrice(parseInt(packs.price))}</TableCell>
                                         <TableCell>{packs.packageStatus}</TableCell>
-                                        <TableCell>{new Date(packs.createDate).toLocaleDateString('vi-VN')}</TableCell>  
-                                        <TableCell>{new Date(packs.deletedDate).toLocaleDateString('vi-VN') ? packs.deletedDate == null : 0}</TableCell>                                       
+                                        <TableCell>{new Date(packs.createDate).toLocaleDateString('vi-VN')}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
