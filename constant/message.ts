@@ -11,3 +11,5 @@ export const MISSING_PRICE_ITEMS = "Missing Price Items";
 export const GREATER_0_MESSAGE = "Must greater than 0";
 
 export const MIN_MAX_PRICE_OVERLAP = "Min price is greater than max price";
+
+export const PRIORITY_EXISTED = "This priority of vehicle type is exist";

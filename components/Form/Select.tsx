@@ -20,7 +20,6 @@ interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
 
 const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
   ({ label, error, options, name, ...props }, ref) => {
-    const [select, setSelected] = useState(options[0].value);
     return (
       <ConnectForm>
         {({ control, formState: { errors } }: UseFormReturn) => {
@@ -29,6 +28,7 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
               control={control}
               name={name}
               render={({ field }) => {
+                const { value, ref, ...rest } = field;
                 return (
                   <FormControl
                     fullWidth
@@ -38,9 +38,9 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
                     <TextField
                       select
                       size='small'
-                      defaultValue=''
                       label={label}
-                      {...field}
+                      defaultValue=''
+                      {...rest}
                     >
                       {options.map((item, index) => (
                         <MenuItem key={item.value} value={item.value}>

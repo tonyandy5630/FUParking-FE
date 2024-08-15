@@ -19,6 +19,7 @@ import { createTableAPI } from "@/api/price";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import ComboFormButton from "@/components/Dialog/ComboButton";
+import { PRIORITY_EXISTED } from "@/constant/message";
 
 type Props = {
   open: boolean;
@@ -28,7 +29,7 @@ type Props = {
 export default function AddPriceTable({ open, onClose }: Props) {
   const methods = useForm({ resolver: yupResolver(PriceTableTableSchema) });
   const {
-    register,
+    setFocus,
     handleSubmit,
     reset,
     control,
@@ -36,12 +37,6 @@ export default function AddPriceTable({ open, onClose }: Props) {
     formState: { errors },
     getValues,
   } = methods;
-  const [vehicleType, setVehicleType] = useState("");
-
-  const handleVehicleTypeChange = (e: any) => {
-    console.log(e.target.value);
-    setVehicleType(e.target.value);
-  };
 
   const createTableMutation = useMutation({
     mutationKey: ["/create-table"],
@@ -80,8 +75,14 @@ export default function AddPriceTable({ open, onClose }: Props) {
           toast.success("Create table successfully");
           reset();
         },
-        onError: (err) => {
-          toast.error("Something went wrong");
+        onError: (err: any) => {
+          if (err.response.data.message === PRIORITY_EXISTED) {
+            setFocus("priority");
+            setError("priority", {
+              message: "Priority existed",
+              type: "validate",
+            });
+          }
         },
       });
     } catch (error) {}
@@ -134,6 +135,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
                 <FormDatePicker
                   name='applyToDate'
                   label='Apply To'
+                  minDate={dayjs()}
                   error={errors.applyToDate?.message}
                 />
               </Grid>

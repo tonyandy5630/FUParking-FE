@@ -35,6 +35,7 @@ const PriceTableTableSchema = object({
     .min(price.min.value, price.min.message),
   minPrice: number()
     .required(REQUIRED_MESSAGE)
+    .transform((value) => (Number.isNaN(value) ? null : value))
     .min(price.min.value, price.min.message)
     .integer(MUST_BE_NUMBER_MESSAGE)
     .when("maxPrice", ([maxPrice], schema) =>

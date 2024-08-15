@@ -23,7 +23,10 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
       <ConnectForm>
         {({ register, formState: { errors } }: UseFormReturn) => {
           return (
-            <FormControl error={true} fullWidth>
+            <FormControl
+              error={errors[name]?.message !== undefined || error !== undefined}
+              fullWidth
+            >
               <TextField
                 {...register(name)}
                 error={errors[name]?.message !== undefined}
