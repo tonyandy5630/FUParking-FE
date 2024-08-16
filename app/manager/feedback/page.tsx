@@ -1,11 +1,16 @@
-import { NextPage } from 'next';
+import FeedbackPage from "@/components/Page/Feedback";
+import { Metadata, NextPage } from "next";
+
+export const metadata: Metadata = {
+  title: "Feedback page",
+};
 
 const Page: NextPage = () => {
-    return (
-        <div>
-            <h1>Hello, Next.js!</h1>
-        </div>
-    );
+  return (
+    <div>
+      <FeedbackPage />
+    </div>
+  );
 };
 
 export default Page;
