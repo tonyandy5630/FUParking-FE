@@ -26,7 +26,7 @@ export default function SelectFilter({
   };
 
   return (
-    <FormControl className='!min-w-44'>
+    <FormControl className='!min-w-40' size='small'>
       <InputLabel id='demo'>{label}</InputLabel>
       <Select
         labelId='demo'
