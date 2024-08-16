@@ -7,9 +7,15 @@ import {
 } from "./url/price-item.url";
 import http from "@/utils/http";
 import { PriceItemRequestSchemaType } from "@/utils/schemas/priceItemSchema";
+import { PaginationType } from "@/types/pagination.type";
 
-export const getPriceItemByTableAPI = (id: string) =>
-  http.get<ErrorResponse<PriceItem[]>>(GET_ALL_PRICE_ITEM_BY_TABLE_API_URL(id));
+export const getPriceItemByTableAPI = (
+  id: string,
+  pagination: PaginationType
+) =>
+  http.get<ErrorResponse<PriceItem[]>>(
+    GET_ALL_PRICE_ITEM_BY_TABLE_API_URL(id, pagination)
+  );
 
 export const createPriceItemsAPI = (data: PriceItemRequestSchemaType) =>
   http.put(CREATE_PRICE_ITEMS_API_URL, data);

@@ -40,8 +40,8 @@ export default function PriceTableDetails({
     isRefetching,
     refetch,
   } = useQuery({
-    queryKey: ["/get-price-table-items", priceTableId],
-    queryFn: () => getPriceItemByTableAPI(priceTableId),
+    queryKey: ["/get-price-table-items", priceTableId, pagination],
+    queryFn: () => getPriceItemByTableAPI(priceTableId, pagination),
   });
 
   const handleOpenUpdatePriceItems = () => {
@@ -79,28 +79,28 @@ export default function PriceTableDetails({
     if (!isSuccess) {
       return;
     }
-    console.log(true);
-    const priceItems = priceItemsData.data.data;
+    const totalPriceItems = priceItemsData.data.totalRecord;
 
-    if (!priceItems) {
+    if (!totalPriceItems) {
       return;
     }
 
-    if (priceItems.length === 0) {
+    if (totalPriceItems === 0) {
       return;
     }
-    if (priceItems.length === 1) {
+
+    if (totalPriceItems === 1) {
       setDisableCreateBtn(false);
       setDisableUpdateBtn(true);
       return;
     }
 
-    if (priceItems.length > 1) {
+    if (totalPriceItems > 1) {
       setDisableCreateBtn(true);
       setDisableUpdateBtn(false);
       return;
     }
-  }, [tableRows.length]);
+  }, [priceItemsData?.data.totalRecord]);
 
   return (
     <>

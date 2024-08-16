@@ -35,6 +35,8 @@ const FILTER: listFilter[] = [
   },
 ];
 
+const STATUS_BUTTON_MIN_WIDTH = 120;
+
 export default function PriceTablePage() {
   const [searchText, setSearchText] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
@@ -136,6 +138,9 @@ export default function PriceTablePage() {
                       <Button
                         variant='contained'
                         color='error'
+                        sx={{
+                          minWidth: STATUS_BUTTON_MIN_WIDTH,
+                        }}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleTableStatusChange({
@@ -151,6 +156,9 @@ export default function PriceTablePage() {
                     return (
                       <Button
                         variant='contained'
+                        sx={{
+                          minWidth: STATUS_BUTTON_MIN_WIDTH,
+                        }}
                         onClick={(e) => {
                           e.stopPropagation();
                           handleTableStatusChange({
@@ -159,7 +167,7 @@ export default function PriceTablePage() {
                           });
                         }}
                       >
-                        RE-ACTIVE
+                        RE-ACTIVATE
                       </Button>
                     );
                 }
@@ -195,17 +203,15 @@ export default function PriceTablePage() {
         open={openCreate}
         onClose={handleCloseCreatePriceTable}
       />
-      {
-        <Table
-          onPageChange={handlePageChange}
-          onPageSizeChange={handleChangeRowsPerPage}
-          pagination={pagination}
-          tableHeads={PriceTableHeaders}
-          tableRows={tableRows}
-          totalRecord={priceTableData?.data.totalRecord}
-          isLoading={isLoading || isRefetching}
-        />
-      }
+      <Table
+        onPageChange={handlePageChange}
+        onPageSizeChange={handleChangeRowsPerPage}
+        pagination={pagination}
+        tableHeads={PriceTableHeaders}
+        tableRows={tableRows}
+        totalRecord={priceTableData?.data.totalRecord}
+        isLoading={isLoading || isRefetching}
+      />
     </>
   );
 }
