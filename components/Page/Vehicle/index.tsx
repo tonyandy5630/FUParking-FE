@@ -3,7 +3,7 @@ import SearchContainer from "@/components/Common/SearchContainer";
 import SearchField from "@/components/Common/searchField";
 import PageTitle from "@/components/PageTitle";
 import { useDebounce } from "use-debounce";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { changeVehicleStatusAPI, getListVehicleAPI } from "@/api/vehicle";
 import DataTable from "@/components/Table";
@@ -14,7 +14,6 @@ import { PaginationType } from "@/types/pagination.type";
 import dynamic from "next/dynamic";
 import { SearchAttribute, VehicleProps } from "@/types/vehicle.type";
 import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
-import Button from "@mui/material/Button";
 import { toast } from "react-toastify";
 import Chip from "@/components/Chip";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -23,6 +22,7 @@ import { VehicleTypeProps } from "@/types/vehicleType.type";
 import ExportToCSVButton from "@/components/ExportCSVButton";
 import ActionButton from "@/components/ActionButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
+const EditVehicleDialog = dynamic(() => import("./EditVehicleDialog"));
 
 const FILTER: listFilter[] = [
   { display: "Plate Number", value: "PLATENUMBER" },
@@ -39,9 +39,14 @@ export default function VehiclePage() {
     pageSize: 5,
     pageIndex: 0,
   });
+  //* open alert dialog
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false);
   const [rowId, setRowId] = useState("");
+
+  //* open update dialog
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [updateVehicle, setUpdateVehicle] = useState<VehicleProps>();
   const searchParams = useSearchParams();
   const [searchText, setSearchText] = useState(
     searchParams.get("keyword")?.toString() ?? ""
@@ -228,6 +233,19 @@ export default function VehiclePage() {
     }));
   };
 
+  const handleUpdateVehicle = (vehicle: VehicleProps) => {
+    if (!vehicle) {
+      return;
+    }
+    setUpdateVehicle(vehicle);
+    setOpenUpdateDialog(true);
+  };
+
+  const handleOpenChangeUpdateDialog = () => {
+    setOpenUpdateDialog((prev) => !prev);
+    refetch();
+  };
+
   const handleVehicleStatusChange = async (vehicleData: {
     vehicleId: string;
     isActive: boolean;
@@ -295,6 +313,7 @@ export default function VehiclePage() {
                         variant='primary'
                         onClick={(e) => {
                           e.stopPropagation();
+                          handleUpdateVehicle(item);
                         }}
                       >
                         Edit
@@ -336,6 +355,14 @@ export default function VehiclePage() {
           });
         }}
       />
+      {updateVehicle && (
+        <EditVehicleDialog
+          open={openUpdateDialog}
+          onOpenChange={handleOpenChangeUpdateDialog}
+          vehicle={updateVehicle}
+        />
+      )}
+
       <PageTitle>Vehicle List</PageTitle>
       <SearchContainer>
         <SelectFilter

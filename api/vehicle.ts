@@ -1,6 +1,7 @@
 import {
   CHANGE_VEHICLE_STATUS_API_URL,
   GET_LIST_VEHICLE_API_URL,
+  UPDATE_VEHICLE_API_URL,
 } from "./url/vehicle.url";
 
 import http from "@/utils/http";
@@ -9,6 +10,7 @@ import {
   SearchAttribute,
   VehicleStatus,
 } from "@/types/vehicle.type";
+import { UpdateVehicleSchemaType } from "@/utils/schemas/updateVehicleSchema";
 
 export const getListVehicleAPI = ({
   pageSize,
@@ -40,3 +42,6 @@ export const changeVehicleStatusAPI = (data: {
   vehicleId: string;
   isActive: boolean;
 }) => http.put(CHANGE_VEHICLE_STATUS_API_URL, data);
+
+export const updateVehicleAPI = (data: UpdateVehicleSchemaType) =>
+  http.post(UPDATE_VEHICLE_API_URL, data);

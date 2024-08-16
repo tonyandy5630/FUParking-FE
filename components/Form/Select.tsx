@@ -39,7 +39,7 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
                       select
                       size='small'
                       label={label}
-                      defaultValue=''
+                      defaultValue={props.defaultValue ?? ""}
                       {...rest}
                     >
                       {options.map((item, index) => (
