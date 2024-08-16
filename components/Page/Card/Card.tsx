@@ -1,9 +1,10 @@
+import PageTitle from "@/components/PageTitle";
 import CardTable from "./CardTable";
 
 export default function Card() {
   return (
     <>
-      <h1 className='text-2xl font-semibold text-center'>Card List</h1>
+      <PageTitle>Card List</PageTitle>
       <CardTable />
     </>
   );

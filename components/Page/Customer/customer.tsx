@@ -20,6 +20,8 @@ import Loading from "../LoadingPage/Loading";
 import { toast } from "react-toastify";
 import AddCustomer from "./addCustomer";
 import dynamic from "next/dynamic";
+import SearchContainer from "@/components/Common/SearchContainer";
+import PageTitle from "@/components/PageTitle";
 
 export default function Customer() {
   const [page, setPage] = useState(1);
@@ -93,16 +95,20 @@ export default function Customer() {
 
   return (
     <>
-      <h1 className='text-2xl font-semibold '>Customer List</h1>
-      <div className='flex flex-row gap-3 justify-center'>
+      <PageTitle>Customer List</PageTitle>
+      <SearchContainer>
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
         <SearchField inputValue={inputValue} setInputValue={setInputValue} />
-      </div>
-      <div className='flex flex-row gap-3 items-center justify-center w-full'>
+      </SearchContainer>
+      <div className='flex flex-row gap-3 items-center justify-start w-full'>
+        <AddCustomer
+          disabled={changeStatusCustomerMutation.isPending}
+          refetch={refetch}
+        />
         <Button
           variant='contained'
           color='primary'
@@ -111,10 +117,6 @@ export default function Customer() {
         >
           Refresh
         </Button>
-        <AddCustomer
-          disabled={changeStatusCustomerMutation.isPending}
-          refetch={refetch}
-        />
       </div>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}

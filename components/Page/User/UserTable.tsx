@@ -83,14 +83,13 @@ export default function UserTable() {
   return (
     <>
       <SearchContainer>
+        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-center w-full'></div>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
