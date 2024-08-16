@@ -21,3 +21,5 @@ export const GET_LIST_VEHICLE_API_URL = ({
   }&SearchInput=${SearchInput}&Attribute=${Attribute}`;
 
 export const CHANGE_VEHICLE_STATUS_API_URL = `${baseURL}/vehicles/user/vehicle/status`;
+
+export const UPDATE_VEHICLE_API_URL = `${baseURL}/vehicles/user/update`;

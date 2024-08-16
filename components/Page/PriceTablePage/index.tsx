@@ -37,8 +37,6 @@ const FILTER: listFilter[] = [
   },
 ];
 
-const STATUS_BUTTON_MIN_WIDTH = 120;
-
 export default function PriceTablePage() {
   const [searchText, setSearchText] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
