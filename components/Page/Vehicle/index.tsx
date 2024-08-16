@@ -21,6 +21,8 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { getAllVehicleTypeAPI } from "@/api/vehicleType";
 import { VehicleTypeProps } from "@/types/vehicleType.type";
 import ExportToCSVButton from "@/components/ExportCSVButton";
+import ActionButton from "@/components/ActionButton";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
 
 const FILTER: listFilter[] = [
   { display: "Plate Number", value: "PLATENUMBER" },
@@ -37,6 +39,9 @@ export default function VehiclePage() {
     pageSize: 5,
     pageIndex: 0,
   });
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false);
+  const [rowId, setRowId] = useState("");
   const searchParams = useSearchParams();
   const [searchText, setSearchText] = useState(
     searchParams.get("keyword")?.toString() ?? ""
@@ -54,6 +59,7 @@ export default function VehiclePage() {
     mutationKey: ["/status-vehicle-change"],
     mutationFn: changeVehicleStatusAPI,
   });
+
   const {
     data: vehicleData,
     isSuccess,
@@ -86,6 +92,41 @@ export default function VehiclePage() {
     queryKey: ["/vehicles/get-all-vehicle-types"],
     queryFn: getAllVehicleTypeAPI,
   });
+
+  useEffect(() => {
+    if (searchParams.get("filter") !== "") {
+      setFilter(
+        (searchParams.get("filter") as SearchAttribute) ?? "PLATENUMBER"
+      );
+    }
+
+    if (searchParams.get("vehicleType") !== "") {
+      setSelectedVehicleTypes(
+        (searchParams.get("vehicleType") as string) ?? ""
+      );
+    }
+
+    if (searchParams.get("keyword") !== "") {
+      setSearchText((searchParams.get("keyword") as string) ?? "");
+    }
+    refetch();
+  }, [pathname, searchParams]);
+
+  useEffect(() => {
+    if (isSuccess && vehicleData.data.data) {
+      setVehicleList(vehicleData.data.data || []);
+    }
+  }, [isSuccess, vehicleData]);
+
+  const handleToggleConfirmBox = () => {
+    setOpenConfirmDialog((prev) => !prev);
+  };
+
+  const handleOpenConfirmBox = (id: string, isActive: boolean) => {
+    setIsActiveOrDeActive(isActive);
+    setRowId(id);
+    handleToggleConfirmBox();
+  };
 
   const createQueryString = useCallback(
     (newParam: { name: string; value: string }[]) => {
@@ -202,30 +243,6 @@ export default function VehiclePage() {
       toast.error("Something went wrong");
     }
   };
-  useEffect(() => {
-    if (searchParams.get("filter") !== "") {
-      setFilter(
-        (searchParams.get("filter") as SearchAttribute) ?? "PLATENUMBER"
-      );
-    }
-
-    if (searchParams.get("vehicleType") !== "") {
-      setSelectedVehicleTypes(
-        (searchParams.get("vehicleType") as string) ?? ""
-      );
-    }
-
-    if (searchParams.get("keyword") !== "") {
-      setSearchText((searchParams.get("keyword") as string) ?? "");
-    }
-    refetch();
-  }, [pathname, searchParams]);
-
-  useEffect(() => {
-    if (isSuccess && vehicleData.data.data) {
-      setVehicleList(vehicleData.data.data || []);
-    }
-  }, [isSuccess, vehicleData]);
 
   const vehicleTableRows = useMemo(() => {
     return vehicleList.map((item: VehicleProps) => (
@@ -244,37 +261,54 @@ export default function VehiclePage() {
           </Chip>
         </TableCell>
         <TableCell>
-          <div className='flex justify-evenly items-center gap-1 min-w-full'>
+          <div className='flex justify-start items-center gap-1 min-w-full'>
             {(() => {
               switch (item.statusVehicle) {
                 case "ACTIVE":
                   return (
-                    <Button
-                      variant='contained'
-                      color='error'
-                      onClick={() =>
-                        handleVehicleStatusChange({
-                          vehicleId: item.id,
-                          isActive: false,
-                        })
-                      }
+                    <ActionButton
+                      variant='danger'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenConfirmBox(item.id, false);
+                      }}
                     >
-                      DEACTIVE
-                    </Button>
+                      DEACTIVATE
+                    </ActionButton>
                   );
                 case "INACTIVE":
                   return (
-                    <Button
-                      variant='contained'
-                      onClick={() =>
-                        handleVehicleStatusChange({
-                          vehicleId: item.id,
-                          isActive: true,
-                        })
-                      }
+                    <ActionButton
+                      variant='primary'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenConfirmBox(item.id, true);
+                      }}
                     >
-                      Unban
-                    </Button>
+                      ACTIVATE
+                    </ActionButton>
+                  );
+                case "PENDING":
+                  return (
+                    <div className='flex justify-between items-center gap-2'>
+                      <ActionButton
+                        variant='primary'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      >
+                        Edit
+                      </ActionButton>
+                      <ActionButton
+                        variant='danger'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenConfirmBox(item.id, false);
+                        }}
+                      >
+                        DEACTIVATE
+                      </ActionButton>
+                    </div>
                   );
               }
             })()}
@@ -286,6 +320,22 @@ export default function VehiclePage() {
 
   return (
     <>
+      <AlertDialog
+        open={openConfirmDialog}
+        onOpenChange={handleToggleConfirmBox}
+        title={
+          isActiveOrDeActive
+            ? "Re-Activate this vehicle ?"
+            : "Deactivate this vehicle ?"
+        }
+        onCancel={handleToggleConfirmBox}
+        onConfirm={() => {
+          handleVehicleStatusChange({
+            vehicleId: rowId,
+            isActive: isActiveOrDeActive,
+          });
+        }}
+      />
       <PageTitle>Vehicle List</PageTitle>
       <SearchContainer>
         <SelectFilter
