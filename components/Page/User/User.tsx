@@ -1,11 +1,11 @@
 import UserTable from "@/components/Page/User/UserTable";
-
+import PageTitle from "@/components/PageTitle";
 
 export default function User() {
-    return (
-        <>
-            <h1 className='text-2xl font-semibold text-center'>User List</h1>
-    <UserTable />
+  return (
+    <>
+      <PageTitle>User List</PageTitle>
+      <UserTable />
     </>
-);
+  );
 }

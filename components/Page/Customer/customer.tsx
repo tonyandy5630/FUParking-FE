@@ -20,12 +20,20 @@ import Loading from "../LoadingPage/Loading";
 import { toast } from "react-toastify";
 import AddCustomer from "./addCustomer";
 import dynamic from "next/dynamic";
+import SearchContainer from "@/components/Common/SearchContainer";
+import PageTitle from "@/components/PageTitle";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import ActionButton from "@/components/ActionButton";
 
 export default function Customer() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [inputValue, setInputValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = Active , false = Deactive
+  const [rowId, setRowId] = useState("");
+
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CustomerWithFillerProps>("fullName");
   const { data, isLoading, isSuccess, isError, error, refetch } = useQuery({
@@ -39,6 +47,16 @@ export default function Customer() {
       ),
     retry: 1,
   });
+
+  const handleOpenDialog = (id: string, isActive: boolean) => {
+    setOpenConfirmDialog(true);
+    setRowId(id);
+    setIsActiveOrDeActive(isActive);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenConfirmDialog(false);
+  };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -90,19 +108,35 @@ export default function Customer() {
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof CustomerWithFillerProps);
   };
-
   return (
     <>
-      <h1 className='text-2xl font-semibold '>Customer List</h1>
-      <div className='flex flex-row gap-3 justify-center'>
+      <AlertDialog
+        open={openConfirmDialog}
+        title={
+          isActiveOrDeActive
+            ? "Confirm re-activate this customer ?"
+            : "Deactivate this customer ?"
+        }
+        onCancel={handleCloseDialog}
+        onOpenChange={handleCloseDialog}
+        onConfirm={() => {
+          onStatusChange(isActiveOrDeActive, rowId);
+        }}
+      />
+      <PageTitle>Customer List</PageTitle>
+      <SearchContainer>
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
         <SearchField inputValue={inputValue} setInputValue={setInputValue} />
-      </div>
-      <div className='flex flex-row gap-3 items-center justify-center w-full'>
+      </SearchContainer>
+      <div className='flex flex-row gap-3 items-center justify-start w-full'>
+        <AddCustomer
+          disabled={changeStatusCustomerMutation.isPending}
+          refetch={refetch}
+        />
         <Button
           variant='contained'
           color='primary'
@@ -111,10 +145,6 @@ export default function Customer() {
         >
           Refresh
         </Button>
-        <AddCustomer
-          disabled={changeStatusCustomerMutation.isPending}
-          refetch={refetch}
-        />
       </div>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
@@ -122,119 +152,112 @@ export default function Customer() {
         (data.data.totalRecord === 0 ? (
           <p>There is no data to show.</p>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Full Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Type</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.data.data?.map((row) => (
-                  <TableRow key={row.customerId}>
-                    <TableCell>{row.fullName}</TableCell>
-                    <TableCell>{row.email}</TableCell>
-                    <TableCell>
-                      {row.customerType === "PAID" ? (
-                        <span className='inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center'>
-                          Paid
-                        </span>
-                      ) : row.customerType === "FREE" ? (
-                        <span className='inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center'>
-                          Free
-                        </span>
-                      ) : (
-                        <span>{row.customerType}</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {row.statusCustomer === "ACTIVE" ? (
-                        <span
-                          className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
-                          style={{
-                            color: "#62a34f",
-                            backgroundColor: "#dcfce7",
-                          }}
-                        >
-                          Active
-                        </span>
-                      ) : row.statusCustomer === "INACTIVE" ? (
-                        <span
-                          className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
-                          style={{
-                            color: "#fcca46",
-                            backgroundColor: "#fef9c3",
-                          }}
-                        >
-                          Inactive
-                        </span>
-                      ) : (
-                        <span>{row.statusCustomer}</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className='flex flex-row gap-3'>
-                        {row.statusCustomer === "INACTIVE" && (
-                          <Button
-                            sx={{
-                              backgroundColor: "#3b82f6",
-                              color: "white",
-                              width: "80px",
-                              "&:disabled": {
-                                backgroundColor: "grey",
-                                color: "white",
-                              },
-                              "&:hover": {
-                                backgroundColor: "#2563eb",
-                              },
+          <>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Full Name</TableCell>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Type</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Action</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data.data.data?.map((row) => (
+                    <TableRow key={row.customerId}>
+                      <TableCell>{row.fullName}</TableCell>
+                      <TableCell>{row.email}</TableCell>
+                      <TableCell>
+                        {row.customerType === "PAID" ? (
+                          <span className='inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center'>
+                            Paid
+                          </span>
+                        ) : row.customerType === "FREE" ? (
+                          <span className='inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center'>
+                            Free
+                          </span>
+                        ) : (
+                          <span>{row.customerType}</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {row.statusCustomer === "ACTIVE" ? (
+                          <span
+                            className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+                            style={{
+                              color: "#62a34f",
+                              backgroundColor: "#dcfce7",
                             }}
-                            onClick={() => onStatusChange(true, row.customerId)}
-                            disabled={changeStatusCustomerMutation.isPending}
                           >
                             Active
-                          </Button>
-                        )}
-                        {row.statusCustomer === "ACTIVE" && (
-                          <Button
-                            sx={{
-                              backgroundColor: "#ef4444",
-                              color: "white",
-                              width: "80px",
-                              "&:disabled": {
-                                backgroundColor: "grey",
-                                color: "white",
-                              },
-                              "&:hover": {
-                                backgroundColor: "#dc2626",
-                              },
+                          </span>
+                        ) : row.statusCustomer === "INACTIVE" ? (
+                          <span
+                            className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+                            style={{
+                              color: "#fcca46",
+                              backgroundColor: "#fef9c3",
                             }}
-                            onClick={() =>
-                              onStatusChange(false, row.customerId)
-                            }
-                            disabled={changeStatusCustomerMutation.isPending}
                           >
-                            Deactive
-                          </Button>
+                            Inactive
+                          </span>
+                        ) : (
+                          <span>{row.statusCustomer}</span>
                         )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              count={data.data.totalRecord || -1}
-              page={page - 1}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
+                      </TableCell>
+                      <TableCell>
+                        <div className='flex flex-row gap-3'>
+                          {(() => {
+                            if (row.statusCustomer === "INACTIVE") {
+                              return (
+                                <>
+                                  <ActionButton
+                                    variant='primary'
+                                    onClick={() =>
+                                      handleOpenDialog(row.customerId, true)
+                                    }
+                                    disabled={
+                                      changeStatusCustomerMutation.isPending
+                                    }
+                                  >
+                                    Activate
+                                  </ActionButton>
+                                </>
+                              );
+                            } else if (row.statusCustomer === "ACTIVE") {
+                              return (
+                                <ActionButton
+                                  variant='danger'
+                                  onClick={() =>
+                                    handleOpenDialog(row.customerId, false)
+                                  }
+                                  disabled={
+                                    changeStatusCustomerMutation.isPending
+                                  }
+                                >
+                                  Deactive
+                                </ActionButton>
+                              );
+                            }
+                          })()}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                count={data.data.totalRecord || -1}
+                page={page - 1}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </TableContainer>
+          </>
         ))}
     </>
   );

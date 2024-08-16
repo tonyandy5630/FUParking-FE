@@ -22,6 +22,8 @@ import { useDebounce } from "use-debounce";
 import { DEBOUNCE_DELAY } from "@/constant/debounce";
 import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
 import { useRouter } from "next/navigation";
+import ActionButton from "@/components/ActionButton";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
 
 const FILTER: listFilter[] = [
@@ -50,6 +52,9 @@ export default function PriceTablePage() {
   } = usePagination();
   const [tableList, setTableList] = useState<PriceTable[]>([]);
   const [debounceSearchText] = useDebounce(searchText, DEBOUNCE_DELAY);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = active, false = deactive
+  const [rowId, setRowId] = useState("");
   const {
     data: priceTableData,
     isSuccess,
@@ -73,6 +78,16 @@ export default function PriceTablePage() {
 
   const handleOpenCreatePriceTable = () => {
     setOpenCreate((prev) => !prev);
+  };
+
+  const handleOpenDialog = (id: string, isActive: boolean) => {
+    setOpenConfirmDialog(true);
+    setRowId(id);
+    setIsActiveOrDeActive(isActive);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenConfirmDialog(false);
   };
 
   const handleFilterChange = (value: string) => {
@@ -135,40 +150,27 @@ export default function PriceTablePage() {
                 switch (item.statusPriceTable) {
                   case "ACTIVE":
                     return (
-                      <Button
-                        variant='contained'
-                        color='error'
-                        sx={{
-                          minWidth: STATUS_BUTTON_MIN_WIDTH,
-                        }}
+                      <ActionButton
+                        variant='danger'
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleTableStatusChange({
-                            priceTableId: item.id,
-                            isActive: false,
-                          });
+                          handleOpenDialog(item.id, false);
                         }}
                       >
                         DEACTIVATE
-                      </Button>
+                      </ActionButton>
                     );
                   case "INACTIVE":
                     return (
-                      <Button
-                        variant='contained'
-                        sx={{
-                          minWidth: STATUS_BUTTON_MIN_WIDTH,
-                        }}
+                      <ActionButton
+                        variant='primary'
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleTableStatusChange({
-                            priceTableId: item.id,
-                            isActive: true,
-                          });
+                          handleOpenDialog(item.id, true);
                         }}
                       >
                         RE-ACTIVATE
-                      </Button>
+                      </ActionButton>
                     );
                 }
               })()}
@@ -181,6 +183,22 @@ export default function PriceTablePage() {
 
   return (
     <>
+      <AlertDialog
+        open={openConfirmDialog}
+        onCancel={handleCloseDialog}
+        onOpenChange={handleCloseDialog}
+        title={
+          isActiveOrDeActive
+            ? "Re-activate this table ?"
+            : "Deactivate this table ?"
+        }
+        onConfirm={() => {
+          handleTableStatusChange({
+            isActive: isActiveOrDeActive,
+            priceTableId: rowId,
+          });
+        }}
+      />
       <PageTitle>Price Page</PageTitle>
       <SearchContainer>
         <SelectFilter

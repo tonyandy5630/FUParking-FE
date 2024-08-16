@@ -16,6 +16,7 @@ import { AxiosResponse } from "axios";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function AddCustomer({
   disabled,
@@ -80,12 +81,12 @@ export default function AddCustomer({
   return (
     <>
       <Button
-        variant='contained'
+        variant='outlined'
         color='primary'
         disabled={disabled}
         onClick={() => setIsOpen(true)}
       >
-        Add Customer
+        <AddIcon /> <span>New Customer </span>
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
         <div className='pl-5 pr-5 pt-10 pb-10'>

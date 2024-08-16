@@ -1,4 +1,5 @@
 import { editCardAPI } from "@/api/card";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import FormInput from "@/components/Form/Input";
 import Modal from "@/components/modal/modal";
 import { ListCardResponse } from "@/types/card.type";
@@ -22,10 +23,12 @@ export default function EditCard({
   setIsPending,
   disable,
   refetch,
+  value,
 }: {
   id: string;
   setIsPending: (isPending: boolean) => void;
   disable: boolean;
+  value: string;
   refetch: (
     options?: RefetchOptions
   ) => Promise<
@@ -33,13 +36,12 @@ export default function EditCard({
   >;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+
   const handleClose = () => {
-    setIsOpen(false);
+    setOpenConfirmDialog(true);
   };
   const methods = useForm<EditCardSchemaType>({
-    defaultValues: {
-      plateNumber: "",
-    },
     resolver: yupResolver(EditCardSchema),
   });
 
@@ -58,6 +60,17 @@ export default function EditCard({
       setIsPending(true);
     },
   });
+
+  const handleToggleDialog = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const handleConfirmDialog = () => {
+    reset();
+    setIsOpen(false);
+    handleToggleDialog();
+  };
+
   const onSubmit = async (data: { plateNumber: string }) => {
     try {
       await editCardMutation.mutateAsync(data, {
@@ -83,6 +96,14 @@ export default function EditCard({
 
   return (
     <>
+      <AlertDialog
+        open={openConfirmDialog}
+        onCancel={handleToggleDialog}
+        onConfirm={handleConfirmDialog}
+        onOpenChange={handleToggleDialog}
+        title='Cancel Edit card ?'
+        content='By clicking OK will RESET and CLOSE this form ?'
+      />
       <Button
         sx={{
           backgroundColor: "#3b82f6",
@@ -103,25 +124,6 @@ export default function EditCard({
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
         <div className='pl-5 pr-5 pt-10 pb-10'>
-          <Button
-            onClick={handleClose}
-            sx={{
-              position: "absolute",
-              padding: "0",
-              margin: "10px",
-              width: "0",
-              right: "0",
-              top: "0",
-              color: "black",
-              border: "1px solid black",
-              backgroundColor: "white",
-              "&:hover": {
-                backgroundColor: "white",
-              },
-            }}
-          >
-            X
-          </Button>
           <div className='flex flex-col w-full space-y-5'>
             <h1 className='text-center font-semibold text-2xl'>
               Create new Customer
@@ -136,11 +138,8 @@ export default function EditCard({
                   label='Plate Number'
                   placeholder='Enter Plate Number'
                   autoFocus={true}
-                  key='plateNumber'
+                  defaultValue={value}
                 />
-                {errors.plateNumber && (
-                  <p className='text-red-500'>{errors.plateNumber.message}</p>
-                )}
                 <Button type='submit' variant='contained' color='primary'>
                   Submit
                 </Button>

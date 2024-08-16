@@ -19,6 +19,7 @@ import {
 import CreateVehicleType from "./CreateVehicleType";
 import EditVehicleType from "./EditVehicleType";
 import DeleteVehicleType from "./DeleteVehicleType";
+import SearchContainer from "@/components/Common/SearchContainer";
 
 export default function VehicleTypeTable() {
   const [page, setPage] = useState(1);
@@ -70,14 +71,14 @@ export default function VehicleTypeTable() {
 
   return (
     <div className='flex flex-col gap-5'>
-      <div className='flex flex-row gap-3 justify-center'>
+      <SearchContainer>
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
         <SearchField inputValue={inputValue} setInputValue={setInputValue} />
-      </div>
+      </SearchContainer>
       <div className='flex flex-row gap-3 items-center justify-center w-full'>
         <Button
           variant='contained'
