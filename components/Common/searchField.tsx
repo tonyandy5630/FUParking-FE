@@ -20,6 +20,8 @@ const SearchField: FC<SearchFieldProps> = ({
 
   return (
     <TextField
+      size='small'
+      autoFocus={true}
       type='text'
       className='border border-gray-400 rounded-md p-2'
       placeholder={placeholder}

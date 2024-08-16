@@ -14,6 +14,7 @@ import React, { useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { FeedbackTableHeaders } from "./table-headers";
 import wrapText from "@/utils/text";
+import { getAllParkingAreaAPI } from "@/api/parkingArea";
 
 const FILTER: listFilter[] = [
   {
@@ -25,12 +26,18 @@ export default function FeedbackPage() {
   const [searchText, setSearchText] = useState("");
   const [debounceSearchText] = useDebounce(searchText, DEBOUNCE_DELAY);
   const [filter, setFilter] = useState("");
+  const [parkingArea, setParkingArea] = useState("");
   const {
     pagination,
     setPagination,
     handlePageChange,
     handleChangeRowsPerPage,
   } = usePagination();
+
+  const { data: parkingAreasData, isLoading: parkingAreaLoading } = useQuery({
+    queryKey: ["/feedback-select-parking-areas"],
+    queryFn: getAllParkingAreaAPI,
+  });
 
   const {
     data: feedbackData,
@@ -41,8 +48,29 @@ export default function FeedbackPage() {
     queryFn: () => getAllFeedbacksAPI(pagination),
   });
 
+  const parkingAreasOptions = useMemo(() => {
+    const parkingAreas = parkingAreasData?.data.data;
+
+    if (!parkingAreas || parkingAreas.length === 0) {
+      return [];
+    }
+
+    return parkingAreas.map((item) => {
+      const options: listFilter = {
+        display: item.name,
+        value: item.id,
+      };
+      return options;
+    });
+  }, [parkingAreasData]);
+
   const handleFilterChange = (value: string) => {
     setFilter(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
+
+  const handleParkingAreaChange = (value: string) => {
+    setParkingArea(value);
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
@@ -71,12 +99,18 @@ export default function FeedbackPage() {
     <>
       <PageTitle>Feedback Page</PageTitle>
       <SearchContainer>
+        <SearchField inputValue={searchText} setInputValue={setSearchText} />
+        <SelectFilter
+          listFilter={parkingAreasOptions}
+          filterAttribute={parkingArea}
+          setFilterAttribute={handleParkingAreaChange}
+          label='Parking Area'
+        />
         <SelectFilter
           listFilter={FILTER}
           filterAttribute={filter}
           setFilterAttribute={handleFilterChange}
         />
-        <SearchField inputValue={searchText} setInputValue={setSearchText} />
       </SearchContainer>
       <Table
         onPageChange={handlePageChange}
