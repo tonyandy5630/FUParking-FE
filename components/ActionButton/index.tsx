@@ -12,7 +12,7 @@ const ActionButton = React.forwardRef<HTMLButtonElement, Props>(
         sx={{
           backgroundColor: `${variant === "primary" ? "#3b82f6" : "#ef4444"}`,
           color: "white",
-          width: "80px",
+          minWidth: "80px",
           "&:disabled": {
             backgroundColor: "grey",
             color: "white",

@@ -1,4 +1,5 @@
 import { addCardAPI } from "@/api/card";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import FormInput from "@/components/Form/Input";
 import Modal from "@/components/modal/modal";
 import { ListCardResponse } from "@/types/card.type";
@@ -31,8 +32,10 @@ export default function AddCard({
   >;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+
   const handleClose = () => {
-    setIsOpen(false);
+    setOpenConfirmDialog(true);
   };
 
   const methods = useForm<AddCardSchemaType>({
@@ -59,6 +62,16 @@ export default function AddCard({
       setIsPending(true);
     },
   });
+
+  const handleToggleDialog = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const handleConfirmDialog = () => {
+    reset();
+    setIsOpen(false);
+    handleToggleDialog();
+  };
 
   const onSubmit = async (data: {
     cardNumber: string;
@@ -88,6 +101,14 @@ export default function AddCard({
 
   return (
     <>
+      <AlertDialog
+        open={openConfirmDialog}
+        onCancel={handleToggleDialog}
+        onConfirm={handleConfirmDialog}
+        onOpenChange={handleToggleDialog}
+        title='Cancel create card ?'
+        content='By clicking OK will RESET and CLOSE this form ?'
+      />
       <Button
         variant='contained'
         color='primary'
@@ -98,28 +119,9 @@ export default function AddCard({
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
         <div className='pl-5 pr-5 pt-10 pb-10'>
-          <Button
-            onClick={handleClose}
-            sx={{
-              position: "absolute",
-              padding: "0",
-              margin: "10px",
-              width: "0",
-              right: "0",
-              top: "0",
-              color: "black",
-              border: "1px solid black",
-              backgroundColor: "white",
-              "&:hover": {
-                backgroundColor: "white",
-              },
-            }}
-          >
-            X
-          </Button>
           <div className='flex flex-col w-full space-y-5'>
             <h1 className='text-center font-semibold text-2xl'>
-              Create new Customer
+              Create new Card
             </h1>
             <FormProvider {...methods}>
               <FormControl>

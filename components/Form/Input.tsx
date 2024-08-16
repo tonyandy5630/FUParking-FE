@@ -16,7 +16,16 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const FormInput = forwardRef<HTMLInputElement, Props>(
   (
-    { name, type = "text", label, error, placeholder, endAdornment, ...props },
+    {
+      name,
+      type = "text",
+      label,
+      defaultValue,
+      error,
+      placeholder,
+      endAdornment,
+      ...props
+    },
     ref
   ) => {
     return (
@@ -37,9 +46,9 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
                 label={label}
                 name={name}
                 autoFocus={props.autoFocus}
-                defaultValue={props.defaultValue ?? ""}
                 placeholder={placeholder}
                 InputProps={{
+                  defaultValue,
                   endAdornment: endAdornment ? (
                     <InputAdornment position='end'>
                       {endAdornment}

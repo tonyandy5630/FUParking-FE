@@ -127,6 +127,7 @@ export default function CardTable() {
                   <TableCell>
                     <div className='flex flex-row space-x-2'>
                       <EditCard
+                        value={card.plateNumber}
                         id={card.id}
                         refetch={refetch}
                         setIsPending={setDisable}
