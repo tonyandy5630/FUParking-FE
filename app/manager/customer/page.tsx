@@ -1,5 +1,10 @@
 import Customer from "@/components/Page/Customer/customer";
-import { NextPage } from "next";
+
+import { Metadata, NextPage } from "next";
+
+export const metadata: Metadata = {
+  title: "Customer page",
+};
 
 const Page: NextPage = () => {
   return (
