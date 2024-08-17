@@ -53,6 +53,10 @@ function AddPriceItemDialog({ onOpenChange, open, tablePriceId }: Props) {
     mutationFn: updatePriceItemsAPI,
   });
 
+  const handleOpenChange = () => {
+    onOpenChange();
+  };
+
   const handleCreatePriceItems = async (data: PriceItemRequestSchemaType) => {
     try {
       await createPriceItemMutation.mutateAsync(data, {
@@ -104,7 +108,7 @@ function AddPriceItemDialog({ onOpenChange, open, tablePriceId }: Props) {
   }, [fields.length, errors]);
 
   return (
-    <Dialog open={open} onClose={onOpenChange} maxWidth='md'>
+    <Dialog open={open} onClose={handleOpenChange} maxWidth='md'>
       <DialogTitle>Add Price Items</DialogTitle>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleCreatePriceItems)}>
@@ -120,10 +124,8 @@ function AddPriceItemDialog({ onOpenChange, open, tablePriceId }: Props) {
           </DialogContent>
           <DialogActions className='flex justify-end min-w-full'>
             <ComboFormButton
-              onClose={onOpenChange}
-              onReset={() => {
-                reset();
-              }}
+              onClose={handleOpenChange}
+              onReset={reset}
               submitLabel='Create'
               isLoading={createPriceItemMutation.isPending}
             />

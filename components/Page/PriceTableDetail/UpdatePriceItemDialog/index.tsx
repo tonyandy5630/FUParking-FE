@@ -59,6 +59,11 @@ export default function UpdatePriceItemDialog({
     }
   };
 
+  const handleOpenChange = () => {
+    onOpenChange();
+    reset();
+  };
+
   const priceItemFields = useMemo(() => {
     const filteredDefaultPriceItem = priceItems.filter(
       (item) =>
@@ -91,7 +96,7 @@ export default function UpdatePriceItemDialog({
           </DialogContent>
           <DialogActions className='flex justify-end min-w-full'>
             <ComboFormButton
-              onClose={onOpenChange}
+              onClose={handleOpenChange}
               onReset={() => reset()}
               submitLabel='Update'
               isLoading={createPriceItemMutation.isPending}

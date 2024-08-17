@@ -12,7 +12,6 @@ import PriceTableTableSchema, {
 import { getAllVehicleTypeAPI } from "@/api/vehicleType";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import FormSelect, { FormOptions } from "@/components/Form/Select";
-import { Button } from "@mui/material";
 import FormInput from "@/components/Form/Input";
 import FormDatePicker from "@/components/Form/DatePicker";
 import { createTableAPI } from "@/api/price";
@@ -51,6 +50,11 @@ export default function AddPriceTable({ open, onClose }: Props) {
     queryKey: ["/price-table/get-all-vehicle-types"],
     queryFn: getAllVehicleTypeAPI,
   });
+
+  const handleClose = () => {
+    onClose();
+    reset();
+  };
 
   const vehicleTypeOptions: FormOptions[] = useMemo(() => {
     if (isTypesSuccess) {
@@ -175,7 +179,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
 
               <DialogActions className='flex justify-end min-w-full'>
                 <ComboFormButton
-                  onClose={onClose}
+                  onClose={handleClose}
                   onReset={() => reset()}
                   submitLabel='Create'
                   isLoading={createTableMutation.isPending}

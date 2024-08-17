@@ -1,22 +1,33 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import SearchField from "@/components/Common/searchField";
 import { useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 const TableRow = dynamic(() => import("@mui/material/TableRow"));
 const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import { ParkingAreas } from "@/types/parkingArea.type";
-import { getListParkingArea } from "@/api/parkingArea";
+import {
+  getListParkingArea,
+  updateParkingAreaStatusAPI,
+} from "@/api/parkingArea";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchContainer from "@/components/Common/SearchContainer";
 import Chip from "@/components/Chip";
-import { useDebounce } from "use-debounce";
-import { DEBOUNCE_DELAY } from "@/constant/debounce";
 import usePagination from "@/hook/usePagination";
 import Table from "@/components/Table";
 import { ParkingAreaTableHeaders } from "./table-headers";
 import dynamic from "next/dynamic";
 import useSearchDebounce from "@/hook/useSearchDebouce";
+import ActionArea from "@/components/ActionArea";
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import AddParkingAreaDialog from "./AddParkingArea";
+import wrapText from "@/utils/text";
+import ActionButton from "@/components/ActionButton";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import { toast } from "react-toastify";
+import { ParkingAreaSchemaType } from "@/utils/schemas/parkingAreaSchema";
+import UpdateParkingAreaDialog from "./UpdateParkingArea";
 
 type FilterOption = {
   display: string;
@@ -33,6 +44,13 @@ export default function ParkingAreaTable() {
   } = usePagination();
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [isActivateOrDeactivate, setIsActivateOrDeactivate] = useState(false);
+  const [updateValue, setUpdateValue] = useState<ParkingAreas | undefined>();
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [rowId, setRowId] = useState("");
+
   const filterOptions: FilterOption[] = [{ display: "Name", value: "name" }];
 
   const [filterAttribute, setFilterAttribute] =
@@ -43,23 +61,75 @@ export default function ParkingAreaTable() {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
-  const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
-    queryKey: [
-      "/areas",
-      pagination.pageSize,
-      pagination.pageIndex,
-      debounceSearchText,
-      filterAttribute,
-    ],
-    queryFn: () =>
-      getListParkingArea(
-        pagination.pageSize,
-        pagination.pageIndex + 1,
-        debounceSearchText,
-        filterAttribute
-      ),
-    retry: 1,
+  const { mutateAsync: updateParkingAreaAsync, isPending } = useMutation({
+    mutationKey: ["/update-parking-area-status"],
+    mutationFn: updateParkingAreaStatusAPI,
   });
+
+  const { data, isLoading, isError, isSuccess, error, refetch, isRefetching } =
+    useQuery({
+      queryKey: [
+        "/areas",
+        pagination.pageSize,
+        pagination.pageIndex,
+        debounceSearchText,
+        filterAttribute,
+      ],
+      queryFn: () =>
+        getListParkingArea(
+          pagination.pageSize,
+          pagination.pageIndex + 1,
+          debounceSearchText,
+          filterAttribute
+        ),
+      retry: 1,
+    });
+
+  const handleOpenIsActiveOrDeactiveDialog = (
+    parkingId: string,
+    isActive: boolean
+  ) => {
+    setOpenConfirmDialog(true);
+    setIsActivateOrDeactivate(isActive);
+    setRowId(parkingId);
+  };
+
+  const handleUpdateDialogClose = () => {
+    setOpenUpdateDialog(false);
+    setUpdateValue(undefined);
+  };
+
+  const handleOpenAddDialog = () => {
+    setOpenAddDialog((prev) => !prev);
+  };
+
+  const handleOpenUpdateDialog = (value: ParkingAreas) => {
+    setUpdateValue(value);
+    setOpenUpdateDialog(true);
+  };
+
+  const handleCloseAddParkingAreaDialog = () => {
+    setOpenAddDialog(false);
+    refetch();
+  };
+
+  const handleCloseDialog = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const handleParkingAreaStatusChange = async (data: {
+    isActive: boolean;
+    parkingId: string;
+  }) => {
+    try {
+      await updateParkingAreaAsync(data, {
+        onSuccess: (res) => {
+          toast.success("Change status successfully");
+          refetch();
+        },
+      });
+    } catch (error) {}
+  };
 
   const tableRows = useMemo(() => {
     const parkingAreas = data?.data.data;
@@ -68,7 +138,12 @@ export default function ParkingAreaTable() {
     }
 
     return parkingAreas.map((area: ParkingAreas) => (
-      <TableRow key={area.id}>
+      <TableRow
+        hover={true}
+        className='cursor-pointer'
+        key={area.id}
+        onClick={() => handleOpenUpdateDialog(area)}
+      >
         <TableCell>{area.name}</TableCell>
         <TableCell>{area.description}</TableCell>
         <TableCell>{area.maxCapacity}</TableCell>
@@ -84,12 +159,38 @@ export default function ParkingAreaTable() {
         <TableCell>
           {new Date(area.createDate).toLocaleDateString("vi-VN")}
         </TableCell>
-        <TableCell>{area.createBy}</TableCell>
-        <TableCell>{area.lastModifyBy}</TableCell>
+        <TableCell>{area.createBy === "" ? "System" : area.createBy}</TableCell>
         <TableCell>
-          {new Date(area.lastModifyDate).toLocaleDateString("vi-VN")
-            ? area.lastModifyDate == null
-            : 0}
+          {(() => {
+            switch (area.statusParkingArea) {
+              case "ACTIVE":
+                return (
+                  <ActionButton
+                    variant='danger'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenIsActiveOrDeactiveDialog(area.id, false);
+                    }}
+                  >
+                    Deactivate
+                  </ActionButton>
+                );
+              case "INACTIVE":
+                return (
+                  <ActionButton
+                    variant='primary'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenIsActiveOrDeactiveDialog(area.id, true);
+                    }}
+                  >
+                    Activate
+                  </ActionButton>
+                );
+              default:
+                return <></>;
+            }
+          })()}
         </TableCell>
       </TableRow>
     ));
@@ -97,6 +198,22 @@ export default function ParkingAreaTable() {
 
   return (
     <>
+      <AlertDialog
+        open={openConfirmDialog}
+        onCancel={handleCloseDialog}
+        onOpenChange={handleCloseDialog}
+        title={
+          isActivateOrDeactivate
+            ? "Re-activate this table ?"
+            : "Deactivate this table ?"
+        }
+        onConfirm={() => {
+          handleParkingAreaStatusChange({
+            isActive: isActivateOrDeactivate,
+            parkingId: rowId,
+          });
+        }}
+      />
       <div className='flex flex-col gap-5'>
         <SearchContainer>
           <SearchField
@@ -110,7 +227,28 @@ export default function ParkingAreaTable() {
           />
         </SearchContainer>
       </div>
-      {isLoading && <Loading />}
+      <ActionArea>
+        <Button variant='outlined' onClick={handleOpenAddDialog}>
+          <AddIcon /> New Parking Area
+        </Button>
+      </ActionArea>
+      <AddParkingAreaDialog
+        open={openAddDialog}
+        onOpenChange={handleCloseAddParkingAreaDialog}
+        onClose={() => {
+          setOpenAddDialog(false);
+          refetch();
+        }}
+      />
+      {updateValue && (
+        <UpdateParkingAreaDialog
+          open={openUpdateDialog}
+          onClose={handleUpdateDialogClose}
+          value={updateValue}
+          onOpenChange={handleUpdateDialogClose}
+        />
+      )}
+      {(isLoading || isRefetching) && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
         (data.data.totalRecord === 0 ? (
@@ -128,8 +266,4 @@ export default function ParkingAreaTable() {
         ))}
     </>
   );
-}
-
-function setFilterAttribute(arg0: string) {
-  throw new Error("Function not implemented.");
 }

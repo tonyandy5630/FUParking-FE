@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 
 export type FormOptions = {
   name: string;
-  value: string;
+  value: string | number;
 };
 
 interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
@@ -28,7 +28,7 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
               control={control}
               name={name}
               render={({ field }) => {
-                const { value, ref, ...rest } = field;
+                const { value, ...rest } = field;
                 return (
                   <FormControl
                     fullWidth
@@ -38,8 +38,8 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
                     <TextField
                       select
                       size='small'
-                      label={label}
                       defaultValue={props.defaultValue ?? ""}
+                      label={label}
                       {...rest}
                     >
                       {options.map((item, index) => (
