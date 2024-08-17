@@ -7,6 +7,4 @@ export const ParkingAreaTableHeaders = [
   "Status",
   "Created Date",
   "Create By",
-  "Last Modify By",
-  "Last Modify Date",
 ];

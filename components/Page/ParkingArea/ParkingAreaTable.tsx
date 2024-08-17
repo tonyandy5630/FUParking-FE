@@ -10,13 +10,16 @@ import { getListParkingArea } from "@/api/parkingArea";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchContainer from "@/components/Common/SearchContainer";
 import Chip from "@/components/Chip";
-import { useDebounce } from "use-debounce";
-import { DEBOUNCE_DELAY } from "@/constant/debounce";
 import usePagination from "@/hook/usePagination";
 import Table from "@/components/Table";
 import { ParkingAreaTableHeaders } from "./table-headers";
 import dynamic from "next/dynamic";
 import useSearchDebounce from "@/hook/useSearchDebouce";
+import ActionArea from "@/components/ActionArea";
+import { Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import AddParkingAreaDialog from "./AddParkingArea";
+import wrapText from "@/utils/text";
 
 type FilterOption = {
   display: string;
@@ -33,6 +36,7 @@ export default function ParkingAreaTable() {
   } = usePagination();
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
+  const [openAddDialog, setOpenDialog] = useState(false);
   const filterOptions: FilterOption[] = [{ display: "Name", value: "name" }];
 
   const [filterAttribute, setFilterAttribute] =
@@ -60,6 +64,10 @@ export default function ParkingAreaTable() {
       ),
     retry: 1,
   });
+  const handleOpenAddDialog = () => {
+    refetch();
+    setOpenDialog((prev) => !prev);
+  };
 
   const tableRows = useMemo(() => {
     const parkingAreas = data?.data.data;
@@ -110,6 +118,15 @@ export default function ParkingAreaTable() {
           />
         </SearchContainer>
       </div>
+      <ActionArea>
+        <Button variant='outlined' onClick={handleOpenAddDialog}>
+          <AddIcon /> New Parking Area
+        </Button>
+      </ActionArea>
+      <AddParkingAreaDialog
+        open={openAddDialog}
+        onOpenChange={handleOpenAddDialog}
+      />
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&

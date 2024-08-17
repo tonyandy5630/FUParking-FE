@@ -16,4 +16,8 @@ export const PRIORITY_EXISTED = "This priority of vehicle type is exist";
 
 export const MODE_LIMIT_MESSAGE = "Mode goes from 1 -> 5";
 
-export const BLOCK_LIMIT_MESSAGE = "Block goes from 0 -> 60";
+export const BLOCK_LIMIT_MESSAGE = "Block is to long";
+
+export const OBJECT_EXISTED_MESSAGE = "Object is existed";
+
+export const PARKING_NAME_TAKEN_MESSAGE = "Parking Area Name taken";

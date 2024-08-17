@@ -5,7 +5,7 @@ const MIN_MODE = 1;
 const MAX_MODE = 5;
 
 const MIN_BLOCK = 0;
-const MAX_BLOCK = 60;
+const MAX_BLOCK = 9999;
 
 export const getParkingAreaRules = (getValues?: UseFormGetValues<any>) => ({
   mode: {

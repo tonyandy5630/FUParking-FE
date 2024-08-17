@@ -12,6 +12,8 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   endAdornment?: string;
   error?: string;
+  multiline?: boolean;
+  minRow?: number;
 }
 
 const FormInput = forwardRef<HTMLInputElement, Props>(
@@ -24,6 +26,8 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
       error,
       placeholder,
       endAdornment,
+      multiline,
+      minRow,
       ...props
     },
     ref
@@ -44,6 +48,8 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
                 type={type}
                 id={name}
                 label={label}
+                multiline={multiline}
+                minRows={multiline ? minRow : undefined}
                 name={name}
                 autoFocus={props.autoFocus}
                 placeholder={placeholder}
