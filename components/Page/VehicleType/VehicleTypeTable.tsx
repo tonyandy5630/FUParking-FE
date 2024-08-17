@@ -2,14 +2,13 @@
 import { getListVehicleTypeAPI } from "@/api/vehicleType";
 import { VehicleTypeProps } from "@/types/vehicleType.type";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 import SearchField from "@/components/Common/searchField";
 import SelectFilter from "@/components/Common/selectFilter";
 import {
   Button,
   TableContainer,
-  Table,
   TableHead,
   TableRow,
   TableCell,
@@ -20,54 +19,81 @@ import CreateVehicleType from "./CreateVehicleType";
 import EditVehicleType from "./EditVehicleType";
 import DeleteVehicleType from "./DeleteVehicleType";
 import SearchContainer from "@/components/Common/SearchContainer";
+import usePagination from "@/hook/usePagination";
+import useSearchDebounce from "@/hook/useSearchDebouce";
+import Table from "@/components/Table";
+import VehicleTableHeaders from "../Vehicle/table-headers";
+const keys = ["Name", "Description", "Created Date"];
 
 export default function VehicleTypeTable() {
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const keys = ["Name", "Description", "Created Date"];
   const [disable, setDisable] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const {
+    goToFirstPage,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    pagination,
+  } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
+
   const [filterAttribute, setFilterAttribute] =
     useState<keyof VehicleTypeProps>("name");
   const filterOptions = [{ display: "Name", value: "name" }];
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
+
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof VehicleTypeProps);
+    goToFirstPage();
   };
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
     queryKey: [
       "/vehicle-types",
-      rowsPerPage,
-      page,
-      searchTerm,
+      pagination.pageSize,
+      pagination.pageIndex,
+      debounceSearchText,
       filterAttribute,
     ],
     queryFn: () =>
       getListVehicleTypeAPI(
-        rowsPerPage,
-        page,
-        searchTerm,
+        pagination.pageSize,
+        pagination.pageIndex + 1,
+        debounceSearchText,
         filterAttribute.toString()
       ),
     retry: 1,
   });
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
+  const tableRows = useMemo(() => {
+    const vehicleTypes = data?.data.data;
+    if (!vehicleTypes || vehicleTypes.length === 0) {
+      return [];
+    }
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
+    return vehicleTypes.map((vehicleType: VehicleTypeProps) => (
+      <TableRow key={vehicleType.id}>
+        <TableCell>{vehicleType.name}</TableCell>
+        <TableCell>{vehicleType.description ?? "Nan"}</TableCell>
+        <TableCell>
+          {new Date(vehicleType.createdDate).toLocaleDateString("en-GB")}
+        </TableCell>
+        <TableCell>
+          <div className='flex flex-row space-x-2'>
+            <EditVehicleType
+              id={vehicleType.id}
+              refetch={refetch}
+              setIsPending={setDisable}
+              disable={disable}
+            />
+            <DeleteVehicleType
+              id={vehicleType.id}
+              refetch={refetch}
+              setIsPending={setDisable}
+              disable={disable}
+            />
+          </div>
+        </TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
 
   return (
     <div className='flex flex-col gap-5'>
@@ -77,7 +103,10 @@ export default function VehicleTypeTable() {
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
       </SearchContainer>
       <div className='flex flex-row gap-3 items-center justify-center w-full'>
         <Button
@@ -97,63 +126,15 @@ export default function VehicleTypeTable() {
       {isLoading && <Loading />}
       {isError && <p>Error: {error.message}</p>}
       {isSuccess && (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {keys.map((key) => (
-                  <TableCell
-                    key={key}
-                    className='text-left text-sm font-medium text-slate-600'
-                  >
-                    {key}
-                  </TableCell>
-                ))}
-                <TableCell className='text-left text-sm font-medium text-slate-600'>
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data?.data.data?.map((vehicleType: VehicleTypeProps) => (
-                <TableRow key={vehicleType.id}>
-                  <TableCell>{vehicleType.name}</TableCell>
-                  <TableCell>{vehicleType.description ?? "Nan"}</TableCell>
-                  <TableCell>
-                    {new Date(vehicleType.createdDate).toLocaleDateString(
-                      "en-GB"
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className='flex flex-row space-x-2'>
-                      <EditVehicleType
-                        id={vehicleType.id}
-                        refetch={refetch}
-                        setIsPending={setDisable}
-                        disable={disable}
-                      />
-                      <DeleteVehicleType
-                        id={vehicleType.id}
-                        refetch={refetch}
-                        setIsPending={setDisable}
-                        disable={disable}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component='div'
-            count={data?.data.totalRecord || -1}
-            page={page - 1}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </TableContainer>
+        <Table
+          onPageChange={handlePageChange}
+          onPageSizeChange={handleChangeRowsPerPage}
+          pagination={pagination}
+          tableHeads={VehicleTableHeaders}
+          tableRows={tableRows}
+          isLoading={isLoading}
+          totalRecord={data.data.totalRecord}
+        />
       )}
     </div>
   );

@@ -16,6 +16,7 @@ import SearchContainer from "@/components/Common/SearchContainer";
 import { UserTableHeaders } from "./table-headers";
 import Chip from "@/components/Chip";
 import { useDebounce } from "use-debounce";
+import useSearchDebounce from "@/hook/useSearchDebouce";
 
 type FilterOption = {
   display: string;
@@ -29,16 +30,20 @@ const filterOptions: FilterOption[] = [
 ];
 
 export default function UserTable() {
-  const [inputValue, setInputValue] = useState("");
-  const debounceSearchText = useDebounce<string>(inputValue, 750);
-
-  const { pagination, handleChangeRowsPerPage, handlePageChange } =
-    usePagination();
+  const {
+    pagination,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    goToFirstPage,
+  } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
 
   const [filterAttribute, setFilterAttribute] = useState("");
 
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof User);
+    goToFirstPage();
   };
 
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
@@ -53,7 +58,7 @@ export default function UserTable() {
       getListUser(
         pagination.pageSize,
         pagination.pageIndex,
-        debounceSearchText[0],
+        debounceSearchText,
         filterAttribute
       ),
     retry: 1,
@@ -83,7 +88,10 @@ export default function UserTable() {
   return (
     <>
       <SearchContainer>
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}

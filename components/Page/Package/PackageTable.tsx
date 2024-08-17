@@ -3,16 +3,9 @@
 import { getListPackage } from "@/api/package";
 import { Packages } from "@/types/package.type";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
-import {
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  CardProps,
-  TablePagination,
-} from "@mui/material";
+import { useMemo, useState } from "react";
+const TableRow = dynamic(() => import("@mui/material/TableRow"));
+const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
 import Loading from "../LoadingPage/Loading";
@@ -23,6 +16,7 @@ import usePagination from "@/hook/usePagination";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import Table from "@/components/Table";
 import { PackageTableHeaders } from "./table-headers";
+import dynamic from "next/dynamic";
 
 type FilterOption = {
   display: string;
