@@ -13,14 +13,11 @@ const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import Button from "@mui/material/Button";
 import Loading from "../LoadingPage/Loading";
 import { toast } from "react-toastify";
-import AddCustomer from "./addCustomer";
 import dynamic from "next/dynamic";
 import SearchContainer from "@/components/Common/SearchContainer";
 import PageTitle from "@/components/PageTitle";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import ActionButton from "@/components/ActionButton";
-import { useDebounce } from "use-debounce";
-import { DEBOUNCE_DELAY } from "@/constant/debounce";
 import usePagination from "@/hook/usePagination";
 import Table from "@/components/Table";
 import { CustomerTableHeaders } from "./table-headers";
@@ -212,12 +209,8 @@ export default function Customer() {
         />
       </SearchContainer>
       <div className='flex flex-row gap-3 items-center justify-start w-full py-2'>
-        <AddCustomer
-          disabled={changeStatusCustomerMutation.isPending}
-          refetch={refetch}
-        />
         <Button
-          variant='contained'
+          variant='outlined'
           color='primary'
           onClick={() => refetch()}
           disabled={changeStatusCustomerMutation.isPending}
