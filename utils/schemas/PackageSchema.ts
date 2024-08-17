@@ -30,4 +30,5 @@ export const UpdatePackageSchema = object({
 });
 
 export type PackageSchemaType = InferType<typeof PackageSchema>;
+export type UpdatePackageSchemaType = InferType<typeof UpdatePackageSchema>;
 export default PackageSchema;

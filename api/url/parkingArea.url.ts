@@ -17,3 +17,5 @@ export const UPDATE_PARKING_AREA_API_URL = (areaId: string) =>
 
 export const DEACTIVATE_PARKING_AREA_API_URL = (areaId: string) =>
   `${baseURL}/area/${areaId}`;
+
+export const ADD_PARKING_AREA_API_URL = `${baseURL}/areas`;
