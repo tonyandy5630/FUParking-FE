@@ -1,79 +1,146 @@
 "use client";
-import {
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-} from "@mui/material";
+import Button from "@mui/material/Button";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+import dynamic from "next/dynamic";
 import { CardProps } from "@/types/card.type";
 import { useQuery } from "@tanstack/react-query";
 import { listCardAPI } from "@/api/card";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
-import EditCard from "./EditCard";
-import DeleteCard from "./DeleteCard";
-import AddCard from "./AddCard";
-import MissCard from "./MissCard";
-import ActiveAndDeactiveCard from "./ActiveAndDeactiveCard";
+const EditCard = dynamic(() => import("./EditCard"));
+const DeleteCard = dynamic(() => import("./DeleteCard"));
+const AddCard = dynamic(() => import("./AddCard"));
+const MissCard = dynamic(() => import("./MissCard"));
+const ActiveAndDeactiveCard = dynamic(() => import("./ActiveAndDeactiveCard"));
 import SearchContainer from "@/components/Common/SearchContainer";
 import Chip from "@/components/Chip";
+import Table from "@/components/Table";
+import usePagination from "@/hook/usePagination";
+import { CardTableHeaders } from "./table-headers";
+import { useDebounce } from "use-debounce";
+import { DEBOUNCE_DELAY } from "@/constant/debounce";
+
+const filterOptions = [
+  { display: "Card Number", value: "cardNumber" },
+  { display: "Plate Number", value: "plateNumber" },
+];
 
 export default function CardTable() {
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const keys = [
-    "Card Number",
-    "Plate Number",
-    "Created Date",
-    "Status",
-    "Plate Number Session",
-  ];
   const [disable, setDisable] = useState(false);
-  const [inputValue, setInputValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [debounceSearchText] = useDebounce(searchTerm, DEBOUNCE_DELAY);
+  const {
+    pagination,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    setPagination,
+  } = usePagination();
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CardProps>("cardNumber");
-  const filterOptions = [
-    { display: "Card Number", value: "cardNumber" },
-    { display: "Plate Number", value: "plateNumber" },
-  ];
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
+
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof CardProps);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
-    queryKey: ["/cards", rowsPerPage, page, searchTerm, filterAttribute],
+    queryKey: [
+      "/cards",
+      pagination.pageSize,
+      pagination.pageIndex,
+      debounceSearchText,
+      filterAttribute,
+    ],
     queryFn: () =>
-      listCardAPI(rowsPerPage, page, searchTerm, filterAttribute.toString()),
+      listCardAPI(
+        pagination.pageSize,
+        pagination.pageIndex + 1,
+        debounceSearchText,
+        filterAttribute.toString()
+      ),
     retry: 1,
   });
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
+  const handleSearchTextChange = (value: string) => {
+    setSearchTerm(value);
+  };
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
+  const tableRows = useMemo(() => {
+    const cards = data?.data.data;
+    if (!cards || cards.length === 0) {
+      return [];
+    }
+
+    return cards.map((card: CardProps) => (
+      <TableRow key={card.id}>
+        <TableCell>{card.cardNumber}</TableCell>
+        <TableCell>{card.plateNumber}</TableCell>
+        <TableCell>
+          {new Date(card.createdDate).toLocaleDateString("en-GB")}
+        </TableCell>
+        <TableCell>
+          <Chip
+            variant={
+              card.status === "ACTIVE"
+                ? "success"
+                : card.status === "MISSING"
+                ? "warning"
+                : "error"
+            }
+          >
+            {card.status}
+          </Chip>
+        </TableCell>
+        <TableCell>{card.plateNumberSession}</TableCell>
+        <TableCell>
+          <div className='flex flex-row space-x-2'>
+            <EditCard
+              value={card.plateNumber}
+              id={card.id}
+              refetch={refetch}
+              setIsPending={setDisable}
+              disable={disable}
+            />
+            <DeleteCard
+              id={card.id}
+              refetch={refetch}
+              setIsPending={setDisable}
+              disable={disable}
+            />
+            {card.status !== "MISSING" ? (
+              <>
+                <MissCard
+                  id={card.id}
+                  refetch={refetch}
+                  setIsPending={setDisable}
+                  disable={disable}
+                />
+              </>
+            ) : (
+              <></>
+            )}
+            <ActiveAndDeactiveCard
+              id={card.id}
+              isActive={card.status === "ACTIVE"}
+              refetch={refetch}
+              setIsPending={setDisable}
+              disable={disable}
+            />
+          </div>
+        </TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
 
   return (
     <div className='flex flex-col gap-5'>
       <SearchContainer>
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+        <SearchField
+          inputValue={searchTerm}
+          setInputValue={handleSearchTextChange}
+        />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
@@ -98,95 +165,15 @@ export default function CardTable() {
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess && (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {keys.map((key) => (
-                  <TableCell
-                    key={key}
-                    className='text-left text-sm font-medium text-slate-600'
-                  >
-                    {key}
-                  </TableCell>
-                ))}
-                <TableCell className='text-left text-sm font-medium text-slate-600'>
-                  Action
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data?.data.data?.map((card: CardProps) => (
-                <TableRow key={card.id}>
-                  <TableCell>{card.cardNumber}</TableCell>
-                  <TableCell>{card.plateNumber}</TableCell>
-                  <TableCell>
-                    {new Date(card.createdDate).toLocaleDateString("en-GB")}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      variant={
-                        card.status === "ACTIVE"
-                          ? "success"
-                          : card.status === "MISSING"
-                          ? "warning"
-                          : "error"
-                      }
-                    >
-                      {card.status}
-                    </Chip>
-                  </TableCell>
-                  <TableCell>{card.plateNumberSession}</TableCell>
-                  <TableCell>
-                    <div className='flex flex-row space-x-2'>
-                      <EditCard
-                        value={card.plateNumber}
-                        id={card.id}
-                        refetch={refetch}
-                        setIsPending={setDisable}
-                        disable={disable}
-                      />
-                      <DeleteCard
-                        id={card.id}
-                        refetch={refetch}
-                        setIsPending={setDisable}
-                        disable={disable}
-                      />
-                      {card.status !== "MISSING" ? (
-                        <>
-                          <MissCard
-                            id={card.id}
-                            refetch={refetch}
-                            setIsPending={setDisable}
-                            disable={disable}
-                          />
-                        </>
-                      ) : (
-                        <></>
-                      )}
-                      <ActiveAndDeactiveCard
-                        id={card.id}
-                        isActive={card.status === "ACTIVE"}
-                        refetch={refetch}
-                        setIsPending={setDisable}
-                        disable={disable}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component='div'
-            count={data?.data.totalRecord || -1}
-            page={page - 1}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </TableContainer>
+        <Table
+          onPageChange={handlePageChange}
+          onPageSizeChange={handleChangeRowsPerPage}
+          pagination={pagination}
+          tableHeads={CardTableHeaders}
+          tableRows={tableRows}
+          isLoading={isLoading}
+          totalRecord={data.data.totalRecord}
+        />
       )}
     </div>
   );

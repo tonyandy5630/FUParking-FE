@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import SelectFilter from "../../Common/selectFilter";
 import SearchField from "../../Common/searchField";
 import { CustomerWithFillerProps } from "@/types/customer.type";
