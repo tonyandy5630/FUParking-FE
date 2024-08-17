@@ -15,6 +15,7 @@ import { useDebounce } from "use-debounce";
 import { FeedbackTableHeaders } from "./table-headers";
 import wrapText from "@/utils/text";
 import { getAllParkingAreaAPI } from "@/api/parkingArea";
+import useSearchDebounce from "@/hook/useSearchDebouce";
 
 // const FILTER: listFilter[] = [
 //   {
@@ -25,8 +26,6 @@ import { getAllParkingAreaAPI } from "@/api/parkingArea";
 
 const ALL_PARKING_AREA = "ALL PARKING AREA";
 export default function FeedbackPage() {
-  const [searchText, setSearchText] = useState("");
-  const [debounceSearchText] = useDebounce(searchText, DEBOUNCE_DELAY);
   const [filter, setFilter] = useState("");
   const [parkingArea, setParkingArea] = useState("");
   const {
@@ -34,7 +33,10 @@ export default function FeedbackPage() {
     setPagination,
     handlePageChange,
     handleChangeRowsPerPage,
+    goToFirstPage,
   } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
 
   const { data: parkingAreasData, isLoading: parkingAreaLoading } = useQuery({
     queryKey: ["/feedback-select-parking-areas"],
@@ -122,7 +124,7 @@ export default function FeedbackPage() {
       <SearchContainer>
         <SearchField
           inputValue={searchText}
-          setInputValue={setSearchText}
+          setInputValue={handleSearchTextChange}
           placeholder='Search Customer Name'
         />
         <SelectFilter
