@@ -15,6 +15,7 @@ import useSearchDebounce from "@/hook/useSearchDebouce";
 import Table from "@/components/Table";
 import { GateTableHeaders } from "./table.headers";
 import dynamic from "next/dynamic";
+import SearchContainer from "@/components/Common/SearchContainer";
 
 type FilterOption = {
   display: string;
@@ -89,17 +90,17 @@ export default function GateTable() {
   return (
     <>
       <div className='flex flex-col gap-5'>
-        <div className='flex flex-row gap-3 justify-center'>
+        <SearchContainer>
+          <SearchField
+            inputValue={searchText}
+            setInputValue={handleSearchTextChange}
+          />
           <SelectFilter
             filterAttribute={filterAttribute}
             setFilterAttribute={handleFilterAttributeChange}
             listFilter={filterOptions}
           />
-          <SearchField
-            inputValue={searchText}
-            setInputValue={handleSearchTextChange}
-          />
-        </div>
+        </SearchContainer>
       </div>
       <div className='flex flex-row gap-3 items-center justify-center w-full'></div>
       {isLoading && <Loading />}
