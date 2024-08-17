@@ -19,7 +19,8 @@ const ParkingAreaSchema = object({
     .required(REQUIRED_MESSAGE),
   maxCapacity: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
-    .min(maxCapacity.min.value, maxCapacity.min.message),
+    .min(maxCapacity.min.value, maxCapacity.min.message)
+    .required(REQUIRED_MESSAGE),
 });
 
 export type ParkingAreaSchemaType = InferType<typeof ParkingAreaSchema>;

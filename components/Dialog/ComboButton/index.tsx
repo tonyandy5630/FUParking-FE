@@ -45,7 +45,10 @@ export default function ComboFormButton({
       open: true,
       title: "Cancel",
       content: "Click OK will reset and cancel the form",
-      onConfirm: onClose,
+      onConfirm: () => {
+        onReset();
+        onClose();
+      },
     }));
   };
 

@@ -13,9 +13,11 @@ export const GET_LIST_PARKINGAREA_API_URL = (
 export const GET_ALL_PARKING_AREA_API_URL = `${baseURL}/areas`;
 
 export const UPDATE_PARKING_AREA_API_URL = (areaId: string) =>
-  `${baseURL}/area/${areaId}`;
+  `${baseURL}/areas/${areaId}`;
 
 export const DEACTIVATE_PARKING_AREA_API_URL = (areaId: string) =>
   `${baseURL}/area/${areaId}`;
 
 export const ADD_PARKING_AREA_API_URL = `${baseURL}/areas`;
+
+export const UPDATE_PARKING_AREA_STATUS_API_URL = `${baseURL}/areas/status`;

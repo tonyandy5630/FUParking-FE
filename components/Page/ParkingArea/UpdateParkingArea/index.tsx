@@ -10,19 +10,16 @@ import ParkingAreaSchema, {
   ParkingAreaSchemaType,
 } from "@/utils/schemas/parkingAreaSchema";
 import { useMutation } from "@tanstack/react-query";
-import { addParkingAreaAPI, updateParkingAreaAPI } from "@/api/parkingArea";
+import { updateParkingAreaAPI } from "@/api/parkingArea";
 import { toast } from "react-toastify";
 import FormInput from "@/components/Form/Input";
 import Grid from "@mui/material/Unstable_Grid2";
 import FormSelect, { FormOptions } from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
-import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
 import { ParkingAreas } from "@/types/parkingArea.type";
 
 interface Props extends DialogProps {
-  /**
-   * true is Add, false is Update
-   */
+  value: ParkingAreas;
 }
 
 const MODE_OPTIONS: FormOptions[] = [
@@ -44,7 +41,12 @@ const MODE_OPTIONS: FormOptions[] = [
   },
 ];
 
-function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
+function UpdateParkingAreaDialog({
+  open,
+  onOpenChange,
+  onClose,
+  value,
+}: Props) {
   const methods = useForm({
     resolver: yupResolver(ParkingAreaSchema),
   });
@@ -53,40 +55,40 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
     formState: { errors },
     reset,
     handleSubmit,
-    setError,
+    getValues,
   } = methods;
-  const { mutateAsync: addParkingAreaAsync, isPending } = useMutation({
-    mutationKey: ["/add-parking-area"],
-    mutationFn: addParkingAreaAPI,
+
+  const {
+    mutateAsync: updateParkingAreaAsync,
+    isPending: isPendingUpdateParkingArea,
+  } = useMutation({
+    mutationKey: ["/update-parking-area"],
+    mutationFn: updateParkingAreaAPI,
   });
 
   const handleClose = () => {
     onOpenChange();
   };
 
-  const handleAddParkingArea = async (data: ParkingAreaSchemaType) => {
+  const handleUpdateParkingArea = async (data: ParkingAreaSchemaType) => {
     try {
-      await addParkingAreaAsync(data, {
+      const updateData = {
+        data,
+        id: value.id,
+      };
+      await updateParkingAreaAsync(updateData, {
         onSuccess: (res) => {
-          toast.success("Add Parking Area Successfully");
-          reset();
+          toast.success("Update Successfully");
         },
       });
-    } catch (error: any) {
-      if (error.response.data.message === OBJECT_EXISTED_MESSAGE) {
-        setError("name", {
-          type: "validate",
-          message: "Parking Area Name taken",
-        });
-      }
-    }
+    } catch (error) {}
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth='xs'>
-      <DialogTitle>Create New Parking Area</DialogTitle>
+      <DialogTitle>{"Update Parking Area: " + value?.name}</DialogTitle>
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(handleAddParkingArea)}>
+        <form onSubmit={handleSubmit(handleUpdateParkingArea)}>
           <DialogContent className='min-w-fit'>
             <Grid container spacing={2}>
               <Grid xs={12}>
@@ -96,6 +98,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
                     autoFocus={true}
                     label='Parking Area Name'
                     placeholder='Enter parking area name'
+                    defaultValue={value?.name}
                   />
                 </div>
               </Grid>
@@ -106,6 +109,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
                   label='Description'
                   minRow={3}
                   placeholder='Enter Description'
+                  defaultValue={value?.description}
                 />
               </Grid>
               <Grid xs={6}>
@@ -115,6 +119,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
                     type='number'
                     label='Estimate Maximum Capacity'
                     placeholder='Enter Maximum Capacity'
+                    defaultValue={value?.maxCapacity}
                   />
                 </div>
               </Grid>
@@ -125,6 +130,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
                     label='Mode'
                     options={MODE_OPTIONS}
                     error={errors.mode?.message}
+                    defaultValue={value?.mode}
                   />
                 </div>
               </Grid>
@@ -136,6 +142,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
                     label='Block'
                     placeholder='Enter Block'
                     endAdornment='Minutes'
+                    defaultValue={value?.block}
                   />
                 </div>
               </Grid>
@@ -143,8 +150,8 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
                 <ComboFormButton
                   onClose={handleClose}
                   onReset={reset}
-                  submitLabel={"Create"}
-                  isLoading={isPending}
+                  submitLabel='Update'
+                  isLoading={isPendingUpdateParkingArea}
                 />
               </DialogActions>
             </Grid>
@@ -155,4 +162,4 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
   );
 }
 
-export default AddParkingAreaDialog;
+export default UpdateParkingAreaDialog;
