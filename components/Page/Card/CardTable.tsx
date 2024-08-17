@@ -22,6 +22,7 @@ import AddCard from "./AddCard";
 import MissCard from "./MissCard";
 import ActiveAndDeactiveCard from "./ActiveAndDeactiveCard";
 import SearchContainer from "@/components/Common/SearchContainer";
+import Chip from "@/components/Chip";
 
 export default function CardTable() {
   const [page, setPage] = useState(1);
@@ -122,7 +123,19 @@ export default function CardTable() {
                   <TableCell>
                     {new Date(card.createdDate).toLocaleDateString("en-GB")}
                   </TableCell>
-                  <TableCell>{card.status}</TableCell>
+                  <TableCell>
+                    <Chip
+                      variant={
+                        card.status === "ACTIVE"
+                          ? "success"
+                          : card.status === "MISSING"
+                          ? "warning"
+                          : "error"
+                      }
+                    >
+                      {card.status}
+                    </Chip>
+                  </TableCell>
                   <TableCell>{card.plateNumberSession}</TableCell>
                   <TableCell>
                     <div className='flex flex-row space-x-2'>

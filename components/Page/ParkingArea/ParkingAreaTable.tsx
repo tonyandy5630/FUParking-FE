@@ -17,6 +17,7 @@ import { ParkingAreas } from "@/types/parkingArea.type";
 import { getListParkingArea } from "@/api/parkingArea";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchContainer from "@/components/Common/SearchContainer";
+import Chip from "@/components/Chip";
 
 type FilterOption = {
   display: string;
@@ -113,7 +114,17 @@ export default function ParkingAreaTable() {
                     <TableCell>{area.maxCapacity}</TableCell>
                     <TableCell>{area.block}</TableCell>
                     <TableCell>{area.mode}</TableCell>
-                    <TableCell>{area.statusParkingArea}</TableCell>
+                    <TableCell>
+                      <Chip
+                        variant={
+                          area.statusParkingArea === "ACTIVE"
+                            ? "success"
+                            : "error"
+                        }
+                      >
+                        {area.statusParkingArea}
+                      </Chip>
+                    </TableCell>
                     <TableCell>
                       {new Date(area.createDate).toLocaleDateString("vi-VN")}
                     </TableCell>

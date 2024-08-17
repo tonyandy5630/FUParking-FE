@@ -19,6 +19,7 @@ import SearchField from "@/components/Common/searchField";
 import Loading from "../LoadingPage/Loading";
 import { formatPrice } from "@/utils/price";
 import SearchContainer from "@/components/Common/SearchContainer";
+import Chip from "@/components/Chip";
 
 type FilterOption = {
   display: string;
@@ -125,7 +126,15 @@ export default function PackageTable() {
                         : `${packs.expPackage} day`}
                     </TableCell>
                     <TableCell>{formatPrice(parseInt(packs.price))}</TableCell>
-                    <TableCell>{packs.packageStatus}</TableCell>
+                    <TableCell>
+                      <Chip
+                        variant={
+                          packs.packageStatus === "ACTIVE" ? "success" : "error"
+                        }
+                      >
+                        {packs.packageStatus}
+                      </Chip>
+                    </TableCell>
                     <TableCell>
                       {new Date(packs.createDate).toLocaleDateString("vi-VN")}
                     </TableCell>

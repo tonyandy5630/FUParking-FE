@@ -273,7 +273,13 @@ export default function VehiclePage() {
         </TableCell>
         <TableCell>
           <Chip
-            variant={item.statusVehicle === "ACTIVE" ? "success" : "warning"}
+            variant={
+              item.statusVehicle === "ACTIVE"
+                ? "success"
+                : item.statusVehicle === "PENDING"
+                ? "warning"
+                : "error"
+            }
           >
             {item.statusVehicle}
           </Chip>
