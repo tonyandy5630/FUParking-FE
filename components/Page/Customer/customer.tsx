@@ -24,6 +24,7 @@ import { DEBOUNCE_DELAY } from "@/constant/debounce";
 import usePagination from "@/hook/usePagination";
 import Table from "@/components/Table";
 import { CustomerTableHeaders } from "./table-headers";
+import useSearchDebounce from "@/hook/useSearchDebouce";
 
 const filterOptions = [
   { display: "Name", value: "fullName" },
@@ -33,8 +34,6 @@ const filterOptions = [
 ];
 
 export default function Customer() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debounceSearchText] = useDebounce(searchTerm, DEBOUNCE_DELAY);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = Active , false = Deactive
   const {
@@ -42,7 +41,10 @@ export default function Customer() {
     handleChangeRowsPerPage,
     handlePageChange,
     setPagination,
+    goToFirstPage,
   } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
   const [rowId, setRowId] = useState("");
 
   const [filterAttribute, setFilterAttribute] =
@@ -73,11 +75,6 @@ export default function Customer() {
 
   const handleCloseDialog = () => {
     setOpenConfirmDialog(false);
-  };
-
-  const handleSearchTextChange = (value: string) => {
-    setSearchTerm(value);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
   const changeStatusCustomerMutation = useMutation({
@@ -184,6 +181,7 @@ export default function Customer() {
 
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof CustomerWithFillerProps);
+    goToFirstPage();
   };
 
   return (
@@ -209,7 +207,7 @@ export default function Customer() {
           listFilter={filterOptions}
         />
         <SearchField
-          inputValue={searchTerm}
+          inputValue={searchText}
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>

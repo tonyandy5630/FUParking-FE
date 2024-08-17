@@ -20,8 +20,7 @@ import Chip from "@/components/Chip";
 import Table from "@/components/Table";
 import usePagination from "@/hook/usePagination";
 import { CardTableHeaders } from "./table-headers";
-import { useDebounce } from "use-debounce";
-import { DEBOUNCE_DELAY } from "@/constant/debounce";
+import useSearchDebounce from "@/hook/useSearchDebouce";
 
 const filterOptions = [
   { display: "Card Number", value: "cardNumber" },
@@ -30,14 +29,15 @@ const filterOptions = [
 
 export default function CardTable() {
   const [disable, setDisable] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debounceSearchText] = useDebounce(searchTerm, DEBOUNCE_DELAY);
   const {
     pagination,
     handleChangeRowsPerPage,
     handlePageChange,
     setPagination,
+    goToFirstPage,
   } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CardProps>("cardNumber");
 
@@ -62,11 +62,6 @@ export default function CardTable() {
       ),
     retry: 1,
   });
-
-  const handleSearchTextChange = (value: string) => {
-    setSearchTerm(value);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  };
 
   const tableRows = useMemo(() => {
     const cards = data?.data.data;
@@ -139,7 +134,7 @@ export default function CardTable() {
     <div className='flex flex-col gap-5'>
       <SearchContainer>
         <SearchField
-          inputValue={searchTerm}
+          inputValue={searchText}
           setInputValue={handleSearchTextChange}
         />
         <SelectFilter
