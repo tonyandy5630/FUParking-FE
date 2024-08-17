@@ -37,8 +37,12 @@ export default function Customer() {
   const [debounceSearchText] = useDebounce(searchTerm, DEBOUNCE_DELAY);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = Active , false = Deactive
-  const { pagination, handleChangeRowsPerPage, handlePageChange } =
-    usePagination();
+  const {
+    pagination,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    setPagination,
+  } = usePagination();
   const [rowId, setRowId] = useState("");
 
   const [filterAttribute, setFilterAttribute] =
@@ -73,6 +77,7 @@ export default function Customer() {
 
   const handleSearchTextChange = (value: string) => {
     setSearchTerm(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
   const changeStatusCustomerMutation = useMutation({

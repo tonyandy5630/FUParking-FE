@@ -65,6 +65,7 @@ export default function CardTable() {
 
   const handleSearchTextChange = (value: string) => {
     setSearchTerm(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
   const tableRows = useMemo(() => {

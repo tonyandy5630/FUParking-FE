@@ -1,23 +1,22 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import SearchField from "@/components/Common/searchField";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  CardProps,
-  TablePagination,
-} from "@mui/material";
+const TableRow = dynamic(() => import("@mui/material/TableRow"));
+const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import { ParkingAreas } from "@/types/parkingArea.type";
 import { getListParkingArea } from "@/api/parkingArea";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchContainer from "@/components/Common/SearchContainer";
 import Chip from "@/components/Chip";
+import { useDebounce } from "use-debounce";
+import { DEBOUNCE_DELAY } from "@/constant/debounce";
+import usePagination from "@/hook/usePagination";
+import Table from "@/components/Table";
+import { ParkingAreaTableHeaders } from "./table-headers";
+import dynamic from "next/dynamic";
+import useSearchDebounce from "@/hook/useSearchDebouce";
 
 type FilterOption = {
   display: string;
@@ -25,59 +24,85 @@ type FilterOption = {
 };
 
 export default function ParkingAreaTable() {
-  const [inputValue, setInputValue] = useState("");
+  const {
+    handleChangeRowsPerPage,
+    handlePageChange,
+    pagination,
+    setPagination,
+    goToFirstPage,
+  } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
   const filterOptions: FilterOption[] = [{ display: "Name", value: "name" }];
-  const headTables = [
-    "Name",
-    "Description",
-    "Max capacity",
-    "Block",
-    "Mode",
-    "Status",
-    "Created Date",
-    "Create By",
-    "Last Modify By",
-    "Last Modify Date",
-  ];
+
   const [filterAttribute, setFilterAttribute] =
     useState<keyof ParkingAreas>("name");
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
-
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof ParkingAreas);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchTerm, setSearchTerm] = useState("");
+
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
-    queryKey: ["/areas", rowsPerPage, page, inputValue, filterAttribute],
+    queryKey: [
+      "/areas",
+      pagination.pageSize,
+      pagination.pageIndex,
+      debounceSearchText,
+      filterAttribute,
+    ],
     queryFn: () =>
-      getListParkingArea(rowsPerPage, page, inputValue, filterAttribute),
+      getListParkingArea(
+        pagination.pageSize,
+        pagination.pageIndex + 1,
+        debounceSearchText,
+        filterAttribute
+      ),
     retry: 1,
   });
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
+  const tableRows = useMemo(() => {
+    const parkingAreas = data?.data.data;
+    if (!parkingAreas || parkingAreas.length === 0) {
+      return [];
+    }
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
+    return parkingAreas.map((area: ParkingAreas) => (
+      <TableRow key={area.id}>
+        <TableCell>{area.name}</TableCell>
+        <TableCell>{area.description}</TableCell>
+        <TableCell>{area.maxCapacity}</TableCell>
+        <TableCell>{area.block}</TableCell>
+        <TableCell>{area.mode}</TableCell>
+        <TableCell>
+          <Chip
+            variant={area.statusParkingArea === "ACTIVE" ? "success" : "error"}
+          >
+            {area.statusParkingArea}
+          </Chip>
+        </TableCell>
+        <TableCell>
+          {new Date(area.createDate).toLocaleDateString("vi-VN")}
+        </TableCell>
+        <TableCell>{area.createBy}</TableCell>
+        <TableCell>{area.lastModifyBy}</TableCell>
+        <TableCell>
+          {new Date(area.lastModifyDate).toLocaleDateString("vi-VN")
+            ? area.lastModifyDate == null
+            : 0}
+        </TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
 
   return (
     <>
       <div className='flex flex-col gap-5'>
         <SearchContainer>
-          <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+          <SearchField
+            inputValue={searchText}
+            setInputValue={handleSearchTextChange}
+          />
           <SelectFilter
             filterAttribute={filterAttribute}
             setFilterAttribute={handleFilterAttributeChange}
@@ -85,70 +110,21 @@ export default function ParkingAreaTable() {
           />
         </SearchContainer>
       </div>
-      <div className='flex flex-row gap-3 items-center justify-center w-full'></div>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
         (data.data.totalRecord === 0 ? (
           <p>There is no data to show.</p>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {headTables.map((headTable) => (
-                    <TableCell
-                      key={headTable}
-                      className='text-left text-sm font-medium text-slate-600'
-                    >
-                      {headTable}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data?.data.data?.map((area: ParkingAreas) => (
-                  <TableRow key={area.id}>
-                    <TableCell>{area.name}</TableCell>
-                    <TableCell>{area.description}</TableCell>
-                    <TableCell>{area.maxCapacity}</TableCell>
-                    <TableCell>{area.block}</TableCell>
-                    <TableCell>{area.mode}</TableCell>
-                    <TableCell>
-                      <Chip
-                        variant={
-                          area.statusParkingArea === "ACTIVE"
-                            ? "success"
-                            : "error"
-                        }
-                      >
-                        {area.statusParkingArea}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(area.createDate).toLocaleDateString("vi-VN")}
-                    </TableCell>
-                    <TableCell>{area.createBy}</TableCell>
-                    <TableCell>{area.lastModifyBy}</TableCell>
-                    <TableCell>
-                      {new Date(area.lastModifyDate).toLocaleDateString("vi-VN")
-                        ? area.lastModifyDate == null
-                        : 0}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component='div'
-              count={data?.data.totalRecord || -1}
-              page={page - 1}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
+          <Table
+            onPageChange={handlePageChange}
+            onPageSizeChange={handleChangeRowsPerPage}
+            pagination={pagination}
+            tableHeads={ParkingAreaTableHeaders}
+            tableRows={tableRows}
+            isLoading={isLoading}
+            totalRecord={data.data.totalRecord}
+          />
         ))}
     </>
   );
