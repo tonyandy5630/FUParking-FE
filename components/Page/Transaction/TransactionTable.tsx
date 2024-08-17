@@ -3,19 +3,18 @@ import { listTransactionAPI } from "@/api/transaction";
 import SearchField from "@/components/Common/searchField";
 import SelectFilter from "@/components/Common/selectFilter";
 import { useQuery } from "@tanstack/react-query";
-import { lazy, useEffect, useState } from "react";
+import { lazy, useMemo, useState } from "react";
 const Loading = lazy(() => import("../LoadingPage/Loading"));
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TablePagination,
-} from "@mui/material";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
 import { TransactionWithFillerProps } from "@/types/transaction.type";
 import SearchContainer from "@/components/Common/SearchContainer";
+import usePagination from "@/hook/usePagination";
+import { useDebounce } from "use-debounce";
+import { DEBOUNCE_DELAY } from "@/constant/debounce";
+import Table from "@/components/Table";
+import { TransactionTableHeaders } from "./table-headers";
+import Chip from "@/components/Chip";
 
 type FilterOption = {
   display: string;
@@ -24,6 +23,13 @@ type FilterOption = {
 
 export default function TransactionTable() {
   const [inputValue, setInputValue] = useState("");
+  const [debounceSearchText] = useDebounce(inputValue, DEBOUNCE_DELAY);
+  const {
+    handleChangeRowsPerPage,
+    handlePageChange,
+    pagination,
+    setPagination,
+  } = usePagination();
   const filterOptions: FilterOption[] = [
     { display: "Email", value: "email" },
     { display: "Package Name", value: "packageName" },
@@ -31,46 +37,62 @@ export default function TransactionTable() {
   const [filterAttribute, setFilterAttribute] =
     useState<keyof TransactionWithFillerProps>("email");
 
-  const headTables = [
-    "Email",
-    "Wallet Type",
-    "Payment Method",
-    "Package Name",
-    "Amount",
-    "Description",
-    "Status",
-    "Created Date",
-  ];
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
-
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof TransactionWithFillerProps);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
-    queryKey: ["/transactions", rowsPerPage, page, inputValue, filterAttribute],
+    queryKey: [
+      "/transactions",
+      pagination.pageSize,
+      pagination.pageIndex,
+      debounceSearchText,
+      filterAttribute,
+    ],
     queryFn: () =>
-      listTransactionAPI(rowsPerPage, page, inputValue, filterAttribute),
+      listTransactionAPI(
+        pagination.pageSize,
+        pagination.pageIndex + 1,
+        debounceSearchText,
+        filterAttribute
+      ),
     retry: 1,
   });
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
+  const handleSearchTextChange = (value: string) => {
+    setInputValue(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
+  const tableRows = useMemo(() => {
+    const transactions = data?.data.data;
+    if (!transactions || transactions.length === 0) {
+      return [];
+    }
+
+    return transactions.map((transaction: TransactionWithFillerProps) => (
+      <TableRow key={transaction.id}>
+        <TableCell>{transaction.email}</TableCell>
+        <TableCell>{transaction.walletType}</TableCell>
+        <TableCell>{transaction.paymentMethod}</TableCell>
+        <TableCell>{transaction.packageName}</TableCell>
+        <TableCell>{transaction.amount}</TableCell>
+        <TableCell>{transaction.transactionDescription}</TableCell>
+        <TableCell>
+          <Chip
+            variant={
+              transaction.transactionStatus === "SUCCEED" ? "success" : "error"
+            }
+          >
+            {transaction.transactionStatus}
+          </Chip>
+        </TableCell>
+        <TableCell>
+          {new Date(transaction.createdDate).toLocaleDateString("en-GB")}
+        </TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
 
   return (
     <>
@@ -80,62 +102,26 @@ export default function TransactionTable() {
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+        <SearchField
+          inputValue={inputValue}
+          setInputValue={handleSearchTextChange}
+        />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-center w-full'></div>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
         (data.data.totalRecord === 0 ? (
           <p>There is no data to show.</p>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {headTables.map((headTable) => (
-                    <TableCell
-                      key={headTable}
-                      className='text-left text-sm font-medium text-slate-600'
-                    >
-                      {headTable}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data?.data.data?.map(
-                  (transaction: TransactionWithFillerProps) => (
-                    <TableRow key={transaction.id}>
-                      <TableCell>{transaction.email}</TableCell>
-                      <TableCell>{transaction.walletType}</TableCell>
-                      <TableCell>{transaction.paymentMethod}</TableCell>
-                      <TableCell>{transaction.packageName}</TableCell>
-                      <TableCell>{transaction.amount}</TableCell>
-                      <TableCell>
-                        {transaction.transactionDescription}
-                      </TableCell>
-                      <TableCell>{transaction.transactionStatus}</TableCell>
-                      <TableCell>
-                        {new Date(transaction.createdDate).toLocaleDateString(
-                          "en-GB"
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  )
-                )}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component='div'
-              count={data?.data.totalRecord || -1}
-              page={page - 1}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
+          <Table
+            onPageChange={handlePageChange}
+            onPageSizeChange={handleChangeRowsPerPage}
+            pagination={pagination}
+            tableHeads={TransactionTableHeaders}
+            tableRows={tableRows}
+            isLoading={isLoading}
+            totalRecord={data.data.totalRecord}
+          />
         ))}
     </>
   );
