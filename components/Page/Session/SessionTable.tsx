@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 import { SessionProps } from "@/types/session.type";
 import SessionDetail from "./SessionDetail";
+import Chip from "@/components/Chip";
+import SearchContainer from "@/components/Common/SearchContainer";
 
 export default function SessionTable() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
@@ -115,19 +117,19 @@ export default function SessionTable() {
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-row gap-3 justify-center">
+    <div className='flex flex-col gap-5'>
+      <SearchContainer>
+        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
-      </div>
-      <div className="flex flex-row gap-3 items-center justify-center w-full">
+      </SearchContainer>
+      <div className='flex flex-row gap-3 items-center justify-end w-full'>
         <Button
-          variant="contained"
-          color="primary"
+          variant='outlined'
+          color='primary'
           onClick={() => refetch()}
           disabled={false}
         >
@@ -144,7 +146,7 @@ export default function SessionTable() {
                 {keys.map((key) => (
                   <TableCell
                     key={key}
-                    className="text-left text-sm font-medium text-slate-600"
+                    className='text-left text-sm font-medium text-slate-600'
                   >
                     {key}
                   </TableCell>
@@ -155,6 +157,8 @@ export default function SessionTable() {
               {data?.data.data?.map((session: SessionProps) => (
                 <TableRow
                   key={session.id}
+                  hover={true}
+                  className='cursor-pointer'
                   onClick={() => handleClickOpen(session.id)}
                 >
                   <TableCell>{session.cardNumber}</TableCell>
@@ -166,7 +170,19 @@ export default function SessionTable() {
                   <TableCell>{session.vehicleTypeName}</TableCell>
                   <TableCell>{session.paymentMethodName}</TableCell>
                   <TableCell>{session.customerEmail}</TableCell>
-                  <TableCell>{session.status}</TableCell>
+                  <TableCell>
+                    <Chip
+                      variant={
+                        session.status === "CANCELLED"
+                          ? "error"
+                          : session.status === "CLOSED"
+                          ? "warning"
+                          : "success"
+                      }
+                    >
+                      {session.status}
+                    </Chip>
+                  </TableCell>
                   <TableCell>{session.parkingArea}</TableCell>
                 </TableRow>
               ))}
@@ -180,7 +196,7 @@ export default function SessionTable() {
           </Table>
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
-            component="div"
+            component='div'
             count={data?.data.totalRecord || -1}
             page={page - 1}
             onPageChange={handleChangePage}

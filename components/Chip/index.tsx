@@ -14,12 +14,16 @@ export default function Chip({ children, variant = "success" }: Props) {
             ? "#62a34f"
             : variant === "warning"
             ? "#ed6c02"
+            : variant === "error"
+            ? "white"
             : "black",
         backgroundColor:
           variant === "success"
             ? "#dcfce7"
             : variant === "warning"
             ? "#fef9c3"
+            : variant === "error"
+            ? "#dc2626"
             : "white",
       }}
     >
