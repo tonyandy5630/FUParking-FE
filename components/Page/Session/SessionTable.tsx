@@ -6,7 +6,6 @@ import { CardProps } from "@/types/card.type";
 import {
   Button,
   TableContainer,
-  Table,
   TableHead,
   TableRow,
   TableCell,
@@ -14,34 +13,32 @@ import {
   TablePagination,
 } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 import { SessionProps } from "@/types/session.type";
 import SessionDetail from "./SessionDetail";
 import Chip from "@/components/Chip";
 import SearchContainer from "@/components/Common/SearchContainer";
+import usePagination from "@/hook/usePagination";
+import useSearchDebounce from "@/hook/useSearchDebouce";
+import Table from "@/components/Table";
+import { SessionTableHeaders } from "./table-headers";
+import { formatDateTimeUS } from "@/utils/date";
 
 export default function SessionTable() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
     null
   );
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const keys = [
-    "Card Number",
-    "Plate Number",
-    "Time In",
-    "Time Out",
-    "Vehicle Type",
-    "Payment Method",
-    "Customer Email",
-    "Status",
-    "Parking Location",
-  ];
+  const {
+    goToFirstPage,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    pagination,
+  } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
+
   const [isOpen, setIsOpen] = useState(false);
-  const [disable, setDisable] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CardProps>("cardNumber");
   const filterOptions = [
@@ -49,44 +46,27 @@ export default function SessionTable() {
     { display: "Plate Number", value: "plateNumber" },
     { display: "Email", value: "customeremail" },
   ];
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
+
   const startDate = "";
   const endDate = "";
-  const formatDateTimeVN = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    }).format(date);
-  };
 
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
     queryKey: [
       "/session",
-      rowsPerPage,
-      page,
+      pagination.pageSize,
+      pagination.pageIndex,
       startDate,
       endDate,
-      searchTerm,
+      debounceSearchText,
       filterAttribute,
     ],
     queryFn: () =>
       listSessionAPI(
-        rowsPerPage,
-        page,
+        pagination.pageSize,
+        pagination.pageIndex + 1,
         startDate,
         endDate,
-        searchTerm,
+        debounceSearchText,
         filterAttribute.toString()
       ),
     retry: 1,
@@ -94,17 +74,8 @@ export default function SessionTable() {
 
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof CardProps);
+    goToFirstPage();
   };
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
 
   const handleClickOpen = (sessionId: string) => {
     setSelectedSessionId(sessionId);
@@ -116,10 +87,53 @@ export default function SessionTable() {
     setSelectedSessionId(null);
   };
 
+  const tableRows = useMemo(() => {
+    const sessions = data?.data.data;
+    if (!sessions || sessions.length === 0) {
+      return [];
+    }
+
+    return sessions.map((session: SessionProps) => (
+      <TableRow
+        key={session.id}
+        hover={true}
+        className='cursor-pointer'
+        onClick={() => handleClickOpen(session.id)}
+      >
+        <TableCell>{session.cardNumber}</TableCell>
+        <TableCell>{session.plateNumber}</TableCell>
+        <TableCell>{formatDateTimeUS(session.timeIn)}</TableCell>
+        <TableCell>
+          {session.timeOut ? formatDateTimeUS(session.timeOut) : ""}
+        </TableCell>
+        <TableCell>{session.vehicleTypeName}</TableCell>
+        <TableCell>{session.paymentMethodName}</TableCell>
+        <TableCell>{session.customerEmail}</TableCell>
+        <TableCell>
+          <Chip
+            variant={
+              session.status === "CANCELLED"
+                ? "error"
+                : session.status === "CLOSED"
+                ? "warning"
+                : "success"
+            }
+          >
+            {session.status}
+          </Chip>
+        </TableCell>
+        <TableCell>{session.parkingArea}</TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
+
   return (
     <div className='flex flex-col gap-5'>
       <SearchContainer>
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
@@ -139,71 +153,22 @@ export default function SessionTable() {
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess && (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {keys.map((key) => (
-                  <TableCell
-                    key={key}
-                    className='text-left text-sm font-medium text-slate-600'
-                  >
-                    {key}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data?.data.data?.map((session: SessionProps) => (
-                <TableRow
-                  key={session.id}
-                  hover={true}
-                  className='cursor-pointer'
-                  onClick={() => handleClickOpen(session.id)}
-                >
-                  <TableCell>{session.cardNumber}</TableCell>
-                  <TableCell>{session.plateNumber}</TableCell>
-                  <TableCell>{formatDateTimeVN(session.timeIn)}</TableCell>
-                  <TableCell>
-                    {session.timeOut ? formatDateTimeVN(session.timeOut) : ""}
-                  </TableCell>
-                  <TableCell>{session.vehicleTypeName}</TableCell>
-                  <TableCell>{session.paymentMethodName}</TableCell>
-                  <TableCell>{session.customerEmail}</TableCell>
-                  <TableCell>
-                    <Chip
-                      variant={
-                        session.status === "CANCELLED"
-                          ? "error"
-                          : session.status === "CLOSED"
-                          ? "warning"
-                          : "success"
-                      }
-                    >
-                      {session.status}
-                    </Chip>
-                  </TableCell>
-                  <TableCell>{session.parkingArea}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-
-            <SessionDetail
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-              sessionId={selectedSessionId}
-            />
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component='div'
-            count={data?.data.totalRecord || -1}
-            page={page - 1}
-            onPageChange={handleChangePage}
-            rowsPerPage={rowsPerPage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+        <>
+          <Table
+            onPageChange={handlePageChange}
+            onPageSizeChange={handleChangeRowsPerPage}
+            pagination={pagination}
+            tableHeads={SessionTableHeaders}
+            tableRows={tableRows}
+            isLoading={isLoading}
+            totalRecord={data.data.totalRecord}
           />
-        </TableContainer>
+          <SessionDetail
+            isOpen={isOpen}
+            setIsOpen={setIsOpen}
+            sessionId={selectedSessionId}
+          />
+        </>
       )}
     </div>
   );

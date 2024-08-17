@@ -3,86 +3,108 @@
 import { getListPackage } from "@/api/package";
 import { Packages } from "@/types/package.type";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  CardProps,
-  TablePagination,
-} from "@mui/material";
+import { useMemo, useState } from "react";
+const TableRow = dynamic(() => import("@mui/material/TableRow"));
+const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
 import Loading from "../LoadingPage/Loading";
 import { formatPrice } from "@/utils/price";
 import SearchContainer from "@/components/Common/SearchContainer";
 import Chip from "@/components/Chip";
+import usePagination from "@/hook/usePagination";
+import useSearchDebounce from "@/hook/useSearchDebouce";
+import Table from "@/components/Table";
+import { PackageTableHeaders } from "./table-headers";
+import dynamic from "next/dynamic";
 
 type FilterOption = {
   display: string;
   value: string;
 };
 
+const filterOptions: FilterOption[] = [
+  { display: "Name", value: "name" },
+  { display: "Coin Amount", value: "coinAmount" },
+  { display: "Extra Coin", value: "extraCoin" },
+  { display: "Exp Package", value: "expPackage" },
+  { display: "Status", value: "packageStatus" },
+];
+
 export default function PackageTable() {
-  const [inputValue, setInputValue] = useState("");
-  const filterOptions: FilterOption[] = [
-    { display: "Name", value: "name" },
-    { display: "Coin Amount", value: "coinAmount" },
-    { display: "Extra Coin", value: "extraCoin" },
-    { display: "Exp Package", value: "expPackage" },
-    { display: "Status", value: "packageStatus" },
-  ];
-  const headTables = [
-    "No.",
-    "Name",
-    "Coin Amount",
-    "Extra Coin",
-    "Exp Package",
-    "Price",
-    "Status",
-    "Created Date",
-  ];
+  const {
+    goToFirstPage,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    pagination,
+  } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
+
   const [filterAttribute, setFilterAttribute] =
     useState<keyof Packages>("name");
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
-
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof Packages);
+    goToFirstPage();
   };
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchTerm, setSearchTerm] = useState("");
+
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
-    queryKey: ["/packages", rowsPerPage, page, inputValue, filterAttribute],
+    queryKey: [
+      "/packages",
+      pagination.pageSize,
+      pagination.pageIndex,
+      debounceSearchText,
+      filterAttribute,
+    ],
     queryFn: () =>
-      getListPackage(rowsPerPage, page, inputValue, filterAttribute),
+      getListPackage(
+        pagination.pageSize,
+        pagination.pageIndex + 1,
+        filterAttribute,
+        debounceSearchText
+      ),
     retry: 1,
   });
+  const tableRows = useMemo(() => {
+    const packages = data?.data.data;
+    if (!packages || packages.length === 0) {
+      return [];
+    }
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
+    return packages.map((packs: Packages, index) => (
+      <TableRow key={packs.id}>
+        <TableCell>{index + 1}</TableCell>
+        <TableCell>{packs.name}</TableCell>
+        <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
+        <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
+        <TableCell>
+          {parseInt(packs.expPackage) > 1
+            ? `${packs.expPackage} days`
+            : `${packs.expPackage} day`}
+        </TableCell>
+        <TableCell>{formatPrice(parseInt(packs.price))}</TableCell>
+        <TableCell>
+          <Chip
+            variant={packs.packageStatus === "ACTIVE" ? "success" : "error"}
+          >
+            {packs.packageStatus}
+          </Chip>
+        </TableCell>
+        <TableCell>
+          {new Date(packs.createDate).toLocaleDateString("vi-VN")}
+        </TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
 
   return (
     <>
       <SearchContainer>
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
@@ -95,63 +117,15 @@ export default function PackageTable() {
         (data.data.totalRecord === 0 ? (
           <p>There is no data to show.</p>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {headTables.map((headTable) => (
-                    <TableCell
-                      key={headTable}
-                      className='text-left text-sm font-medium text-slate-600'
-                    >
-                      {headTable}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data?.data.data?.map((packs: Packages, index) => (
-                  <TableRow key={packs.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{packs.name}</TableCell>
-                    <TableCell>
-                      {formatPrice(parseInt(packs.coinAmount))}
-                    </TableCell>
-                    <TableCell>
-                      {formatPrice(parseInt(packs.extraCoin))}
-                    </TableCell>
-                    <TableCell>
-                      {parseInt(packs.expPackage) > 1
-                        ? `${packs.expPackage} days`
-                        : `${packs.expPackage} day`}
-                    </TableCell>
-                    <TableCell>{formatPrice(parseInt(packs.price))}</TableCell>
-                    <TableCell>
-                      <Chip
-                        variant={
-                          packs.packageStatus === "ACTIVE" ? "success" : "error"
-                        }
-                      >
-                        {packs.packageStatus}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>
-                      {new Date(packs.createDate).toLocaleDateString("vi-VN")}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component='div'
-              count={data?.data.totalRecord || -1}
-              page={page - 1}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
+          <Table
+            onPageChange={handlePageChange}
+            onPageSizeChange={handleChangeRowsPerPage}
+            pagination={pagination}
+            tableHeads={PackageTableHeaders}
+            tableRows={tableRows}
+            isLoading={isLoading}
+            totalRecord={data.data.totalRecord}
+          />
         ))}
     </>
   );

@@ -24,6 +24,7 @@ import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
 import { useRouter } from "next/navigation";
 import ActionButton from "@/components/ActionButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import useSearchDebounce from "@/hook/useSearchDebouce";
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
 
 const FILTER: listFilter[] = [
@@ -38,7 +39,6 @@ const FILTER: listFilter[] = [
 ];
 
 export default function PriceTablePage() {
-  const [searchText, setSearchText] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
   const router = useRouter();
   const [filter, setFilter] = useState("");
@@ -47,9 +47,11 @@ export default function PriceTablePage() {
     handleChangeRowsPerPage,
     handlePageChange,
     setPagination,
+    goToFirstPage,
   } = usePagination();
   const [tableList, setTableList] = useState<PriceTable[]>([]);
-  const [debounceSearchText] = useDebounce(searchText, DEBOUNCE_DELAY);
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = active, false = deactive
   const [rowId, setRowId] = useState("");
@@ -90,7 +92,7 @@ export default function PriceTablePage() {
 
   const handleFilterChange = (value: string) => {
     setFilter(value);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    goToFirstPage();
   };
 
   const updateTableStatusMutation = useMutation({
@@ -199,15 +201,15 @@ export default function PriceTablePage() {
       />
       <PageTitle>Price Page</PageTitle>
       <SearchContainer>
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+          placeholder={"Enter price table name"}
+        />
         <SelectFilter
           filterAttribute={filter}
           setFilterAttribute={handleFilterChange}
           listFilter={FILTER}
-        />
-        <SearchField
-          inputValue={searchText}
-          setInputValue={setSearchText}
-          placeholder={"Enter price table name"}
         />
       </SearchContainer>
       <div className='min-w-full flex justify-start items-center py-2'>

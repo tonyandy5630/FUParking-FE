@@ -14,6 +14,7 @@ export default function usePagination({
   setPagination: Dispatch<SetStateAction<PaginationType>>;
   handlePageChange: (newPage: number) => void;
   handleChangeRowsPerPage: (size: number) => void;
+  goToFirstPage: () => void;
 } {
   const [pagination, setPagination] = useState<PaginationType>({
     pageSize,
@@ -32,10 +33,15 @@ export default function usePagination({
     }));
   };
 
+  const goToFirstPage = () => {
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+  };
+
   return {
     pagination,
     setPagination,
     handlePageChange,
     handleChangeRowsPerPage,
+    goToFirstPage,
   };
 }

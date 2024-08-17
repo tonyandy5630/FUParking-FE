@@ -3,21 +3,19 @@
 import { getGate } from "@/api/gate";
 import { Gates } from "@/types/gate.type";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import {
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  CardProps,
-  TablePagination,
-} from "@mui/material";
+import { useMemo, useState } from "react";
+const TableRow = dynamic(() => import("@mui/material/TableRow"));
+const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
 import Loading from "../LoadingPage/Loading";
 import Chip from "@/components/Chip";
+import usePagination from "@/hook/usePagination";
+import useSearchDebounce from "@/hook/useSearchDebouce";
+import Table from "@/components/Table";
+import { GateTableHeaders } from "./table.headers";
+import dynamic from "next/dynamic";
+import SearchContainer from "@/components/Common/SearchContainer";
 
 type FilterOption = {
   display: string;
@@ -25,7 +23,15 @@ type FilterOption = {
 };
 
 export default function GateTable() {
-  const [inputValue, setInputValue] = useState("");
+  const {
+    goToFirstPage,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    pagination,
+  } = usePagination();
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
+
   const filterOptions: FilterOption[] = [
     { display: "Name", value: "name" },
     { display: "Parking Area", value: "parkingAreaName" },
@@ -33,58 +39,68 @@ export default function GateTable() {
     { display: "Gate Type", value: "gateTypeName" },
     { display: "Status", value: "statusGate" },
   ];
-  const headTables = [
-    "Name",
-    "Parking Area",
-    "Description",
-    "Gate Type",
-    "Status",
-    "Created Date",
-    "Last Modify By",
-  ];
-  const [filterAttribute, setFilterAttribute] = useState<keyof Gates>("name");
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
-  };
+  const [filterAttribute, setFilterAttribute] = useState<keyof Gates>("name");
 
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof Gates);
+    goToFirstPage();
   };
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
-    queryKey: ["/gates", rowsPerPage, page, inputValue, filterAttribute],
-    queryFn: () => getGate(rowsPerPage, page, inputValue, filterAttribute),
+    queryKey: [
+      "/gates",
+      pagination.pageSize,
+      pagination.pageIndex,
+      debounceSearchText,
+      filterAttribute,
+    ],
+    queryFn: () =>
+      getGate(
+        pagination.pageSize,
+        pagination.pageIndex + 1,
+        debounceSearchText,
+        filterAttribute
+      ),
     retry: 1,
   });
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
+  const tableRows = useMemo(() => {
+    const gates = data?.data.data;
+    if (!gates || gates.length === 0) {
+      return [];
+    }
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
+    return gates.map((gate: Gates) => (
+      <TableRow key={gate.id}>
+        <TableCell>{gate.name}</TableCell>
+        <TableCell>{gate.parkingAreaName}</TableCell>
+        <TableCell>{gate.description}</TableCell>
+        <TableCell>{gate.gateTypeName}</TableCell>
+        <TableCell>
+          <Chip variant={gate.statusGate === "ACTIVE" ? "success" : "error"}>
+            {gate.statusGate}
+          </Chip>
+        </TableCell>
+        <TableCell>{gate.createdBy}</TableCell>
+        <TableCell>{gate.lastModifyBy}</TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
 
   return (
     <>
       <div className='flex flex-col gap-5'>
-        <div className='flex flex-row gap-3 justify-center'>
+        <SearchContainer>
+          <SearchField
+            inputValue={searchText}
+            setInputValue={handleSearchTextChange}
+          />
           <SelectFilter
             filterAttribute={filterAttribute}
             setFilterAttribute={handleFilterAttributeChange}
             listFilter={filterOptions}
           />
-          <SearchField inputValue={inputValue} setInputValue={setInputValue} />
-        </div>
+        </SearchContainer>
       </div>
       <div className='flex flex-row gap-3 items-center justify-center w-full'></div>
       {isLoading && <Loading />}
@@ -93,52 +109,15 @@ export default function GateTable() {
         (data.data.totalRecord === 0 ? (
           <p>There is no data to show.</p>
         ) : (
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  {headTables.map((headTable) => (
-                    <TableCell
-                      key={headTable}
-                      className='text-left text-sm font-medium text-slate-600'
-                    >
-                      {headTable}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data?.data.data?.map((gate: Gates) => (
-                  <TableRow key={gate.id}>
-                    <TableCell>{gate.name}</TableCell>
-                    <TableCell>{gate.parkingAreaName}</TableCell>
-                    <TableCell>{gate.description}</TableCell>
-                    <TableCell>{gate.gateTypeName}</TableCell>
-                    <TableCell>
-                      <Chip
-                        variant={
-                          gate.statusGate === "ACTIVE" ? "success" : "error"
-                        }
-                      >
-                        {gate.statusGate}
-                      </Chip>
-                    </TableCell>
-                    <TableCell>{gate.createdBy}</TableCell>
-                    <TableCell>{gate.lastModifyBy}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component='div'
-              count={data?.data.totalRecord || -1}
-              page={page - 1}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </TableContainer>
+          <Table
+            onPageChange={handlePageChange}
+            onPageSizeChange={handleChangeRowsPerPage}
+            pagination={pagination}
+            tableHeads={GateTableHeaders}
+            tableRows={tableRows}
+            isLoading={isLoading}
+            totalRecord={data.data.totalRecord}
+          />
         ))}
     </>
   );

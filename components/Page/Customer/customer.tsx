@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import SelectFilter from "../../Common/selectFilter";
 import SearchField from "../../Common/searchField";
 import { CustomerWithFillerProps } from "@/types/customer.type";
@@ -8,13 +8,8 @@ import {
   changeStatusCustomerAPI,
   getListCustomerWithFillerAPI,
 } from "@/api/customer";
-const TableContainer = dynamic(() => import("@mui/material/TableContainer"));
-const Table = dynamic(() => import("@mui/material/Table"));
-const TableHead = dynamic(() => import("@mui/material/TableHead"));
 const TableRow = dynamic(() => import("@mui/material/TableRow"));
 const TableCell = dynamic(() => import("@mui/material/TableCell"));
-const TableBody = dynamic(() => import("@mui/material/TableBody"));
-const TablePagination = dynamic(() => import("@mui/material/TablePagination"));
 import Button from "@mui/material/Button";
 import Loading from "../LoadingPage/Loading";
 import { toast } from "react-toastify";
@@ -24,25 +19,47 @@ import SearchContainer from "@/components/Common/SearchContainer";
 import PageTitle from "@/components/PageTitle";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import ActionButton from "@/components/ActionButton";
+import { useDebounce } from "use-debounce";
+import { DEBOUNCE_DELAY } from "@/constant/debounce";
+import usePagination from "@/hook/usePagination";
+import Table from "@/components/Table";
+import { CustomerTableHeaders } from "./table-headers";
+
+const filterOptions = [
+  { display: "Name", value: "fullName" },
+  { display: "Email", value: "email" },
+  { display: "Type Customer", value: "customerType" },
+  { display: "Status", value: "statusCustomer" },
+];
 
 export default function Customer() {
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [inputValue, setInputValue] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [debounceSearchText] = useDebounce(searchTerm, DEBOUNCE_DELAY);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = Active , false = Deactive
+  const {
+    pagination,
+    handleChangeRowsPerPage,
+    handlePageChange,
+    setPagination,
+  } = usePagination();
   const [rowId, setRowId] = useState("");
 
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CustomerWithFillerProps>("fullName");
   const { data, isLoading, isSuccess, isError, error, refetch } = useQuery({
-    queryKey: ["/customer", rowsPerPage, page, searchTerm, filterAttribute],
+    queryKey: [
+      "/customer",
+      pagination.pageSize,
+      pagination.pageIndex,
+      debounceSearchText,
+      filterAttribute,
+    ],
     queryFn: () =>
       getListCustomerWithFillerAPI(
-        rowsPerPage,
-        page,
-        searchTerm,
+        pagination.pageSize,
+        pagination.pageIndex + 1,
+        debounceSearchText,
         filterAttribute.toString()
       ),
     retry: 1,
@@ -58,23 +75,9 @@ export default function Customer() {
     setOpenConfirmDialog(false);
   };
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timeoutId);
-    };
-  }, [inputValue]);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage + 1);
-  };
-
-  const handleChangeRowsPerPage = (event: any) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(1);
+  const handleSearchTextChange = (value: string) => {
+    setSearchTerm(value);
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
 
   const changeStatusCustomerMutation = useMutation({
@@ -98,16 +101,91 @@ export default function Customer() {
     }
   };
 
-  const filterOptions = [
-    { display: "Name", value: "fullName" },
-    { display: "Email", value: "email" },
-    { display: "Type Customer", value: "customerType" },
-    { display: "Status", value: "statusCustomer" },
-  ];
+  const tableRows = useMemo(() => {
+    const customers = data?.data.data;
+    if (!customers || customers.length === 0) {
+      return [];
+    }
+
+    return customers.map((row) => (
+      <TableRow key={row.customerId}>
+        <TableCell>{row.fullName}</TableCell>
+        <TableCell>{row.email}</TableCell>
+        <TableCell>
+          {row.customerType === "PAID" ? (
+            <span className='inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center'>
+              Paid
+            </span>
+          ) : row.customerType === "FREE" ? (
+            <span className='inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center'>
+              Free
+            </span>
+          ) : (
+            <span>{row.customerType}</span>
+          )}
+        </TableCell>
+        <TableCell>
+          {row.statusCustomer === "ACTIVE" ? (
+            <span
+              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              style={{
+                color: "#62a34f",
+                backgroundColor: "#dcfce7",
+              }}
+            >
+              Active
+            </span>
+          ) : row.statusCustomer === "INACTIVE" ? (
+            <span
+              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              style={{
+                color: "#fcca46",
+                backgroundColor: "#fef9c3",
+              }}
+            >
+              Inactive
+            </span>
+          ) : (
+            <span>{row.statusCustomer}</span>
+          )}
+        </TableCell>
+        <TableCell>
+          <div className='flex flex-row gap-3'>
+            {(() => {
+              if (row.statusCustomer === "INACTIVE") {
+                return (
+                  <>
+                    <ActionButton
+                      variant='primary'
+                      onClick={() => handleOpenDialog(row.customerId, true)}
+                      disabled={changeStatusCustomerMutation.isPending}
+                    >
+                      Activate
+                    </ActionButton>
+                  </>
+                );
+              } else if (row.statusCustomer === "ACTIVE") {
+                return (
+                  <ActionButton
+                    variant='danger'
+                    onClick={() => handleOpenDialog(row.customerId, false)}
+                    disabled={changeStatusCustomerMutation.isPending}
+                  >
+                    Deactive
+                  </ActionButton>
+                );
+              }
+            })()}
+          </div>
+        </TableCell>
+      </TableRow>
+    ));
+  }, [data?.data.data]);
 
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof CustomerWithFillerProps);
   };
+
   return (
     <>
       <AlertDialog
@@ -130,9 +208,12 @@ export default function Customer() {
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
-        <SearchField inputValue={inputValue} setInputValue={setInputValue} />
+        <SearchField
+          inputValue={searchTerm}
+          setInputValue={handleSearchTextChange}
+        />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-start w-full'>
+      <div className='flex flex-row gap-3 items-center justify-start w-full py-2'>
         <AddCustomer
           disabled={changeStatusCustomerMutation.isPending}
           refetch={refetch}
@@ -153,110 +234,15 @@ export default function Customer() {
           <p>There is no data to show.</p>
         ) : (
           <>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Full Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.data.data?.map((row) => (
-                    <TableRow key={row.customerId}>
-                      <TableCell>{row.fullName}</TableCell>
-                      <TableCell>{row.email}</TableCell>
-                      <TableCell>
-                        {row.customerType === "PAID" ? (
-                          <span className='inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center'>
-                            Paid
-                          </span>
-                        ) : row.customerType === "FREE" ? (
-                          <span className='inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center'>
-                            Free
-                          </span>
-                        ) : (
-                          <span>{row.customerType}</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {row.statusCustomer === "ACTIVE" ? (
-                          <span
-                            className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
-                            style={{
-                              color: "#62a34f",
-                              backgroundColor: "#dcfce7",
-                            }}
-                          >
-                            Active
-                          </span>
-                        ) : row.statusCustomer === "INACTIVE" ? (
-                          <span
-                            className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
-                            style={{
-                              color: "#fcca46",
-                              backgroundColor: "#fef9c3",
-                            }}
-                          >
-                            Inactive
-                          </span>
-                        ) : (
-                          <span>{row.statusCustomer}</span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className='flex flex-row gap-3'>
-                          {(() => {
-                            if (row.statusCustomer === "INACTIVE") {
-                              return (
-                                <>
-                                  <ActionButton
-                                    variant='primary'
-                                    onClick={() =>
-                                      handleOpenDialog(row.customerId, true)
-                                    }
-                                    disabled={
-                                      changeStatusCustomerMutation.isPending
-                                    }
-                                  >
-                                    Activate
-                                  </ActionButton>
-                                </>
-                              );
-                            } else if (row.statusCustomer === "ACTIVE") {
-                              return (
-                                <ActionButton
-                                  variant='danger'
-                                  onClick={() =>
-                                    handleOpenDialog(row.customerId, false)
-                                  }
-                                  disabled={
-                                    changeStatusCustomerMutation.isPending
-                                  }
-                                >
-                                  Deactive
-                                </ActionButton>
-                              );
-                            }
-                          })()}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                count={data.data.totalRecord || -1}
-                page={page - 1}
-                onPageChange={handleChangePage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </TableContainer>
+            <Table
+              onPageChange={handlePageChange}
+              onPageSizeChange={handleChangeRowsPerPage}
+              pagination={pagination}
+              tableHeads={CustomerTableHeaders}
+              tableRows={tableRows}
+              isLoading={isLoading}
+              totalRecord={data.data.totalRecord}
+            />
           </>
         ))}
     </>
