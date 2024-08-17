@@ -92,7 +92,7 @@ export default function EditVehicleDialog({
     <Dialog open={open} maxWidth='xs'>
       <DialogTitle>
         {" "}
-        Update Vehicle With Plate Number : {vehicle.id}
+        Update Vehicle With Plate Number : {vehicle.plateNumber}
       </DialogTitle>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleUpdateVehicle)}>

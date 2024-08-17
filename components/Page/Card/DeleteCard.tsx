@@ -54,7 +54,6 @@ export default function DeleteCard({
         },
       });
     } catch (error) {
-      toast.error("Failed to delete card");
       setIsPending(false);
       refetch();
     }
