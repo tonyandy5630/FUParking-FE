@@ -1,13 +1,11 @@
 import { DialogProps } from "@/types/dialog.type";
-import React, { useMemo, useRef } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useMutation } from "@tanstack/react-query";
-import { addPackageAPI, updatePackageAPI } from "@/api/package";
-import PackageSchema, {
-  PackageSchemaType,
+import { deletePackageAPI, updatePackageAPI } from "@/api/package";
+import {
   UpdatePackageSchema,
   UpdatePackageSchemaType,
 } from "@/utils/schemas/PackageSchema";
@@ -18,12 +16,11 @@ import useHandleDialog from "@/hook/useHandleDialog";
 import Grid from "@mui/material/Unstable_Grid2";
 import FormInput from "@/components/Form/Input";
 import ComboFormButton from "@/components/Dialog/ComboButton";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
-import { Button } from "@mui/material";
-import { expDurationIncrement } from "../PackageTable";
-import incrementValue from "@/utils/increment";
 import { Packages } from "@/types/package.type";
+import DeleteButton from "@/components/DeleteButton";
+import dynamic from "next/dynamic";
 
 interface Props extends DialogProps {
   successCallback: () => void;
@@ -64,10 +61,28 @@ export default function UpdatePackageDialog({
     mutationFn: updatePackageAPI,
   });
 
+  const { mutateAsync: deletePackageAsync, isPending: isPendingDeletePackage } =
+    useMutation({
+      mutationKey: ["/delete-package"],
+      mutationFn: deletePackageAPI,
+    });
+
   const handleConfirmDialog = () => {
     handleCloseConfirmDialog();
     reset();
     if (onClose) onClose();
+  };
+
+  const handleDeletePackage = async () => {
+    try {
+      await deletePackageAsync(value.id, {
+        onSuccess: () => {
+          toast.success("Delete Package Successfully");
+          successCallback();
+          if (onClose) onClose();
+        },
+      });
+    } catch (error) {}
   };
 
   const handleCloseUpdateDialog = () => {
@@ -95,14 +110,16 @@ export default function UpdatePackageDialog({
 
   return (
     <>
-      <AlertDialog
-        open={openConfirmDialog}
-        onCancel={handleCloseConfirmDialog}
-        onConfirm={handleConfirmDialog}
-        title='Confirm cancel Update Package?'
-        content='Click OK will CLOSE and RESET the form'
-        onOpenChange={handleCloseConfirmDialog}
-      />
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          onCancel={handleCloseConfirmDialog}
+          onConfirm={handleConfirmDialog}
+          title='Confirm cancel Update Package?'
+          content='Click OK will CLOSE and RESET the form'
+          onOpenChange={handleCloseConfirmDialog}
+        />
+      )}
       <Dialog open={open} onClose={handleCloseUpdateDialog}>
         <DialogTitle>Update Package</DialogTitle>
         <FormProvider {...methods}>
@@ -119,15 +136,22 @@ export default function UpdatePackageDialog({
                     />
                   </div>
                 </Grid>
+                <Grid xs={12}>
+                  <div className='min-w-full flex justify-between items-center'>
+                    <DeleteButton onDelete={handleDeletePackage}>
+                      Delete
+                    </DeleteButton>
+                    <DialogActions>
+                      <ComboFormButton
+                        submitLabel='Update'
+                        isLoading={isPending}
+                        onClose={handleConfirmDialog}
+                        onReset={reset}
+                      />
+                    </DialogActions>
+                  </div>
+                </Grid>
               </Grid>
-              <DialogActions>
-                <ComboFormButton
-                  submitLabel='Create'
-                  isLoading={isPending}
-                  onClose={handleConfirmDialog}
-                  onReset={reset}
-                />
-              </DialogActions>
             </DialogContent>
           </form>
         </FormProvider>
