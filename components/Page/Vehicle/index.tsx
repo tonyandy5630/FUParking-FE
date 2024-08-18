@@ -371,6 +371,10 @@ export default function VehiclePage() {
           open={openUpdateDialog}
           onOpenChange={handleOpenChangeUpdateDialog}
           vehicle={updateVehicle}
+          onClose={handleOpenChangeUpdateDialog}
+          successCallback={() => {
+            refetch();
+          }}
         />
       )}
 

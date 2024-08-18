@@ -29,7 +29,6 @@ export default function AlertDialog({
     <React.Fragment>
       <Dialog
         open={open}
-        onClose={onOpenChange}
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
       >
