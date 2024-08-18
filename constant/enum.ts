@@ -3,3 +3,5 @@ export class EnumAuthRole {
   static MANAGER = "MANAGER";
   static SUPERVISOR = "SUPERVISOR";
 }
+
+export type Role = "staff" | "manager" | "supervisor";

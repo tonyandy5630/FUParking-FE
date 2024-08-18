@@ -10,7 +10,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   type?: "password" | "text" | "number";
   label?: string;
-  endAdornment?: string;
+  endAdornment?: any;
   error?: string;
   multiline?: boolean;
   minRow?: number;
