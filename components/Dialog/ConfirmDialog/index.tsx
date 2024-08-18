@@ -11,7 +11,7 @@ interface Props extends DialogProps {
   onConfirm: () => void;
   onCancel: () => void;
   title: string;
-  content?: string;
+  content?: any;
 }
 export default function AlertDialog({
   open,

@@ -5,6 +5,7 @@ import {
   GET_LIST_PARKINGAREA_API_URL,
   UPDATE_PARKING_AREA_API_URL,
   UPDATE_PARKING_AREA_STATUS_API_URL,
+  DELETE_PARKING_AREA_API_URL,
 } from "./url/parkingArea.url";
 import { ListParkingArea } from "@/types/parkingArea.type";
 import { UpdatePackageSchemaType } from "@/utils/schemas/PackageSchema";
@@ -33,3 +34,6 @@ export const updateParkingAreaStatusAPI = (data: {
   parkingId: string;
   isActive: boolean;
 }) => http.put(UPDATE_PARKING_AREA_STATUS_API_URL, data);
+
+export const deleteParkingAreaAPI = (id: string) =>
+  http.delete(DELETE_PARKING_AREA_API_URL(id));

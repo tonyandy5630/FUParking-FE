@@ -26,7 +26,12 @@ export default function DeleteButton({ onDelete, children }: Props) {
           onCancel={handleToggleAlertDialog}
           onConfirm={onDelete}
           title='Delete ?'
-          content='Click OK will DELETE this item'
+          content={
+            <div>
+              <p>OK will DELETE this item</p>
+              <strong>This action cannot be revert</strong>
+            </div>
+          }
           onClose={handleToggleAlertDialog}
           onOpenChange={handleToggleAlertDialog}
         />

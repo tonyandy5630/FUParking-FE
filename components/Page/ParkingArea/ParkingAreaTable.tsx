@@ -248,6 +248,9 @@ export default function ParkingAreaTable() {
           onClose={handleUpdateDialogClose}
           value={updateValue}
           onOpenChange={handleUpdateDialogClose}
+          successCallback={() => {
+            refetch();
+          }}
         />
       )}
       {(isLoading || isRefetching) && <Loading />}
