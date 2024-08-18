@@ -20,7 +20,8 @@ const PackageSchema = object({
     .required(REQUIRED_MESSAGE),
   price: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
-    .min(price.min.value, price.min.message),
+    .min(price.min.value, price.min.message)
+    .required(REQUIRED_MESSAGE),
 });
 
 export const UpdatePackageSchema = object({

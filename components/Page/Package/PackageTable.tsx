@@ -21,6 +21,8 @@ import ActionArea from "@/components/ActionArea";
 import { Button } from "@mui/material";
 import useHandleDialog from "@/hook/useHandleDialog";
 import AddPackageDialog from "./AddPackage";
+import { toVNDateString } from "@/utils/date";
+import UpdatePackageDialog from "./UpdatePackage";
 
 type FilterOption = {
   display: string;
@@ -48,6 +50,11 @@ export default function PackageTable() {
     useSearchDebounce(goToFirstPage);
   const { openDialog: openAddDialog, handleToggleDialog: toggleAddDialog } =
     useHandleDialog(false);
+  const {
+    openDialog: openUpdateDialog,
+    handleToggleDialog: toggleUpdateDialog,
+  } = useHandleDialog(false);
+  const [updatePackage, setUpdatePackage] = useState<Packages | undefined>();
 
   const [filterAttribute, setFilterAttribute] =
     useState<keyof Packages>("name");
@@ -75,6 +82,16 @@ export default function PackageTable() {
     retry: 1,
   });
 
+  const handleCloseDialog = () => {
+    toggleUpdateDialog();
+    setUpdatePackage(undefined);
+  };
+
+  const handleUpdateDialogOpen = (value: Packages) => {
+    setUpdatePackage(value);
+    toggleUpdateDialog();
+  };
+
   const tableRows = useMemo(() => {
     const packages = data?.data.data;
     if (!packages || packages.length === 0) {
@@ -82,7 +99,12 @@ export default function PackageTable() {
     }
 
     return packages.map((packs: Packages, index) => (
-      <TableRow key={packs.id}>
+      <TableRow
+        key={packs.id}
+        hover={true}
+        className='cursor-pointer'
+        onClick={() => handleUpdateDialogOpen(packs)}
+      >
         <TableCell>{packs.name}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
@@ -99,9 +121,7 @@ export default function PackageTable() {
             {packs.packageStatus}
           </Chip>
         </TableCell>
-        <TableCell>
-          {new Date(packs.createDate).toLocaleDateString("vi-VN")}
-        </TableCell>
+        <TableCell>{packs.createDate}</TableCell>
       </TableRow>
     ));
   }, [data?.data.data]);
@@ -116,6 +136,17 @@ export default function PackageTable() {
           refetch();
         }}
       />
+      {updatePackage && (
+        <UpdatePackageDialog
+          open={openUpdateDialog}
+          onClose={handleCloseDialog}
+          onOpenChange={toggleUpdateDialog}
+          successCallback={() => {
+            refetch();
+          }}
+          value={updatePackage}
+        />
+      )}
       <SearchContainer>
         <SearchField
           inputValue={searchText}
