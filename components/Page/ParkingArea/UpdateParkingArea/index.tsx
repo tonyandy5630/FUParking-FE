@@ -10,7 +10,7 @@ import ParkingAreaSchema, {
   ParkingAreaSchemaType,
 } from "@/utils/schemas/parkingAreaSchema";
 import { useMutation } from "@tanstack/react-query";
-import { updateParkingAreaAPI } from "@/api/parkingArea";
+import { deleteParkingAreaAPI, updateParkingAreaAPI } from "@/api/parkingArea";
 import { toast } from "react-toastify";
 import FormInput from "@/components/Form/Input";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -19,9 +19,13 @@ import ComboFormButton from "@/components/Dialog/ComboButton";
 import { ParkingAreas } from "@/types/parkingArea.type";
 import { MODES } from "@/utils/mode";
 import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
+import { Delete } from "@mui/icons-material";
+import DialogActionWithDelete from "@/components/Dialog/ActionWithDelete";
+import DeleteButton from "@/components/DeleteButton";
 
 interface Props extends DialogProps {
   value: ParkingAreas;
+  successCallback: () => void;
 }
 
 const MODE_OPTIONS: FormOptions[] = [...MODES];
@@ -31,6 +35,7 @@ function UpdateParkingAreaDialog({
   onOpenChange,
   onClose,
   value,
+  successCallback,
 }: Props) {
   const methods = useForm({
     resolver: yupResolver(ParkingAreaSchema),
@@ -48,6 +53,14 @@ function UpdateParkingAreaDialog({
   } = methods;
 
   const {
+    mutateAsync: deleteParkingAreaAsync,
+    isPending: isPendingDeleteParkingArea,
+  } = useMutation({
+    mutationKey: ["/delete-parking-area"],
+    mutationFn: deleteParkingAreaAPI,
+  });
+
+  const {
     mutateAsync: updateParkingAreaAsync,
     isPending: isPendingUpdateParkingArea,
   } = useMutation({
@@ -59,11 +72,24 @@ function UpdateParkingAreaDialog({
     onOpenChange();
   };
 
+  const handleDeleteParkingArea = async () => {
+    try {
+      await deleteParkingAreaAsync(value.id, {
+        onSuccess: () => {
+          toast.success("Delete Parking Area Successfully");
+          handleClose();
+          successCallback();
+        },
+      });
+    } catch (error) {}
+  };
+
   const handleUpdateParkingArea = async (data: ParkingAreaSchemaType) => {
     try {
       await updateParkingAreaAsync(data, {
         onSuccess: (res) => {
           toast.success("Update Successfully");
+          successCallback();
         },
       });
     } catch (error: any) {
@@ -77,7 +103,7 @@ function UpdateParkingAreaDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='xs'>
+    <Dialog open={open} onClose={onClose}>
       <DialogTitle>{"Update Parking Area: " + value?.name}</DialogTitle>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleUpdateParkingArea)}>
@@ -138,14 +164,21 @@ function UpdateParkingAreaDialog({
                   />
                 </div>
               </Grid>
-              <DialogActions className='flex justify-end min-w-full'>
-                <ComboFormButton
-                  onClose={handleClose}
-                  onReset={reset}
-                  submitLabel='Update'
-                  isLoading={isPendingUpdateParkingArea}
-                />
-              </DialogActions>
+              <Grid xs={12}>
+                <DialogActionWithDelete>
+                  <DeleteButton onDelete={handleDeleteParkingArea}>
+                    Delete
+                  </DeleteButton>
+                  <DialogActions>
+                    <ComboFormButton
+                      onClose={handleClose}
+                      onReset={reset}
+                      submitLabel='Update'
+                      isLoading={isPendingUpdateParkingArea}
+                    />
+                  </DialogActions>
+                </DialogActionWithDelete>
+              </Grid>
             </Grid>
           </DialogContent>
         </form>
