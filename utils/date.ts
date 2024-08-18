@@ -16,7 +16,7 @@ export function getLocalISOString(date: Date): string {
 }
 
 export function toVNDateString(date: string) {
-  if (!Date.parse(date)) {
+  if (!Date.parse(date) && !dayjs(date)) {
     return "NaN";
   }
   return dayjs(date).format("DD/MM/YYYY");

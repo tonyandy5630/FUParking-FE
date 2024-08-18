@@ -63,7 +63,6 @@ export default function VehicleTypeTable() {
       ),
     retry: 1,
   });
-
   const tableRows = useMemo(() => {
     const vehicleTypes = data?.data.data;
     if (!vehicleTypes || vehicleTypes.length === 0) {

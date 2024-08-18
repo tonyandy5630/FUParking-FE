@@ -118,7 +118,7 @@ export default function CreateVehicleType({
           </Button>
           <div className='flex flex-col w-full space-y-5'>
             <h1 className='text-center font-semibold text-2xl'>
-              Create new Customer
+              Create new Vehicle Type
             </h1>
             <FormProvider {...methods}>
               <form
