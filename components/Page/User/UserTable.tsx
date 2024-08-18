@@ -17,11 +17,31 @@ import { UserTableHeaders } from "./table-headers";
 import Chip from "@/components/Chip";
 import { useDebounce } from "use-debounce";
 import useSearchDebounce from "@/hook/useSearchDebouce";
+import { FormOptions } from "@/components/Form/Select";
+import ActionArea from "@/components/ActionArea";
+import { Button } from "@mui/material";
+import useHandleDialog from "@/hook/useHandleDialog";
+import AddUserDialog from "./AddUser";
 
 type FilterOption = {
   display: string;
   value: string;
 };
+
+export const RoleOptions: FormOptions[] = [
+  {
+    name: "Staff",
+    value: "staff",
+  },
+  {
+    name: "Manager",
+    value: "manager",
+  },
+  {
+    name: "Supervisor",
+    value: "supervisor",
+  },
+];
 
 const filterOptions: FilterOption[] = [
   { display: "Name", value: "name" },
@@ -38,6 +58,8 @@ export default function UserTable() {
   } = usePagination();
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
+  const { openDialog: openAddDialog, handleToggleDialog: toggleAddDialog } =
+    useHandleDialog(false);
 
   const [filterAttribute, setFilterAttribute] = useState("");
 
@@ -87,6 +109,16 @@ export default function UserTable() {
   }, [data]);
   return (
     <>
+      {openAddDialog && (
+        <AddUserDialog
+          open={openAddDialog}
+          onOpenChange={toggleAddDialog}
+          successCallback={() => {
+            refetch();
+          }}
+          onClose={toggleAddDialog}
+        />
+      )}
       <SearchContainer>
         <SearchField
           inputValue={searchText}
@@ -98,6 +130,11 @@ export default function UserTable() {
           listFilter={filterOptions}
         />
       </SearchContainer>
+      <ActionArea>
+        <Button variant='outlined' onClick={toggleAddDialog}>
+          New User
+        </Button>
+      </ActionArea>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
