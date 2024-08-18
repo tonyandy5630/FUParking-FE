@@ -1,13 +1,15 @@
 import { getSessionAPI } from "@/api/session";
 import Modal from "@/components/modal/modal";
-import { Button } from "@mui/material";
+const Button = dynamic(() => import("@mui/material/Button"));
 import { useQuery } from "@tanstack/react-query";
-import Image from "next/image";
-import ButtonCheckOut from "./ButtonCheckOut";
-import { use, useEffect, useState } from "react";
-import { getLocalISOString } from "@/utils/date";
+const Image = dynamic(() => import("next/image"));
+const ButtonCheckOut = dynamic(() => import("./ButtonCheckOut"));
+import { useEffect, useState } from "react";
+import toLocaleDate, { getLocalISOString, toVNDateString } from "@/utils/date";
 import Loading from "../LoadingPage/Loading";
 import ButtonCancelSession from "./ButtonCancelSession";
+import dynamic from "next/dynamic";
+import logo from "@/public/Bai_Logo.svg";
 
 export default function SessionDetail({
   isOpen,
@@ -43,7 +45,7 @@ export default function SessionDetail({
   return (
     <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
       {sessionId ? (
-        <div className="pl-5 pr-5 pt-10 pb-10">
+        <div className='pl-5 pr-5 pt-10 pb-10'>
           <Button
             onClick={handleClose}
             sx={{
@@ -67,91 +69,89 @@ export default function SessionDetail({
           {isError && <p>Server Error</p>}
           {isSuccess && (
             <>
-              <div className="p-4 flex flex-row gap-5">
-                <div className="mb-4">
-                  <p className="text-xl font-bold mb-2">Session Detail</p>
+              <div className='p-4 flex flex-row gap-5 min-h-fit'>
+                <div className='mb-4'>
+                  <p className='text-xl font-bold mb-2'>Session Detail</p>
                   <p>
                     <strong>Session ID:</strong> {data?.data.data?.id}
                   </p>
                   <p>
-                    <strong>Session Card:</strong> {data?.data.data?.cardNumber}
+                    <strong>Parking Location:</strong>{" "}
+                    {data?.data.data?.parkingArea}
                   </p>
                   <p>
-                    <strong>Session Mode:</strong> {data?.data.data?.mode}
+                    <strong>Gate In:</strong> {data?.data.data?.gateInName}
                   </p>
                   <p>
-                    <strong>Session Gate Out:</strong>{" "}
-                    {data?.data.data?.gateOutName}
+                    <strong>Gate Out:</strong> {data?.data.data?.gateOutName}
                   </p>
                   <p>
-                    <strong>Session Gate In:</strong>{" "}
-                    {data?.data.data?.gateInName}
-                  </p>
-                  <p>
-                    <strong>Session Plate Number:</strong>{" "}
+                    <strong>Plate Number:</strong>{" "}
                     {data?.data.data?.plateNumber}
                   </p>
                   <p>
-                    <strong>Session Check In Staff:</strong>{" "}
+                    <strong>Check In Staff:</strong>{" "}
                     {data?.data.data?.checkInStaff}
                   </p>
                   <p>
-                    <strong>Session Check Out Staff:</strong>{" "}
+                    <strong>Check Out Staff:</strong>{" "}
                     {data?.data.data?.checkOutStaff}
                   </p>
                   <p>
-                    <strong>Session Time In:</strong> {data?.data.data?.timeIn}
+                    <strong>Time In:</strong>{" "}
+                    {toLocaleDate(data?.data.data?.timeIn ?? "") ?? ""}
                   </p>
                   <p>
-                    <strong>Session Time Out:</strong>{" "}
-                    {data?.data.data?.timeOut ?? "null"}
+                    <strong>Time Out:</strong>{" "}
+                    {toVNDateString(data?.data.data?.timeOut ?? "") ?? "NaN"}
                   </p>
+
                   <p>
-                    <strong>Session Vehicle Type:</strong>{" "}
+                    <strong>Vehicle Type:</strong>{" "}
                     {data?.data.data?.vehicleTypeName}
                   </p>
                   <p>
-                    <strong>Session Payment Method:</strong>{" "}
+                    <strong>Payment Method:</strong>{" "}
                     {data?.data.data?.paymentMethodName}
                   </p>
                   <p>
-                    <strong>Session Customer Email:</strong>{" "}
+                    <strong>Customer Email:</strong>{" "}
                     {data?.data.data?.customerEmail}
                   </p>
                   <p>
-                    <strong>Session Status:</strong> {data?.data.data?.status}
-                  </p>
-                  <p>
-                    <strong>Session Parking Location:</strong>{" "}
-                    {data?.data.data?.parkingArea}
+                    <strong>Status:</strong> {data?.data.data?.status}
                   </p>
                 </div>
-                <div className="flex flex-col gap-5">
+                <div className='flex flex-col gap-5'>
                   <div>
-                    <p className="font-semibold mb-2">Session Image In:</p>
-                    <Image
-                      loader={() => data?.data.data?.imageInUrl as string}
-                      src={data?.data.data?.imageInUrl as string}
-                      alt="session image in"
-                      width={200}
-                      height={200}
-                      className="rounded-lg"
-                    />
+                    <p className='font-semibold mb-2'>Image In:</p>
+                    {data?.data.data?.imageInUrl && (
+                      <Image
+                        loader={() => data?.data.data?.imageInUrl as string}
+                        src={(data?.data.data?.imageInUrl as string) ?? logo}
+                        alt='session image in'
+                        width={200}
+                        height={200}
+                        className='rounded-lg'
+                      />
+                    )}
                   </div>
                   <div>
-                    <p className="font-semibold mb-2">Session Image Out:</p>
-                    <Image
-                      loader={() => data?.data.data?.imageOutUrl as string}
-                      src={data?.data.data?.imageOutUrl as string}
-                      alt="session image out"
-                      width={200}
-                      height={200}
-                      className="rounded-lg"
-                    />
+                    <p className='font-semibold mb-2'>Image Out:</p>
+                    {data?.data.data?.imageOutUrl && (
+                      <Image
+                        loader={() => data?.data.data?.imageOutUrl as string}
+                        src={data?.data.data?.imageOutUrl as string}
+                        alt='session image out'
+                        width={200}
+                        height={200}
+                        className='rounded-lg'
+                      />
+                    )}
                   </div>
                 </div>
               </div>
-              <div className="w-full justify-center items-center flex gap-5">
+              <div className='w-full justify-center items-center flex gap-5'>
                 {statusSession === "PARKED" && (
                   <>
                     <ButtonCheckOut
@@ -173,7 +173,7 @@ export default function SessionDetail({
           )}
         </div>
       ) : (
-        <div className="pl-5 pr-5 pt-10 pb-10">
+        <div className='pl-5 pr-5 pt-10 pb-10'>
           <Button
             onClick={handleClose}
             sx={{

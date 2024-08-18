@@ -21,7 +21,10 @@ import { getAllVehicleTypeAPI } from "@/api/vehicleType";
 import { VehicleTypeProps } from "@/types/vehicleType.type";
 import ExportToCSVButton from "@/components/ExportCSVButton";
 import ActionButton from "@/components/ActionButton";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import Loading from "../LoadingPage/Loading";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"), {
+  loading: () => <Loading />,
+});
 const EditVehicleDialog = dynamic(() => import("./EditVehicleDialog"));
 
 const FILTER: listFilter[] = [
@@ -345,22 +348,24 @@ export default function VehiclePage() {
 
   return (
     <>
-      <AlertDialog
-        open={openConfirmDialog}
-        onOpenChange={handleToggleConfirmBox}
-        title={
-          isActiveOrDeActive
-            ? "Re-Activate this vehicle ?"
-            : "Deactivate this vehicle ?"
-        }
-        onCancel={handleToggleConfirmBox}
-        onConfirm={() => {
-          handleVehicleStatusChange({
-            vehicleId: rowId,
-            isActive: isActiveOrDeActive,
-          });
-        }}
-      />
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          onOpenChange={handleToggleConfirmBox}
+          title={
+            isActiveOrDeActive
+              ? "Re-Activate this vehicle ?"
+              : "Deactivate this vehicle ?"
+          }
+          onCancel={handleToggleConfirmBox}
+          onConfirm={() => {
+            handleVehicleStatusChange({
+              vehicleId: rowId,
+              isActive: isActiveOrDeActive,
+            });
+          }}
+        />
+      )}
       {updateVehicle && (
         <EditVehicleDialog
           open={openUpdateDialog}

@@ -89,37 +89,39 @@ export default function EditVehicleDialog({
   };
 
   return (
-    <Dialog open={open} maxWidth='xs'>
-      <DialogTitle>
-        {" "}
-        Update Vehicle With Plate Number : {vehicle.plateNumber}
-      </DialogTitle>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(handleUpdateVehicle)}>
-          <DialogContent>
-            <Grid container spacing={2}>
-              <Grid xs={12}></Grid>
-              <Grid xs={12}>
-                <FormSelect
-                  name='vehicleTypeId'
-                  label='Vehicle Type'
-                  options={vehicleTypesOptions}
-                />
-              </Grid>
-              <Grid xs={12}>
-                <DialogActions className='flex justify-end min-w-full'>
-                  <ComboFormButton
-                    onClose={handleCloseUpdate}
-                    onReset={() => reset()}
-                    submitLabel='Update'
-                    isLoading={isPending}
+    <>
+      <Dialog open={open} maxWidth='xs'>
+        <DialogTitle>
+          {" "}
+          Update Vehicle With Plate Number : {vehicle.plateNumber}
+        </DialogTitle>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(handleUpdateVehicle)}>
+            <DialogContent>
+              <Grid container spacing={2}>
+                <Grid xs={12}></Grid>
+                <Grid xs={12}>
+                  <FormSelect
+                    name='vehicleTypeId'
+                    label='Vehicle Type'
+                    options={vehicleTypesOptions}
                   />
-                </DialogActions>
+                </Grid>
+                <Grid xs={12}>
+                  <DialogActions className='flex justify-end min-w-full'>
+                    <ComboFormButton
+                      onClose={handleCloseUpdate}
+                      onReset={() => reset()}
+                      submitLabel='Update'
+                      isLoading={isPending}
+                    />
+                  </DialogActions>
+                </Grid>
               </Grid>
-            </Grid>
-          </DialogContent>
-        </form>
-      </FormProvider>
-    </Dialog>
+            </DialogContent>
+          </form>
+        </FormProvider>
+      </Dialog>
+    </>
   );
 }
