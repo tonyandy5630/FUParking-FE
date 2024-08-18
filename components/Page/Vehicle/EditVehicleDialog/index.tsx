@@ -17,16 +17,21 @@ import FormSelect, { FormOptions } from "@/components/Form/Select";
 import { getAllVehicleTypeAPI } from "@/api/vehicleType";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import Grid from "@mui/material/Unstable_Grid2";
-import { DialogContentText } from "@mui/material";
+import useHandleDialog from "@/hook/useHandleDialog";
+import dynamic from "next/dynamic";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 
 interface Props extends DialogProps {
   vehicle: VehicleProps;
+  successCallback: () => void;
 }
 
 export default function EditVehicleDialog({
   open,
   onOpenChange,
   vehicle,
+  onClose,
+  successCallback,
 }: Props) {
   const {
     data: vehicleTypesData,
@@ -37,6 +42,9 @@ export default function EditVehicleDialog({
     queryFn: getAllVehicleTypeAPI,
   });
 
+  const { openDialog: openAlertDialog, handleToggleDialog: toggleAlertDialog } =
+    useHandleDialog(false);
+
   const methods = useForm({
     resolver: yupResolver(UpdateVehicleSchema),
     defaultValues: {
@@ -44,6 +52,10 @@ export default function EditVehicleDialog({
       vehicleTypeId: vehicle.vehicleType,
     },
   });
+
+  const handleCloseEdit = () => {
+    toggleAlertDialog();
+  };
 
   const vehicleTypesOptions = useMemo(() => {
     const vehicleTypes = vehicleTypesData?.data.data;
@@ -77,6 +89,7 @@ export default function EditVehicleDialog({
       await updateMutationAsync(data, {
         onSuccess: (res) => {
           toast.success("Update successfully");
+          successCallback();
         },
       });
     } catch (error) {
@@ -88,38 +101,55 @@ export default function EditVehicleDialog({
     onOpenChange();
   };
 
+  const handleConfirmAlertDialog = () => {
+    toggleAlertDialog();
+    handleCloseEdit();
+    if (onClose) onClose();
+  };
+
   return (
-    <Dialog open={open} maxWidth='xs'>
-      <DialogTitle>
-        {" "}
-        Update Vehicle With Plate Number : {vehicle.plateNumber}
-      </DialogTitle>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(handleUpdateVehicle)}>
-          <DialogContent>
-            <Grid container spacing={2}>
-              <Grid xs={12}></Grid>
-              <Grid xs={12}>
-                <FormSelect
-                  name='vehicleTypeId'
-                  label='Vehicle Type'
-                  options={vehicleTypesOptions}
-                />
-              </Grid>
-              <Grid xs={12}>
-                <DialogActions className='flex justify-end min-w-full'>
-                  <ComboFormButton
-                    onClose={handleCloseUpdate}
-                    onReset={() => reset()}
-                    submitLabel='Update'
-                    isLoading={isPending}
+    <>
+      {openAlertDialog && (
+        <AlertDialog
+          title='Cancel Edit this vehicle session ?'
+          open={openAlertDialog}
+          onCancel={toggleAlertDialog}
+          onConfirm={handleConfirmAlertDialog}
+          onOpenChange={toggleAlertDialog}
+          onClose={handleConfirmAlertDialog}
+        />
+      )}
+      <Dialog open={open} maxWidth='xs' onClose={handleCloseEdit}>
+        <DialogTitle>
+          {" "}
+          Update Vehicle With Plate Number : {vehicle.plateNumber}
+        </DialogTitle>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(handleUpdateVehicle)}>
+            <DialogContent>
+              <Grid container spacing={2}>
+                <Grid xs={12}>
+                  <FormSelect
+                    name='vehicleTypeId'
+                    label='Vehicle Type'
+                    options={vehicleTypesOptions}
                   />
-                </DialogActions>
+                </Grid>
+                <Grid xs={12}>
+                  <DialogActions className='flex justify-end min-w-full'>
+                    <ComboFormButton
+                      onClose={handleCloseUpdate}
+                      onReset={() => reset()}
+                      submitLabel='Update'
+                      isLoading={isPending}
+                    />
+                  </DialogActions>
+                </Grid>
               </Grid>
-            </Grid>
-          </DialogContent>
-        </form>
-      </FormProvider>
-    </Dialog>
+            </DialogContent>
+          </form>
+        </FormProvider>
+      </Dialog>
+    </>
   );
 }

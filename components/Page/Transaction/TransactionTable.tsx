@@ -12,28 +12,32 @@ import SearchContainer from "@/components/Common/SearchContainer";
 import usePagination from "@/hook/usePagination";
 import { useDebounce } from "use-debounce";
 import { DEBOUNCE_DELAY } from "@/constant/debounce";
-import Table from "@/components/Table";
+const Table = dynamic(() => import("@/components/Table"));
 import { TransactionTableHeaders } from "./table-headers";
 import Chip from "@/components/Chip";
+import dynamic from "next/dynamic";
+import useSearchDebounce from "@/hook/useSearchDebouce";
 
 type FilterOption = {
   display: string;
   value: string;
 };
+const filterOptions: FilterOption[] = [
+  { display: "Email", value: "email" },
+  { display: "Package Name", value: "packageName" },
+];
 
 export default function TransactionTable() {
-  const [inputValue, setInputValue] = useState("");
-  const [debounceSearchText] = useDebounce(inputValue, DEBOUNCE_DELAY);
   const {
     handleChangeRowsPerPage,
     handlePageChange,
     pagination,
     setPagination,
+    goToFirstPage,
   } = usePagination();
-  const filterOptions: FilterOption[] = [
-    { display: "Email", value: "email" },
-    { display: "Package Name", value: "packageName" },
-  ];
+  const { debounceSearchText, handleSearchTextChange, searchText } =
+    useSearchDebounce(goToFirstPage);
+
   const [filterAttribute, setFilterAttribute] =
     useState<keyof TransactionWithFillerProps>("email");
 
@@ -58,11 +62,6 @@ export default function TransactionTable() {
       ),
     retry: 1,
   });
-
-  const handleSearchTextChange = (value: string) => {
-    setInputValue(value);
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  };
 
   const tableRows = useMemo(() => {
     const transactions = data?.data.data;
@@ -103,7 +102,7 @@ export default function TransactionTable() {
           listFilter={filterOptions}
         />
         <SearchField
-          inputValue={inputValue}
+          inputValue={searchText}
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>

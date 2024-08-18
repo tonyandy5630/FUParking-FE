@@ -3,19 +3,24 @@ import { listSessionAPI } from "@/api/session";
 import SearchField from "@/components/Common/searchField";
 import SelectFilter from "@/components/Common/selectFilter";
 import { CardProps } from "@/types/card.type";
-import { Button, TableRow, TableCell } from "@mui/material";
+const Button = dynamic(() => import("@mui/material/Button"));
+const TableRow = dynamic(() => import("@mui/material/TableRow"));
+const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 import { SessionProps } from "@/types/session.type";
-import SessionDetail from "./SessionDetail";
+const SessionDetail = dynamic(() => import("./SessionDetail"), {
+  loading: () => <Loading />,
+});
 import Chip from "@/components/Chip";
 import SearchContainer from "@/components/Common/SearchContainer";
 import usePagination from "@/hook/usePagination";
 import useSearchDebounce from "@/hook/useSearchDebouce";
-import Table from "@/components/Table";
+const Table = dynamic(() => import("@/components/Table"));
 import { SessionTableHeaders } from "./table-headers";
 import toLocaleDate from "@/utils/date";
+import dynamic from "next/dynamic";
 
 export default function SessionTable() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
@@ -155,11 +160,13 @@ export default function SessionTable() {
             isLoading={isLoading}
             totalRecord={data.data.totalRecord}
           />
-          <SessionDetail
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            sessionId={selectedSessionId}
-          />
+          {isOpen && (
+            <SessionDetail
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              sessionId={selectedSessionId}
+            />
+          )}
         </>
       )}
     </div>

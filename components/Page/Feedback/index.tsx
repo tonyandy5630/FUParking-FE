@@ -4,16 +4,20 @@ import SearchContainer from "@/components/Common/SearchContainer";
 import SearchField from "@/components/Common/searchField";
 import SelectFilter, { listFilter } from "@/components/Common/selectFilter";
 import PageTitle from "@/components/PageTitle";
-import Table from "@/components/Table";
+const Table = dynamic(() => import("@/components/Table"));
 import usePagination from "@/hook/usePagination";
 import toLocaleDate from "@/utils/date";
-import { TableCell, TableRow, Tooltip } from "@mui/material";
+const TableCell = dynamic(() => import("@mui/material/TableCell"));
+const TableRow = dynamic(() => import("@mui/material/TableRow"));
+import Tooltip from "@mui/material/Tooltip";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo, useState } from "react";
 import { FeedbackTableHeaders } from "./table-headers";
 import wrapText from "@/utils/text";
 import { getAllParkingAreaAPI } from "@/api/parkingArea";
 import useSearchDebounce from "@/hook/useSearchDebouce";
+import dynamic from "next/dynamic";
+import Loading from "../LoadingPage/Loading";
 
 // const FILTER: listFilter[] = [
 //   {
@@ -131,21 +135,19 @@ export default function FeedbackPage() {
           setFilterAttribute={handleParkingAreaChange}
           label='Parking Area'
         />
-        {/* <SelectFilter
-          listFilter={FILTER}
-          filterAttribute={filter}
-          setFilterAttribute={handleFilterChange}
-        /> */}
       </SearchContainer>
-      <Table
-        onPageChange={handlePageChange}
-        onPageSizeChange={handleChangeRowsPerPage}
-        pagination={pagination}
-        tableHeads={FeedbackTableHeaders}
-        tableRows={tableRows}
-        totalRecord={feedbackData?.data.totalRecord}
-        isLoading={isLoading}
-      />
+      {isLoading && <Loading />}
+      {isSuccess && (
+        <Table
+          onPageChange={handlePageChange}
+          onPageSizeChange={handleChangeRowsPerPage}
+          pagination={pagination}
+          tableHeads={FeedbackTableHeaders}
+          tableRows={tableRows}
+          totalRecord={feedbackData?.data.totalRecord}
+          isLoading={isLoading}
+        />
+      )}
     </>
   );
 }
