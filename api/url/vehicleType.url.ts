@@ -14,8 +14,7 @@ export const GET_ALL_VEHICLE_TYPE_API_URL = `${baseURL}/vehicles/type`;
 
 export const CREATE_VEHICLE_TYPE_API_URL = `${baseURL}/vehicles/types`;
 
-export const UPDATE_VEHICLE_TYPE_API_URL = (id: string) =>
-  `${baseURL}/vehicles/types/${id}`;
+export const UPDATE_VEHICLE_TYPE_API_URL = `${baseURL}/vehicles/types`;
 
 export const DELETE_VEHICLE_TYPE_API_URL = (id: string) =>
   `${baseURL}/vehicles/types/${id}`;

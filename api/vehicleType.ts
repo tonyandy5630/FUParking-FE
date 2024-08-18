@@ -26,13 +26,10 @@ export const createVehicleTypeAPI = (body: {
   description?: string | undefined;
 }) => http.post(CREATE_VEHICLE_TYPE_API_URL, body);
 
-export const updateVehicleTypeAPI = (
-  id: string,
-  body: {
-    name?: string | undefined;
-    description?: string | undefined;
-  }
-) => http.put(UPDATE_VEHICLE_TYPE_API_URL(id), body);
+export const updateVehicleTypeAPI = (body: {
+  name?: string | undefined;
+  description?: string | undefined;
+}) => http.put(UPDATE_VEHICLE_TYPE_API_URL, body);
 
 export const deleteVehicleTypeAPI = (id: string) =>
   http.delete(DELETE_VEHICLE_TYPE_API_URL(id));

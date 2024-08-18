@@ -23,6 +23,8 @@ import usePagination from "@/hook/usePagination";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import Table from "@/components/Table";
 import VehicleTableHeaders from "../Vehicle/table-headers";
+import { VehicleTypeTableHeaders } from "./table-headers";
+import toLocaleDate, { toVNDateString } from "@/utils/date";
 const keys = ["Name", "Description", "Created Date"];
 
 export default function VehicleTypeTable() {
@@ -72,9 +74,7 @@ export default function VehicleTypeTable() {
       <TableRow key={vehicleType.id}>
         <TableCell>{vehicleType.name}</TableCell>
         <TableCell>{vehicleType.description ?? "Nan"}</TableCell>
-        <TableCell>
-          {new Date(vehicleType.createdDate).toLocaleDateString("en-GB")}
-        </TableCell>
+        <TableCell>{toVNDateString(vehicleType.createdDate)}</TableCell>
         <TableCell>
           <div className='flex flex-row space-x-2'>
             <EditVehicleType
@@ -82,6 +82,7 @@ export default function VehicleTypeTable() {
               refetch={refetch}
               setIsPending={setDisable}
               disable={disable}
+              value={vehicleType}
             />
             <DeleteVehicleType
               id={vehicleType.id}
@@ -130,7 +131,7 @@ export default function VehicleTypeTable() {
           onPageChange={handlePageChange}
           onPageSizeChange={handleChangeRowsPerPage}
           pagination={pagination}
-          tableHeads={VehicleTableHeaders}
+          tableHeads={VehicleTypeTableHeaders}
           tableRows={tableRows}
           isLoading={isLoading}
           totalRecord={data.data.totalRecord}

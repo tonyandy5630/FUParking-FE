@@ -98,6 +98,7 @@ export default function ParkingAreaTable() {
   const handleUpdateDialogClose = () => {
     setOpenUpdateDialog(false);
     setUpdateValue(undefined);
+    refetch();
   };
 
   const handleOpenAddDialog = () => {

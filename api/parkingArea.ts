@@ -26,13 +26,8 @@ export const getAllParkingAreaAPI = () =>
 export const addParkingAreaAPI = (data: ParkingAreaSchemaType) =>
   http.post(ADD_PARKING_AREA_API_URL, data);
 
-export const updateParkingAreaAPI = ({
-  data,
-  id,
-}: {
-  data: ParkingAreaSchemaType;
-  id: string;
-}) => http.put(UPDATE_PARKING_AREA_API_URL(id), data);
+export const updateParkingAreaAPI = (data: ParkingAreaSchemaType) =>
+  http.put(UPDATE_PARKING_AREA_API_URL, data);
 
 export const updateParkingAreaStatusAPI = (data: {
   parkingId: string;

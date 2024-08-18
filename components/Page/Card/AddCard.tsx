@@ -2,6 +2,7 @@ import { addCardAPI } from "@/api/card";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import FormInput from "@/components/Form/Input";
 import Modal from "@/components/modal/modal";
+import { CARD_NUMBER_EXISTED, PLATE_NUMBER_EXISTED } from "@/constant/message";
 import { ListCardResponse } from "@/types/card.type";
 import AddCardSchema, {
   AddCardSchemaType,
@@ -50,7 +51,6 @@ export default function AddCard({
     register,
     handleSubmit,
     reset,
-    control,
     setError,
     formState: { errors },
   } = methods;
@@ -87,14 +87,24 @@ export default function AddCard({
           setIsPending(false);
         },
         onError: (error) => {
-          toast.error("Failed to add card");
           setIsPending(false);
-          refetch();
         },
       });
-    } catch (error) {
-      toast.error("Failed to add card");
-      reset();
+    } catch (error: any) {
+      const errorMessage = error.response.data.message;
+      if (errorMessage === CARD_NUMBER_EXISTED) {
+        setError("cardNumber", {
+          type: "custom",
+          message: CARD_NUMBER_EXISTED,
+        });
+      }
+
+      if (errorMessage === PLATE_NUMBER_EXISTED) {
+        setError("plateNumber", {
+          type: "custom",
+          message: PLATE_NUMBER_EXISTED,
+        });
+      }
       setIsPending(false);
     }
   };
@@ -136,18 +146,12 @@ export default function AddCard({
                     autoFocus={true}
                     key='cardNumber'
                   />
-                  {errors.cardNumber && (
-                    <p className='text-red-500'>{errors.cardNumber.message}</p>
-                  )}
                   <FormInput
                     name='plateNumber'
                     label='Plate Number'
                     placeholder='Enter Plate Number'
                     key='plateNumber'
                   />
-                  {errors.plateNumber && (
-                    <p className='text-red-500'>{errors.plateNumber.message}</p>
-                  )}
                   <Button type='submit' variant='contained' color='primary'>
                     Submit
                   </Button>

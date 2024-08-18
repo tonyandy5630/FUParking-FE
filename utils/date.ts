@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 const options: Intl.DateTimeFormatOptions = {
   hour: "numeric",
   minute: "numeric",
@@ -11,6 +13,10 @@ export function getLocalISOString(date: Date): string {
   var localISOTime = new Date(Date.now() - tzoffset).toISOString();
 
   return localISOTime;
+}
+
+export function toVNDateString(date: string) {
+  return dayjs(date).format("DD/MM/YYYY");
 }
 
 export default function toLocaleDate(date: string): string {
