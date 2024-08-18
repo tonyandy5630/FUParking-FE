@@ -53,8 +53,10 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
                 name={name}
                 autoFocus={props.autoFocus}
                 placeholder={placeholder}
+                inputRef={ref}
+                InputLabelProps={{ shrink: true }}
                 InputProps={{
-                  defaultValue,
+                  defaultValue: defaultValue,
                   endAdornment: endAdornment ? (
                     <InputAdornment position='end'>
                       {endAdornment}

@@ -1,5 +1,4 @@
 export const PackageTableHeaders = [
-  "No.",
   "Name",
   "Coin Amount",
   "Extra Coin",
@@ -7,4 +6,5 @@ export const PackageTableHeaders = [
   "Price",
   "Status",
   "Created Date",
+  "Actions",
 ];

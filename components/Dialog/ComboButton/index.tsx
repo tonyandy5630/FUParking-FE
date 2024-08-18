@@ -3,6 +3,10 @@ import React, { lazy, useState } from "react";
 const AlertDialog = lazy(() => import("../ConfirmDialog"));
 
 type Props = {
+  /**
+   *  Action when confirm closing the form
+   * @returns
+   */
   onClose: () => void;
   onReset: () => void;
   isLoading?: boolean;

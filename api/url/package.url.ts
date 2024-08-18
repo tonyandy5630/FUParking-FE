@@ -14,3 +14,6 @@ export const ADD_PACKAGE_API_URL = `${baseURL}/packages`;
 
 export const UPDATE_PACKAGE_API_URL = (packageId: string) =>
   `${baseURL}/packages/${packageId}`;
+
+export const DELETE_PACKAGE_API_URL = (packageId: string) =>
+  `${baseURL}/packages/${packageId}`;

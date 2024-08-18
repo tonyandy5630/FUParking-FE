@@ -1,6 +1,7 @@
 import http from "@/utils/http";
 import {
   ADD_PACKAGE_API_URL,
+  DELETE_PACKAGE_API_URL,
   GET_LIST_PACKAGE_API_URL,
   UPDATE_PACKAGE_API_URL,
 } from "./url/package.url";
@@ -25,3 +26,6 @@ export const addPackageAPI = (data: PackageSchemaType) =>
 
 export const updatePackageAPI = (data: UpdatePackageSchemaType) =>
   http.put(UPDATE_PACKAGE_API_URL(data.packageId), data);
+
+export const deletePackageAPI = (packageId: string) =>
+  http.delete(DELETE_PACKAGE_API_URL(packageId));

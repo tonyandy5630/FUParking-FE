@@ -1,8 +1,8 @@
 "use client";
 
-import { getListPackage } from "@/api/package";
+import { getListPackage, updatePackageAPI } from "@/api/package";
 import { Packages } from "@/types/package.type";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 const TableRow = dynamic(() => import("@mui/material/TableRow"));
 const TableCell = dynamic(() => import("@mui/material/TableCell"));
@@ -17,11 +17,23 @@ import useSearchDebounce from "@/hook/useSearchDebouce";
 import Table from "@/components/Table";
 import { PackageTableHeaders } from "./table-headers";
 import dynamic from "next/dynamic";
+import ActionArea from "@/components/ActionArea";
+import { Button } from "@mui/material";
+import useHandleDialog from "@/hook/useHandleDialog";
+import AddPackageDialog from "./AddPackage";
+import { toVNDateString } from "@/utils/date";
+import UpdatePackageDialog from "./UpdatePackage";
+import ActionButton from "@/components/ActionButton";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import { UpdatePackageSchemaType } from "@/utils/schemas/PackageSchema";
+import { toast } from "react-toastify";
 
 type FilterOption = {
   display: string;
   value: string;
 };
+
+export const expDurationIncrement = [10, 20, 30];
 
 const filterOptions: FilterOption[] = [
   { display: "Name", value: "name" },
@@ -40,6 +52,18 @@ export default function PackageTable() {
   } = usePagination();
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
+  const { openDialog: openAddDialog, handleToggleDialog: toggleAddDialog } =
+    useHandleDialog(false);
+  const {
+    openDialog: openUpdateDialog,
+    handleToggleDialog: toggleUpdateDialog,
+  } = useHandleDialog(false);
+  const {
+    openDialog: openStatusChangeDialog,
+    handleToggleDialog: toggleStatusChangeDialog,
+  } = useHandleDialog(false);
+  const [updatePackage, setUpdatePackage] = useState<Packages | undefined>();
+  const [isActivateOrDeactivate, setIsActivateOrDeactivate] = useState(true);
 
   const [filterAttribute, setFilterAttribute] =
     useState<keyof Packages>("name");
@@ -47,6 +71,35 @@ export default function PackageTable() {
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof Packages);
     goToFirstPage();
+  };
+
+  const {
+    mutateAsync: updatePackageStatusAsync,
+    isPending: isPendingUpdatePackage,
+  } = useMutation({
+    mutationKey: ["/update-status-package"],
+    mutationFn: updatePackageAPI,
+  });
+
+  const handleClickActiveOrDeactivate = (pack: Packages) => {
+    setUpdatePackage(pack);
+    toggleStatusChangeDialog();
+  };
+
+  const handleUpdatePackageStatus = async (data: Packages) => {
+    try {
+      const updateData: UpdatePackageSchemaType = {
+        isActive: data.packageStatus === "ACTIVE",
+        name: data.name,
+        packageId: data.id,
+      };
+      await updatePackageStatusAsync(updateData, {
+        onSuccess: () => {
+          toast.success("Change Package Status successfully");
+          refetch();
+        },
+      });
+    } catch (error) {}
   };
 
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
@@ -66,6 +119,22 @@ export default function PackageTable() {
       ),
     retry: 1,
   });
+
+  const handleCloseDialog = () => {
+    toggleUpdateDialog();
+    setUpdatePackage(undefined);
+  };
+
+  const handleUpdateDialogOpen = (value: Packages) => {
+    setUpdatePackage(value);
+    toggleUpdateDialog();
+  };
+
+  const handleCloseStatusChangeDialog = () => {
+    setUpdatePackage(undefined);
+    toggleStatusChangeDialog();
+  };
+
   const tableRows = useMemo(() => {
     const packages = data?.data.data;
     if (!packages || packages.length === 0) {
@@ -73,8 +142,12 @@ export default function PackageTable() {
     }
 
     return packages.map((packs: Packages, index) => (
-      <TableRow key={packs.id}>
-        <TableCell>{index + 1}</TableCell>
+      <TableRow
+        key={packs.id}
+        hover={true}
+        className='cursor-pointer'
+        onClick={() => handleUpdateDialogOpen(packs)}
+      >
         <TableCell>{packs.name}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
@@ -91,8 +164,29 @@ export default function PackageTable() {
             {packs.packageStatus}
           </Chip>
         </TableCell>
+        <TableCell>{packs.createDate}</TableCell>
         <TableCell>
-          {new Date(packs.createDate).toLocaleDateString("vi-VN")}
+          {packs.packageStatus === "ACTIVE" ? (
+            <ActionButton
+              variant='danger'
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClickActiveOrDeactivate(packs);
+              }}
+            >
+              Deactivate
+            </ActionButton>
+          ) : (
+            <ActionButton
+              variant='primary'
+              onClick={async (e) => {
+                e.stopPropagation();
+                handleClickActiveOrDeactivate(packs);
+              }}
+            >
+              Activate
+            </ActionButton>
+          )}
         </TableCell>
       </TableRow>
     ));
@@ -100,6 +194,39 @@ export default function PackageTable() {
 
   return (
     <>
+      {updatePackage && openStatusChangeDialog && (
+        <AlertDialog
+          open={openStatusChangeDialog}
+          onCancel={handleCloseStatusChangeDialog}
+          onOpenChange={handleCloseStatusChangeDialog}
+          onConfirm={async () => await handleUpdatePackageStatus(updatePackage)}
+          title={
+            isActivateOrDeactivate
+              ? "Deactivate this package ?"
+              : "Activate this package ?"
+          }
+          onClose={handleCloseStatusChangeDialog}
+        />
+      )}
+      <AddPackageDialog
+        open={openAddDialog}
+        onClose={toggleAddDialog}
+        onOpenChange={toggleAddDialog}
+        successCallback={() => {
+          refetch();
+        }}
+      />
+      {updatePackage && (
+        <UpdatePackageDialog
+          open={openUpdateDialog}
+          onClose={handleCloseDialog}
+          onOpenChange={toggleUpdateDialog}
+          successCallback={() => {
+            refetch();
+          }}
+          value={updatePackage}
+        />
+      )}
       <SearchContainer>
         <SearchField
           inputValue={searchText}
@@ -111,6 +238,11 @@ export default function PackageTable() {
           listFilter={filterOptions}
         />
       </SearchContainer>
+      <ActionArea>
+        <Button variant='outlined' onClick={() => toggleAddDialog()}>
+          New Package
+        </Button>
+      </ActionArea>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
