@@ -1,8 +1,8 @@
 "use client";
 
-import { getListPackage } from "@/api/package";
+import { getListPackage, updatePackageAPI } from "@/api/package";
 import { Packages } from "@/types/package.type";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 const TableRow = dynamic(() => import("@mui/material/TableRow"));
 const TableCell = dynamic(() => import("@mui/material/TableCell"));
@@ -23,6 +23,10 @@ import useHandleDialog from "@/hook/useHandleDialog";
 import AddPackageDialog from "./AddPackage";
 import { toVNDateString } from "@/utils/date";
 import UpdatePackageDialog from "./UpdatePackage";
+import ActionButton from "@/components/ActionButton";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import { UpdatePackageSchemaType } from "@/utils/schemas/PackageSchema";
+import { toast } from "react-toastify";
 
 type FilterOption = {
   display: string;
@@ -54,7 +58,12 @@ export default function PackageTable() {
     openDialog: openUpdateDialog,
     handleToggleDialog: toggleUpdateDialog,
   } = useHandleDialog(false);
+  const {
+    openDialog: openStatusChangeDialog,
+    handleToggleDialog: toggleStatusChangeDialog,
+  } = useHandleDialog(false);
   const [updatePackage, setUpdatePackage] = useState<Packages | undefined>();
+  const [isActivateOrDeactivate, setIsActivateOrDeactivate] = useState(true);
 
   const [filterAttribute, setFilterAttribute] =
     useState<keyof Packages>("name");
@@ -62,6 +71,35 @@ export default function PackageTable() {
   const handleFilterAttributeChange = (value: string) => {
     setFilterAttribute(value as keyof Packages);
     goToFirstPage();
+  };
+
+  const {
+    mutateAsync: updatePackageStatusAsync,
+    isPending: isPendingUpdatePackage,
+  } = useMutation({
+    mutationKey: ["/update-status-package"],
+    mutationFn: updatePackageAPI,
+  });
+
+  const handleClickActiveOrDeactivate = (pack: Packages) => {
+    setUpdatePackage(pack);
+    toggleStatusChangeDialog();
+  };
+
+  const handleUpdatePackageStatus = async (data: Packages) => {
+    try {
+      const updateData: UpdatePackageSchemaType = {
+        isActive: data.packageStatus === "ACTIVE",
+        name: data.name,
+        packageId: data.id,
+      };
+      await updatePackageStatusAsync(updateData, {
+        onSuccess: () => {
+          toast.success("Change Package Status successfully");
+          refetch();
+        },
+      });
+    } catch (error) {}
   };
 
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
@@ -90,6 +128,11 @@ export default function PackageTable() {
   const handleUpdateDialogOpen = (value: Packages) => {
     setUpdatePackage(value);
     toggleUpdateDialog();
+  };
+
+  const handleCloseStatusChangeDialog = () => {
+    setUpdatePackage(undefined);
+    toggleStatusChangeDialog();
   };
 
   const tableRows = useMemo(() => {
@@ -122,12 +165,49 @@ export default function PackageTable() {
           </Chip>
         </TableCell>
         <TableCell>{packs.createDate}</TableCell>
+        <TableCell>
+          {packs.packageStatus === "ACTIVE" ? (
+            <ActionButton
+              variant='danger'
+              onClick={(e) => {
+                e.stopPropagation();
+                handleClickActiveOrDeactivate(packs);
+              }}
+            >
+              Deactivate
+            </ActionButton>
+          ) : (
+            <ActionButton
+              variant='primary'
+              onClick={async (e) => {
+                e.stopPropagation();
+                handleClickActiveOrDeactivate(packs);
+              }}
+            >
+              Activate
+            </ActionButton>
+          )}
+        </TableCell>
       </TableRow>
     ));
   }, [data?.data.data]);
 
   return (
     <>
+      {updatePackage && openStatusChangeDialog && (
+        <AlertDialog
+          open={openStatusChangeDialog}
+          onCancel={handleCloseStatusChangeDialog}
+          onOpenChange={handleCloseStatusChangeDialog}
+          onConfirm={async () => await handleUpdatePackageStatus(updatePackage)}
+          title={
+            isActivateOrDeactivate
+              ? "Deactivate this package ?"
+              : "Activate this package ?"
+          }
+          onClose={handleCloseStatusChangeDialog}
+        />
+      )}
       <AddPackageDialog
         open={openAddDialog}
         onClose={toggleAddDialog}

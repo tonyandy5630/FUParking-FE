@@ -6,4 +6,5 @@ export const PackageTableHeaders = [
   "Price",
   "Status",
   "Created Date",
+  "Actions",
 ];
