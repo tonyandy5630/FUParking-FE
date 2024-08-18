@@ -11,5 +11,3 @@ export const GET_LIST_CUSTOMER_WITH_FILLER_API_URL = (
   }&Attribute=${Attribute}`;
 
 export const CHANGE_STATUS_CUSTOMER_API_URL = `${baseURL}/customers/status`;
-
-export const ADD_CUSTOMER_API_URL = `${baseURL}/customers/free`;

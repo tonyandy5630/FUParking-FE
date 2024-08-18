@@ -26,8 +26,8 @@ import ActionButton from "@/components/ActionButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import { toast } from "react-toastify";
 import UpdateParkingAreaDialog from "./UpdateParkingArea";
-import { FormOptions } from "@/components/Form/Select";
 import getModeName, { MODES } from "@/utils/mode";
+import { FormOptions } from "@/components/Form/Select";
 
 type FilterOption = {
   display: string;
@@ -215,17 +215,19 @@ export default function ParkingAreaTable() {
           });
         }}
       />
-      <SearchContainer>
-        <SearchField
-          inputValue={searchText}
-          setInputValue={handleSearchTextChange}
-        />
-        <SelectFilter
-          filterAttribute={filterAttribute}
-          setFilterAttribute={handleFilterAttributeChange}
-          listFilter={filterOptions}
-        />
-      </SearchContainer>
+      <div className='flex flex-col gap-5'>
+        <SearchContainer>
+          <SearchField
+            inputValue={searchText}
+            setInputValue={handleSearchTextChange}
+          />
+          <SelectFilter
+            filterAttribute={filterAttribute}
+            setFilterAttribute={handleFilterAttributeChange}
+            listFilter={filterOptions}
+          />
+        </SearchContainer>
+      </div>
       <ActionArea>
         <Button variant='outlined' onClick={handleOpenAddDialog}>
           <AddIcon /> New Parking Area

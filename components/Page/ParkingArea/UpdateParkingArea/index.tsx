@@ -17,29 +17,13 @@ import Grid from "@mui/material/Unstable_Grid2";
 import FormSelect, { FormOptions } from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import { ParkingAreas } from "@/types/parkingArea.type";
+import { MODES } from "@/utils/mode";
 
 interface Props extends DialogProps {
   value: ParkingAreas;
 }
 
-const MODE_OPTIONS: FormOptions[] = [
-  {
-    name: "Hourly Entry Rate",
-    value: 1,
-  },
-  {
-    name: "Hourly Exit Rate",
-    value: 2,
-  },
-  {
-    name: "Highest Rate Pricing",
-    value: 3,
-  },
-  {
-    name: "Lowest Rate Pricing",
-    value: 4,
-  },
-];
+const MODE_OPTIONS: FormOptions[] = [...MODES];
 
 function UpdateParkingAreaDialog({
   open,
