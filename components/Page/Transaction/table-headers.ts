@@ -7,5 +7,4 @@ export const TransactionTableHeaders = [
   "Description",
   "Status",
   "Created Date",
-  "Action",
 ];
