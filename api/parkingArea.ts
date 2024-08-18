@@ -1,7 +1,7 @@
 import http from "@/utils/http";
 import {
   ADD_PARKING_AREA_API_URL,
-  GET_ALL_PARKING_AREA_API_URL,
+  GET_PARKING_AREA_OPTIONS_API_URL,
   GET_LIST_PARKINGAREA_API_URL,
   UPDATE_PARKING_AREA_API_URL,
   UPDATE_PARKING_AREA_STATUS_API_URL,
@@ -21,7 +21,7 @@ export const getListParkingArea = (
   );
 
 export const getAllParkingAreaAPI = () =>
-  http.get<ListParkingArea>(GET_ALL_PARKING_AREA_API_URL);
+  http.get<ListParkingArea>(GET_PARKING_AREA_OPTIONS_API_URL);
 
 export const addParkingAreaAPI = (data: ParkingAreaSchemaType) =>
   http.post(ADD_PARKING_AREA_API_URL, data);

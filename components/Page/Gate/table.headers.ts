@@ -6,4 +6,5 @@ export const GateTableHeaders = [
   "Status",
   "Created Date",
   "Last Modify By",
+  "Actions",
 ];
