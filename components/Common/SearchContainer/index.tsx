@@ -5,8 +5,6 @@ type Props = {
 };
 export default function SearchContainer({ children }: Props) {
   return (
-    <div className='flex  gap-3 justify-start items-center py-2'>
-      {children}
-    </div>
+    <div className='flex justify-start items-center py-2 gap-2'>{children}</div>
   );
 }

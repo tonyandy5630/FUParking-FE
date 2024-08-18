@@ -215,19 +215,17 @@ export default function ParkingAreaTable() {
           });
         }}
       />
-      <div className='flex flex-col gap-5'>
-        <SearchContainer>
-          <SearchField
-            inputValue={searchText}
-            setInputValue={handleSearchTextChange}
-          />
-          <SelectFilter
-            filterAttribute={filterAttribute}
-            setFilterAttribute={handleFilterAttributeChange}
-            listFilter={filterOptions}
-          />
-        </SearchContainer>
-      </div>
+      <SearchContainer>
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
+        <SelectFilter
+          filterAttribute={filterAttribute}
+          setFilterAttribute={handleFilterAttributeChange}
+          listFilter={filterOptions}
+        />
+      </SearchContainer>
       <ActionArea>
         <Button variant='outlined' onClick={handleOpenAddDialog}>
           <AddIcon /> New Parking Area
