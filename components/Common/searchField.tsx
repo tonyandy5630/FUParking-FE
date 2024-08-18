@@ -23,7 +23,6 @@ const SearchField: FC<SearchFieldProps> = ({
       size='small'
       autoFocus={true}
       type='text'
-      className='border border-gray-400 rounded-md p-2'
       placeholder={placeholder}
       value={inputValue}
       onChange={handleInputChange}

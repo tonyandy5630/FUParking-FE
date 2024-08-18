@@ -22,17 +22,18 @@ import ActionArea from "@/components/ActionArea";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddParkingAreaDialog from "./AddParkingArea";
-import wrapText from "@/utils/text";
 import ActionButton from "@/components/ActionButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import { toast } from "react-toastify";
-import { ParkingAreaSchemaType } from "@/utils/schemas/parkingAreaSchema";
 import UpdateParkingAreaDialog from "./UpdateParkingArea";
+import getModeName, { MODES } from "@/utils/mode";
+import { FormOptions } from "@/components/Form/Select";
 
 type FilterOption = {
   display: string;
   value: string;
 };
+const MODE_OPTIONS: FormOptions[] = [...MODES];
 
 export default function ParkingAreaTable() {
   const {
@@ -148,7 +149,7 @@ export default function ParkingAreaTable() {
         <TableCell>{area.description}</TableCell>
         <TableCell>{area.maxCapacity}</TableCell>
         <TableCell>{area.block}</TableCell>
-        <TableCell>{area.mode}</TableCell>
+        <TableCell>{getModeName(area.mode)}</TableCell>
         <TableCell>
           <Chip
             variant={area.statusParkingArea === "ACTIVE" ? "success" : "error"}
