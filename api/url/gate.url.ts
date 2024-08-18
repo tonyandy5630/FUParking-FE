@@ -13,3 +13,7 @@ export const GET_LIST_GATE_API_URL = (
 export const ADD_GATE_API_URL = `${baseURL}/gates`;
 export const UPDATE_GATE_API_URL = (gateId: string) =>
   `${baseURL}/gates/${gateId}`;
+
+export const GET_ALL_GATE_TYPES = `${baseURL}/gates/types`;
+
+export const UPDATE_GATE_STATUS_API_URL = `${baseURL}/gates/status`;

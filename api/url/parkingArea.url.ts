@@ -10,7 +10,7 @@ export const GET_LIST_PARKINGAREA_API_URL = (
     SearchInput ? `&SearchInput=${SearchInput}` : ""
   }&Attribute=${Attribute}`;
 
-export const GET_ALL_PARKING_AREA_API_URL = `${baseURL}/areas`;
+export const GET_PARKING_AREA_OPTIONS_API_URL = `${baseURL}/areas/option`;
 
 export const UPDATE_PARKING_AREA_API_URL = `${baseURL}/areas`;
 
