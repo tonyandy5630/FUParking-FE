@@ -17,11 +17,17 @@ import useSearchDebounce from "@/hook/useSearchDebouce";
 import Table from "@/components/Table";
 import { PackageTableHeaders } from "./table-headers";
 import dynamic from "next/dynamic";
+import ActionArea from "@/components/ActionArea";
+import { Button } from "@mui/material";
+import useHandleDialog from "@/hook/useHandleDialog";
+import AddPackageDialog from "./AddPackage";
 
 type FilterOption = {
   display: string;
   value: string;
 };
+
+export const expDurationIncrement = [10, 20, 30];
 
 const filterOptions: FilterOption[] = [
   { display: "Name", value: "name" },
@@ -40,6 +46,8 @@ export default function PackageTable() {
   } = usePagination();
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
+  const { openDialog: openAddDialog, handleToggleDialog: toggleAddDialog } =
+    useHandleDialog(false);
 
   const [filterAttribute, setFilterAttribute] =
     useState<keyof Packages>("name");
@@ -66,6 +74,7 @@ export default function PackageTable() {
       ),
     retry: 1,
   });
+
   const tableRows = useMemo(() => {
     const packages = data?.data.data;
     if (!packages || packages.length === 0) {
@@ -74,7 +83,6 @@ export default function PackageTable() {
 
     return packages.map((packs: Packages, index) => (
       <TableRow key={packs.id}>
-        <TableCell>{index + 1}</TableCell>
         <TableCell>{packs.name}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
@@ -100,6 +108,14 @@ export default function PackageTable() {
 
   return (
     <>
+      <AddPackageDialog
+        open={openAddDialog}
+        onClose={toggleAddDialog}
+        onOpenChange={toggleAddDialog}
+        successCallback={() => {
+          refetch();
+        }}
+      />
       <SearchContainer>
         <SearchField
           inputValue={searchText}
@@ -111,6 +127,11 @@ export default function PackageTable() {
           listFilter={filterOptions}
         />
       </SearchContainer>
+      <ActionArea>
+        <Button variant='outlined' onClick={() => toggleAddDialog()}>
+          New Package
+        </Button>
+      </ActionArea>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
