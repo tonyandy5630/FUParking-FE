@@ -22,7 +22,7 @@ export const getPackageRules = (getValues?: UseFormGetValues<any>) => ({
   },
   price: {
     min: {
-      value: 0,
+      value: 1000,
       message: GREATER_0_MESSAGE,
     },
   },

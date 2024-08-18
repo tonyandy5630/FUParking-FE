@@ -3,7 +3,7 @@ import { UseFormGetValues } from "react-hook-form";
 
 const MIN_FROM_HOUR = 0;
 const MAX_FROM_HOUR = 24;
-const MIN_PRICE = 0;
+const MIN_PRICE = 1000;
 
 const getPriceItemRules = (getValues?: UseFormGetValues<any>) => ({
   from: {

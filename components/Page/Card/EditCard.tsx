@@ -1,19 +1,20 @@
 import { editCardAPI } from "@/api/card";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
-import FormInput from "@/components/Form/Input";
-import Modal from "@/components/modal/modal";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
+const FormInput = dynamic(() => import("@/components/Form/Input"));
+const Modal = dynamic(() => import("@/components/modal/modal"));
 import { ListCardResponse } from "@/types/card.type";
 import EditCardSchema, {
   EditCardSchemaType,
 } from "@/utils/schemas/card/editCardSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, FormControl } from "@mui/material";
+import Button from "@mui/material/Button";
 import {
   QueryObserverResult,
   RefetchOptions,
   useMutation,
 } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -96,14 +97,16 @@ export default function EditCard({
 
   return (
     <>
-      <AlertDialog
-        open={openConfirmDialog}
-        onCancel={handleToggleDialog}
-        onConfirm={handleConfirmDialog}
-        onOpenChange={handleToggleDialog}
-        title='Cancel Edit card ?'
-        content='By clicking OK will RESET and CLOSE this form ?'
-      />
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          onCancel={handleToggleDialog}
+          onConfirm={handleConfirmDialog}
+          onOpenChange={handleToggleDialog}
+          title='Cancel Edit card ?'
+          content='By clicking OK will RESET and CLOSE this form ?'
+        />
+      )}
       <Button
         sx={{
           backgroundColor: "#3b82f6",
@@ -122,32 +125,32 @@ export default function EditCard({
       >
         Edit
       </Button>
-      <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className='pl-5 pr-5 pt-10 pb-10'>
-          <div className='flex flex-col w-full space-y-5'>
-            <h1 className='text-center font-semibold text-2xl'>
-              Create new Customer
-            </h1>
-            <FormProvider {...methods}>
-              <form
-                className='flex flex-col space-y-2'
-                onSubmit={handleSubmit(onSubmit)}
-              >
-                <FormInput
-                  name='plateNumber'
-                  label='Plate Number'
-                  placeholder='Enter Plate Number'
-                  autoFocus={true}
-                  defaultValue={value}
-                />
-                <Button type='submit' variant='contained' color='primary'>
-                  Submit
-                </Button>
-              </form>
-            </FormProvider>
+      {isOpen && (
+        <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
+          <div className='pl-5 pr-5 pt-10 pb-10'>
+            <div className='flex flex-col w-full space-y-5'>
+              <h1 className='text-center font-semibold text-2xl'>Edit Card</h1>
+              <FormProvider {...methods}>
+                <form
+                  className='flex flex-col space-y-2'
+                  onSubmit={handleSubmit(onSubmit)}
+                >
+                  <FormInput
+                    name='plateNumber'
+                    label='Plate Number'
+                    placeholder='Enter Plate Number'
+                    autoFocus={true}
+                    defaultValue={value}
+                  />
+                  <Button type='submit' variant='contained' color='primary'>
+                    Submit
+                  </Button>
+                </form>
+              </FormProvider>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
     </>
   );
 }

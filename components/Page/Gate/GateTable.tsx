@@ -8,8 +8,8 @@ const TableRow = dynamic(() => import("@mui/material/TableRow"));
 const TableCell = dynamic(() => import("@mui/material/TableCell"));
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
-import Loading from "../LoadingPage/Loading";
-import Chip from "@/components/Chip";
+const Loading = dynamic(() => import("../LoadingPage/Loading"));
+const Chip = dynamic(() => import("@/components/Chip"));
 import usePagination from "@/hook/usePagination";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import Table from "@/components/Table";
@@ -17,11 +17,11 @@ import { GateTableHeaders } from "./table.headers";
 import dynamic from "next/dynamic";
 import SearchContainer from "@/components/Common/SearchContainer";
 import useHandleDialog from "@/hook/useHandleDialog";
-import { Button } from "@mui/material";
+import Button from "@mui/material/Button";
 import ActionArea from "@/components/ActionArea";
-import AddGateDialog from "./AddGate";
-import UpdateGateDialogs from "./UpdateGate";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
+const AddGateDialog = dynamic(() => import("./AddGate"));
+const UpdateGateDialogs = dynamic(() => import("./UpdateGate"));
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 import ActionButton from "@/components/ActionButton";
 import { toast } from "react-toastify";
 
@@ -186,22 +186,24 @@ export default function GateTable() {
   }, [data?.data.data]);
   return (
     <>
-      <AlertDialog
-        open={openConfirmDialog}
-        onCancel={closeConfirmDialog}
-        onOpenChange={closeConfirmDialog}
-        title={
-          isActivateOrDeactivate
-            ? "Re-activate this table ?"
-            : "Deactivate this table ?"
-        }
-        onConfirm={() => {
-          handleGateStatusChange({
-            isActive: isActivateOrDeactivate,
-            gateId,
-          });
-        }}
-      />
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          onCancel={closeConfirmDialog}
+          onOpenChange={closeConfirmDialog}
+          title={
+            isActivateOrDeactivate
+              ? "Re-activate this table ?"
+              : "Deactivate this table ?"
+          }
+          onConfirm={() => {
+            handleGateStatusChange({
+              isActive: isActivateOrDeactivate,
+              gateId,
+            });
+          }}
+        />
+      )}
       <div className='flex flex-col gap-5'>
         <SearchContainer>
           <SearchField
@@ -219,13 +221,15 @@ export default function GateTable() {
         <Button variant='outlined' onClick={() => handleToggleAddAddDialog()}>
           New Gate
         </Button>
-        <AddGateDialog
-          open={openAddDialog}
-          onOpenChange={handleToggleAddAddDialog}
-          onClose={closeAddDialog}
-          refetch={refetch}
-        />
-        {updateGate && (
+        {openAddDialog && (
+          <AddGateDialog
+            open={openAddDialog}
+            onOpenChange={handleToggleAddAddDialog}
+            onClose={closeAddDialog}
+            refetch={refetch}
+          />
+        )}
+        {updateGate && openUpdateDialog && (
           <UpdateGateDialogs
             open={openUpdateDialog}
             onOpenChange={handleToggleUpdateDialog}

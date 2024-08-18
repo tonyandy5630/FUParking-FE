@@ -17,3 +17,5 @@ export const UPDATE_GATE_API_URL = (gateId: string) =>
 export const GET_ALL_GATE_TYPES = `${baseURL}/gates/types`;
 
 export const UPDATE_GATE_STATUS_API_URL = `${baseURL}/gates/status`;
+
+export const DELETE_GATE_API_URL = (id: string) => `${baseURL}/gates/${id}`;
