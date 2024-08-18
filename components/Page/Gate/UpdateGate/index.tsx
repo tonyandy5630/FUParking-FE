@@ -1,5 +1,5 @@
 import { DialogProps } from "@/types/dialog.type";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -8,7 +8,12 @@ import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import GateSchema, { GateSchemaType } from "@/utils/schemas/gateSchema";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { addGateAPI, getAllGateAPI, updateGateAPI } from "@/api/gate";
+import {
+  addGateAPI,
+  deleteGateAPI,
+  getAllGateAPI,
+  updateGateAPI,
+} from "@/api/gate";
 import { toast } from "react-toastify";
 import Grid from "@mui/material/Unstable_Grid2";
 import { getAllParkingAreaAPI } from "@/api/parkingArea";
@@ -19,6 +24,8 @@ import ComboFormButton from "@/components/Dialog/ComboButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import useHandleDialog from "@/hook/useHandleDialog";
 import { Gates } from "@/types/gate.type";
+import { Button } from "@mui/material";
+import DeleteButton from "@/components/DeleteButton";
 
 interface Props extends DialogProps {
   value: Gates;
@@ -41,7 +48,7 @@ export default function UpdateGateDialogs({
   });
   const { openDialog: openAlert, handleToggleDialog: toggleAlert } =
     useHandleDialog(false);
-
+  const [isDelete, setIsDelete] = useState(false);
   const {
     reset,
     handleSubmit,
@@ -53,6 +60,12 @@ export default function UpdateGateDialogs({
     mutationFn: updateGateAPI,
   });
 
+  const { mutateAsync: deleteGateAsync, isPending: isPendingDeleteGate } =
+    useMutation({
+      mutationKey: ["/delete-gate"],
+      mutationFn: deleteGateAPI,
+    });
+
   const { data: parkingAreasData, isLoading } = useQuery({
     queryKey: ["/update-gate-parking-areas"],
     queryFn: getAllParkingAreaAPI,
@@ -62,6 +75,18 @@ export default function UpdateGateDialogs({
     queryKey: ["/update-all-gate-type"],
     queryFn: getAllGateAPI,
   });
+
+  const handleDeleteGate = async () => {
+    try {
+      await deleteGateAsync(value.id, {
+        onSuccess: () => {
+          toast.success("Delete gate successfully");
+          refetch();
+          if (onClose) onClose();
+        },
+      });
+    } catch (error) {}
+  };
 
   const parkingAreasOptions: FormOptions[] = useMemo(() => {
     const parkingAreas = parkingAreasData?.data.data;
@@ -88,11 +113,10 @@ export default function UpdateGateDialogs({
     onOpenChange();
   };
 
-  const handleConfirmCloseAddDialog = () => {
+  const handleConfirmCloseAlertDialog = () => {
     reset();
     if (onClose) onClose();
   };
-  console.log();
   const handleUpdateGate = async (data: GateSchemaType) => {
     try {
       const updateGateBody = {
@@ -114,7 +138,7 @@ export default function UpdateGateDialogs({
       <AlertDialog
         open={openAlert}
         onCancel={toggleAlert}
-        onConfirm={handleConfirmCloseAddDialog}
+        onConfirm={handleConfirmCloseAlertDialog}
         title={"Cancel Update Gate " + value.name}
         onOpenChange={toggleAlert}
       />
@@ -164,14 +188,19 @@ export default function UpdateGateDialogs({
                 </Grid>
               </Grid>
               <Grid>
-                <DialogActions>
-                  <ComboFormButton
-                    onClose={handleClose}
-                    onReset={reset}
-                    isLoading={isPending}
-                    submitLabel='Update'
-                  />
-                </DialogActions>
+                <div className='min-w-full flex justify-between items-center'>
+                  <DeleteButton onDelete={handleDeleteGate}>
+                    Delete
+                  </DeleteButton>
+                  <DialogActions>
+                    <ComboFormButton
+                      onClose={handleClose}
+                      onReset={reset}
+                      isLoading={isPending}
+                      submitLabel='Update'
+                    />
+                  </DialogActions>
+                </div>
               </Grid>
             </DialogContent>
           </form>

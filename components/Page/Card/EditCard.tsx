@@ -125,9 +125,7 @@ export default function EditCard({
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
         <div className='pl-5 pr-5 pt-10 pb-10'>
           <div className='flex flex-col w-full space-y-5'>
-            <h1 className='text-center font-semibold text-2xl'>
-              Create new Customer
-            </h1>
+            <h1 className='text-center font-semibold text-2xl'>Edit Card</h1>
             <FormProvider {...methods}>
               <form
                 className='flex flex-col space-y-2'

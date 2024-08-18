@@ -89,7 +89,7 @@ export default function PackageTable() {
   const handleUpdatePackageStatus = async (data: Packages) => {
     try {
       const updateData: UpdatePackageSchemaType = {
-        isActive: data.packageStatus === "ACTIVE",
+        isActive: data.packageStatus !== "ACTIVE",
         name: data.name,
         packageId: data.id,
       };
