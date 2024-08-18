@@ -5,6 +5,7 @@ import { getParkingAreaRules } from "../rules/parkingArea";
 const { block, mode, maxCapacity } = getParkingAreaRules();
 
 const ParkingAreaSchema = object({
+  parkingAreaId: string().required(REQUIRED_MESSAGE),
   name: string().required(REQUIRED_MESSAGE),
   description: string(),
   mode: number()

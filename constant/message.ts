@@ -21,3 +21,7 @@ export const BLOCK_LIMIT_MESSAGE = "Block is to long";
 export const OBJECT_EXISTED_MESSAGE = "Object is existed";
 
 export const PARKING_NAME_TAKEN_MESSAGE = "Parking Area Name taken";
+
+export const PLATE_NUMBER_EXISTED = "Plate Number is exist in system";
+
+export const CARD_NUMBER_EXISTED = "Card Number is exist in system";

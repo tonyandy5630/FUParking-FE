@@ -3,17 +3,9 @@ import { listSessionAPI } from "@/api/session";
 import SearchField from "@/components/Common/searchField";
 import SelectFilter from "@/components/Common/selectFilter";
 import { CardProps } from "@/types/card.type";
-import {
-  Button,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TablePagination,
-} from "@mui/material";
+import { Button, TableRow, TableCell } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 import { SessionProps } from "@/types/session.type";
 import SessionDetail from "./SessionDetail";
@@ -23,7 +15,7 @@ import usePagination from "@/hook/usePagination";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import Table from "@/components/Table";
 import { SessionTableHeaders } from "./table-headers";
-import { formatDateTimeUS } from "@/utils/date";
+import toLocaleDate from "@/utils/date";
 
 export default function SessionTable() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
@@ -102,9 +94,9 @@ export default function SessionTable() {
       >
         <TableCell>{session.cardNumber}</TableCell>
         <TableCell>{session.plateNumber}</TableCell>
-        <TableCell>{formatDateTimeUS(session.timeIn)}</TableCell>
+        <TableCell>{toLocaleDate(session.timeIn)}</TableCell>
         <TableCell>
-          {session.timeOut ? formatDateTimeUS(session.timeOut) : ""}
+          {session.timeOut ? toLocaleDate(session.timeOut) : ""}
         </TableCell>
         <TableCell>{session.vehicleTypeName}</TableCell>
         <TableCell>{session.paymentMethodName}</TableCell>

@@ -1,7 +1,10 @@
 import { updateVehicleTypeAPI } from "@/api/vehicleType";
 import FormInput from "@/components/Form/Input";
 import Modal from "@/components/modal/modal";
-import { ListVehicleTypeResponse } from "@/types/vehicleType.type";
+import {
+  ListVehicleTypeResponse,
+  VehicleTypeProps,
+} from "@/types/vehicleType.type";
 import EditVehicleTypeSchema, {
   EditVehicleTypeSchemaType,
 } from "@/utils/schemas/vehicleType/editVehicleType";
@@ -22,6 +25,7 @@ export default function EditVehicleType({
   setIsPending,
   disable,
   refetch,
+  value,
 }: {
   id: string;
   setIsPending: (isPending: boolean) => void;
@@ -31,17 +35,17 @@ export default function EditVehicleType({
   ) => Promise<
     QueryObserverResult<AxiosResponse<ListVehicleTypeResponse, any>, Error>
   >;
+  value: VehicleTypeProps;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => {
     setIsOpen(false);
   };
   const methods = useForm<EditVehicleTypeSchemaType>({
-    defaultValues: {
-      name: "",
-      description: "",
-    },
     resolver: yupResolver(EditVehicleTypeSchema),
+    defaultValues: {
+      id: value.id,
+    },
   });
 
   const {
@@ -54,20 +58,14 @@ export default function EditVehicleType({
   } = methods;
 
   const editVehicleTypeMutation = useMutation({
-    mutationKey: ["/vehicleTypes"],
-    mutationFn: (data: {
-      name?: string | undefined;
-      description?: string | undefined;
-    }) => updateVehicleTypeAPI(id, data),
+    mutationKey: ["/udpate-vehicleTypes"],
+    mutationFn: updateVehicleTypeAPI,
     onMutate: () => {
       setIsPending(true);
     },
   });
 
-  const onSubmit = async (data: {
-    name?: string | undefined;
-    description?: string | undefined;
-  }) => {
+  const onSubmit = async (data: EditVehicleTypeSchemaType) => {
     try {
       if (!data.name && !data.description) {
         setError("description", {
@@ -96,6 +94,7 @@ export default function EditVehicleType({
       refetch();
     }
   };
+
   return (
     <>
       <Button
@@ -154,19 +153,15 @@ export default function EditVehicleType({
                     placeholder='Enter Name'
                     autoFocus={true}
                     key='name'
+                    defaultValue={value.name}
                   />
-                  {errors.name && (
-                    <p className='text-red-500'>{errors.name.message}</p>
-                  )}
                   <FormInput
                     name='description'
                     label='Description'
                     placeholder='Enter description'
                     key='description'
+                    defaultValue={value.description}
                   />
-                  {errors.description && (
-                    <p className='text-red-500'>{errors.description.message}</p>
-                  )}
                   <Button type='submit' variant='contained' color='primary'>
                     Submit
                   </Button>

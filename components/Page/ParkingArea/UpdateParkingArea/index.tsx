@@ -18,6 +18,7 @@ import FormSelect, { FormOptions } from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import { ParkingAreas } from "@/types/parkingArea.type";
 import { MODES } from "@/utils/mode";
+import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
 
 interface Props extends DialogProps {
   value: ParkingAreas;
@@ -33,13 +34,17 @@ function UpdateParkingAreaDialog({
 }: Props) {
   const methods = useForm({
     resolver: yupResolver(ParkingAreaSchema),
+    defaultValues: {
+      mode: value.mode,
+      parkingAreaId: value.id,
+    },
   });
 
   const {
     formState: { errors },
     reset,
     handleSubmit,
-    getValues,
+    setError,
   } = methods;
 
   const {
@@ -56,16 +61,19 @@ function UpdateParkingAreaDialog({
 
   const handleUpdateParkingArea = async (data: ParkingAreaSchemaType) => {
     try {
-      const updateData = {
-        data,
-        id: value.id,
-      };
-      await updateParkingAreaAsync(updateData, {
+      await updateParkingAreaAsync(data, {
         onSuccess: (res) => {
           toast.success("Update Successfully");
         },
       });
-    } catch (error) {}
+    } catch (error: any) {
+      if (error.response.data.message === OBJECT_EXISTED_MESSAGE) {
+        setError("name", {
+          type: "validate",
+          message: "Parking Area Name is existed",
+        });
+      }
+    }
   };
 
   return (
