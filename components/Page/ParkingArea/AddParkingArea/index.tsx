@@ -10,23 +10,19 @@ import ParkingAreaSchema, {
   ParkingAreaSchemaType,
 } from "@/utils/schemas/parkingAreaSchema";
 import { useMutation } from "@tanstack/react-query";
-import { addParkingAreaAPI, updateParkingAreaAPI } from "@/api/parkingArea";
+import { addParkingAreaAPI } from "@/api/parkingArea";
 import { toast } from "react-toastify";
 import FormInput from "@/components/Form/Input";
 import Grid from "@mui/material/Unstable_Grid2";
-import FormSelect, { FormOptions } from "@/components/Form/Select";
+import FormSelect from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
-import { ParkingAreas } from "@/types/parkingArea.type";
 import { MODES } from "@/utils/mode";
 import useHandleDialog from "@/hook/useHandleDialog";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import dynamic from "next/dynamic";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 
-interface Props extends DialogProps {
-  /**
-   * true is Add, false is Update
-   */
-}
+interface Props extends DialogProps {}
 
 function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
   const methods = useForm({

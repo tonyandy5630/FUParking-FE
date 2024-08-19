@@ -21,11 +21,11 @@ import useSearchDebounce from "@/hook/useSearchDebouce";
 import ActionArea from "@/components/ActionArea";
 import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import AddParkingAreaDialog from "./AddParkingArea";
+const AddParkingAreaDialog = dynamic(() => import("./AddParkingArea"));
 import ActionButton from "@/components/ActionButton";
 const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 import { toast } from "react-toastify";
-import UpdateParkingAreaDialog from "./UpdateParkingArea";
+const UpdateParkingAreaDialog = dynamic(() => import("./UpdateParkingArea"));
 import getModeName, { MODES } from "@/utils/mode";
 import { FormOptions } from "@/components/Form/Select";
 
@@ -234,14 +234,16 @@ export default function ParkingAreaTable() {
           <AddIcon /> New Parking Area
         </Button>
       </ActionArea>
-      <AddParkingAreaDialog
-        open={openAddDialog}
-        onOpenChange={handleCloseAddParkingAreaDialog}
-        onClose={() => {
-          setOpenAddDialog(false);
-          refetch();
-        }}
-      />
+      {openAddDialog && (
+        <AddParkingAreaDialog
+          open={openAddDialog}
+          onOpenChange={handleCloseAddParkingAreaDialog}
+          onClose={() => {
+            setOpenAddDialog(false);
+            refetch();
+          }}
+        />
+      )}
       {updateValue && (
         <UpdateParkingAreaDialog
           open={openUpdateDialog}
