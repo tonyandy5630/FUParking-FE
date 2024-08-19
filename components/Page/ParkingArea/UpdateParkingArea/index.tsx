@@ -9,6 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import ParkingAreaSchema, {
   ParkingAreaSchemaType,
 } from "@/utils/schemas/parkingAreaSchema";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 import { useMutation } from "@tanstack/react-query";
 import { deleteParkingAreaAPI, updateParkingAreaAPI } from "@/api/parkingArea";
 import { toast } from "react-toastify";
@@ -19,11 +20,10 @@ import ComboFormButton from "@/components/Dialog/ComboButton";
 import { ParkingAreas } from "@/types/parkingArea.type";
 import { MODES } from "@/utils/mode";
 import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
-import { Delete } from "@mui/icons-material";
 import DialogActionWithDelete from "@/components/Dialog/ActionWithDelete";
 import DeleteButton from "@/components/DeleteButton";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import useHandleDialog from "@/hook/useHandleDialog";
+import dynamic from "next/dynamic";
 
 interface Props extends DialogProps {
   value: ParkingAreas;
@@ -50,9 +50,6 @@ function UpdateParkingAreaDialog({
     openDialog: openConfirmDialog,
     handleToggleDialog: toggleConfirmDialog,
   } = useHandleDialog(false);
-  const [updateParkingArea, setUpdateParkingArea] = useState<
-    ParkingAreas | undefined
-  >();
 
   const {
     formState: { errors },
@@ -78,10 +75,6 @@ function UpdateParkingAreaDialog({
   });
 
   const handleToggleConfirmBox = () => {};
-
-  const handleUpdateParkingAreaChange = () => {
-    toggleConfirmDialog();
-  };
 
   const handleClose = () => {
     onOpenChange();
