@@ -51,7 +51,7 @@ function FormRadioGroup({ name, defaultValue, options, row, label }: Props) {
                   error={errors[name]?.message !== undefined}
                 >
                   <FormLabel>{label}</FormLabel>
-                  <RadioGroup
+                      <RadioGroup
                     {...rest}
                     defaultValue={defaultValue ?? ""}
                     row={row}
