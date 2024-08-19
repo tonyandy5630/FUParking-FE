@@ -23,7 +23,7 @@ import { Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddParkingAreaDialog from "./AddParkingArea";
 import ActionButton from "@/components/ActionButton";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 import { toast } from "react-toastify";
 import UpdateParkingAreaDialog from "./UpdateParkingArea";
 import getModeName, { MODES } from "@/utils/mode";
@@ -98,7 +98,6 @@ export default function ParkingAreaTable() {
   const handleUpdateDialogClose = () => {
     setOpenUpdateDialog(false);
     setUpdateValue(undefined);
-    refetch();
   };
 
   const handleOpenAddDialog = () => {
@@ -112,7 +111,6 @@ export default function ParkingAreaTable() {
 
   const handleCloseAddParkingAreaDialog = () => {
     setOpenAddDialog(false);
-    refetch();
   };
 
   const handleCloseDialog = () => {
@@ -200,22 +198,24 @@ export default function ParkingAreaTable() {
 
   return (
     <>
-      <AlertDialog
-        open={openConfirmDialog}
-        onCancel={handleCloseDialog}
-        onOpenChange={handleCloseDialog}
-        title={
-          isActivateOrDeactivate
-            ? "Re-activate this table ?"
-            : "Deactivate this table ?"
-        }
-        onConfirm={() => {
-          handleParkingAreaStatusChange({
-            isActive: isActivateOrDeactivate,
-            parkingId: rowId,
-          });
-        }}
-      />
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          onCancel={handleCloseDialog}
+          onOpenChange={handleCloseDialog}
+          title={
+            isActivateOrDeactivate
+              ? "Re-activate this table ?"
+              : "Deactivate this table ?"
+          }
+          onConfirm={() => {
+            handleParkingAreaStatusChange({
+              isActive: isActivateOrDeactivate,
+              parkingId: rowId,
+            });
+          }}
+        />
+      )}
       <div className='flex flex-col gap-5'>
         <SearchContainer>
           <SearchField

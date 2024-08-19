@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -22,6 +22,8 @@ import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
 import { Delete } from "@mui/icons-material";
 import DialogActionWithDelete from "@/components/Dialog/ActionWithDelete";
 import DeleteButton from "@/components/DeleteButton";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
+import useHandleDialog from "@/hook/useHandleDialog";
 
 interface Props extends DialogProps {
   value: ParkingAreas;
@@ -44,6 +46,13 @@ function UpdateParkingAreaDialog({
       parkingAreaId: value.id,
     },
   });
+  const {
+    openDialog: openConfirmDialog,
+    handleToggleDialog: toggleConfirmDialog,
+  } = useHandleDialog(false);
+  const [updateParkingArea, setUpdateParkingArea] = useState<
+    ParkingAreas | undefined
+  >();
 
   const {
     formState: { errors },
@@ -67,6 +76,12 @@ function UpdateParkingAreaDialog({
     mutationKey: ["/update-parking-area"],
     mutationFn: updateParkingAreaAPI,
   });
+
+  const handleToggleConfirmBox = () => {};
+
+  const handleUpdateParkingAreaChange = () => {
+    toggleConfirmDialog();
+  };
 
   const handleClose = () => {
     onOpenChange();
@@ -103,87 +118,98 @@ function UpdateParkingAreaDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{"Update Parking Area: " + value?.name}</DialogTitle>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(handleUpdateParkingArea)}>
-          <DialogContent className='min-w-fit'>
-            <Grid container spacing={2}>
-              <Grid xs={12}>
-                <div className='min-w-full'>
-                  <FormInput
-                    name='name'
-                    autoFocus={true}
-                    label='Parking Area Name'
-                    placeholder='Enter parking area name'
-                    defaultValue={value?.name}
-                  />
-                </div>
-              </Grid>
-              <Grid xs={12}>
-                <FormInput
-                  name='description'
-                  multiline={true}
-                  label='Description'
-                  minRow={3}
-                  placeholder='Enter Description'
-                  defaultValue={value?.description}
-                />
-              </Grid>
-              <Grid xs={6}>
-                <div className='min-w-full'>
-                  <FormInput
-                    name='maxCapacity'
-                    type='number'
-                    label='Estimate Maximum Capacity'
-                    placeholder='Enter Maximum Capacity'
-                    defaultValue={value?.maxCapacity}
-                  />
-                </div>
-              </Grid>
-              <Grid xs={6}>
-                <div className='min-w-full'>
-                  <FormSelect
-                    name='mode'
-                    label='Mode'
-                    options={MODE_OPTIONS}
-                    error={errors.mode?.message}
-                    defaultValue={value?.mode}
-                  />
-                </div>
-              </Grid>
-              <Grid xs={12}>
-                <div className='min-w-full'>
-                  <FormInput
-                    name='block'
-                    type='number'
-                    label='Block'
-                    placeholder='Enter Block'
-                    endAdornment='Minutes'
-                    defaultValue={value?.block}
-                  />
-                </div>
-              </Grid>
-              <Grid xs={12}>
-                <DialogActionWithDelete>
-                  <DeleteButton onDelete={handleDeleteParkingArea}>
-                    Delete
-                  </DeleteButton>
-                  <DialogActions>
-                    <ComboFormButton
-                      onClose={handleClose}
-                      onReset={reset}
-                      submitLabel='Update'
-                      isLoading={isPendingUpdateParkingArea}
+    <>
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          onOpenChange={handleToggleConfirmBox}
+          title='Cancel Update Parking Area'
+          onCancel={toggleConfirmDialog}
+          onConfirm={handleClose}
+        />
+      )}
+      <Dialog open={open} onClose={toggleConfirmDialog}>
+        <DialogTitle>{"Update Parking Area: " + value?.name}</DialogTitle>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(handleUpdateParkingArea)}>
+            <DialogContent className='min-w-fit'>
+              <Grid container spacing={2}>
+                <Grid xs={12}>
+                  <div className='min-w-full'>
+                    <FormInput
+                      name='name'
+                      autoFocus={true}
+                      label='Parking Area Name'
+                      placeholder='Enter parking area name'
+                      defaultValue={value?.name}
                     />
-                  </DialogActions>
-                </DialogActionWithDelete>
+                  </div>
+                </Grid>
+                <Grid xs={12}>
+                  <FormInput
+                    name='description'
+                    multiline={true}
+                    label='Description'
+                    minRow={3}
+                    placeholder='Enter Description'
+                    defaultValue={value?.description}
+                  />
+                </Grid>
+                <Grid xs={6}>
+                  <div className='min-w-full'>
+                    <FormInput
+                      name='maxCapacity'
+                      type='number'
+                      label='Estimate Maximum Capacity'
+                      placeholder='Enter Maximum Capacity'
+                      defaultValue={value?.maxCapacity}
+                    />
+                  </div>
+                </Grid>
+                <Grid xs={6}>
+                  <div className='min-w-full'>
+                    <FormSelect
+                      name='mode'
+                      label='Mode'
+                      options={MODE_OPTIONS}
+                      error={errors.mode?.message}
+                      defaultValue={value?.mode}
+                    />
+                  </div>
+                </Grid>
+                <Grid xs={12}>
+                  <div className='min-w-full'>
+                    <FormInput
+                      name='block'
+                      type='number'
+                      label='Block'
+                      placeholder='Enter Block'
+                      endAdornment='Minutes'
+                      defaultValue={value?.block}
+                    />
+                  </div>
+                </Grid>
+                <Grid xs={12}>
+                  <DialogActionWithDelete>
+                    <DeleteButton onDelete={handleDeleteParkingArea}>
+                      Delete
+                    </DeleteButton>
+                    <DialogActions>
+                      <ComboFormButton
+                        onClose={handleClose}
+                        onReset={reset}
+                        submitLabel='Update'
+                        isLoading={isPendingUpdateParkingArea}
+                      />
+                    </DialogActions>
+                  </DialogActionWithDelete>
+                </Grid>
               </Grid>
-            </Grid>
-          </DialogContent>
-        </form>
-      </FormProvider>
-    </Dialog>
+            </DialogContent>
+          </form>
+        </FormProvider>
+      </Dialog>
+    </>
   );
 }
 

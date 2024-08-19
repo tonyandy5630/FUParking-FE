@@ -19,6 +19,8 @@ import ComboFormButton from "@/components/Dialog/ComboButton";
 import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
 import { ParkingAreas } from "@/types/parkingArea.type";
 import { MODES } from "@/utils/mode";
+import useHandleDialog from "@/hook/useHandleDialog";
+import AlertDialog from "@/components/Dialog/ConfirmDialog";
 
 interface Props extends DialogProps {
   /**
@@ -30,6 +32,10 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
   const methods = useForm({
     resolver: yupResolver(ParkingAreaSchema),
   });
+  const {
+    openDialog: openConfirmDialog,
+    handleToggleDialog: toggleConfirmDialog,
+  } = useHandleDialog(false);
 
   const {
     formState: { errors },
@@ -65,75 +71,86 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='xs'>
-      <DialogTitle>Create New Parking Area</DialogTitle>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(handleAddParkingArea)}>
-          <DialogContent className='min-w-fit'>
-            <Grid container spacing={2}>
-              <Grid xs={12}>
-                <div className='min-w-full'>
+    <>
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          onOpenChange={toggleConfirmDialog}
+          title='Cancel Add Parking Area'
+          onCancel={toggleConfirmDialog}
+          onConfirm={handleClose}
+        />
+      )}
+      <Dialog open={open} onClose={toggleConfirmDialog} maxWidth='xs'>
+        <DialogTitle>Create New Parking Area</DialogTitle>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(handleAddParkingArea)}>
+            <DialogContent className='min-w-fit'>
+              <Grid container spacing={2}>
+                <Grid xs={12}>
+                  <div className='min-w-full'>
+                    <FormInput
+                      name='name'
+                      autoFocus={true}
+                      label='Parking Area Name'
+                      placeholder='Enter parking area name'
+                    />
+                  </div>
+                </Grid>
+                <Grid xs={12}>
                   <FormInput
-                    name='name'
-                    autoFocus={true}
-                    label='Parking Area Name'
-                    placeholder='Enter parking area name'
+                    name='description'
+                    multiline={true}
+                    label='Description'
+                    minRow={3}
+                    placeholder='Enter Description'
                   />
-                </div>
-              </Grid>
-              <Grid xs={12}>
-                <FormInput
-                  name='description'
-                  multiline={true}
-                  label='Description'
-                  minRow={3}
-                  placeholder='Enter Description'
-                />
-              </Grid>
-              <Grid xs={6}>
-                <div className='min-w-full'>
-                  <FormInput
-                    name='maxCapacity'
-                    type='number'
-                    label='Estimate Maximum Capacity'
-                    placeholder='Enter Maximum Capacity'
+                </Grid>
+                <Grid xs={6}>
+                  <div className='min-w-full'>
+                    <FormInput
+                      name='maxCapacity'
+                      type='number'
+                      label='Estimate Maximum Capacity'
+                      placeholder='Enter Maximum Capacity'
+                    />
+                  </div>
+                </Grid>
+                <Grid xs={6}>
+                  <div className='min-w-full'>
+                    <FormSelect
+                      name='mode'
+                      label='Mode'
+                      options={MODES}
+                      error={errors.mode?.message}
+                    />
+                  </div>
+                </Grid>
+                <Grid xs={12}>
+                  <div className='min-w-full'>
+                    <FormInput
+                      name='block'
+                      type='number'
+                      label='Block'
+                      placeholder='Enter Block'
+                      endAdornment='Minutes'
+                    />
+                  </div>
+                </Grid>
+                <DialogActions className='flex justify-end min-w-full'>
+                  <ComboFormButton
+                    onClose={handleClose}
+                    onReset={reset}
+                    submitLabel={"Create"}
+                    isLoading={isPending}
                   />
-                </div>
+                </DialogActions>
               </Grid>
-              <Grid xs={6}>
-                <div className='min-w-full'>
-                  <FormSelect
-                    name='mode'
-                    label='Mode'
-                    options={MODES}
-                    error={errors.mode?.message}
-                  />
-                </div>
-              </Grid>
-              <Grid xs={12}>
-                <div className='min-w-full'>
-                  <FormInput
-                    name='block'
-                    type='number'
-                    label='Block'
-                    placeholder='Enter Block'
-                    endAdornment='Minutes'
-                  />
-                </div>
-              </Grid>
-              <DialogActions className='flex justify-end min-w-full'>
-                <ComboFormButton
-                  onClose={handleClose}
-                  onReset={reset}
-                  submitLabel={"Create"}
-                  isLoading={isPending}
-                />
-              </DialogActions>
-            </Grid>
-          </DialogContent>
-        </form>
-      </FormProvider>
-    </Dialog>
+            </DialogContent>
+          </form>
+        </FormProvider>
+      </Dialog>
+    </>
   );
 }
 
