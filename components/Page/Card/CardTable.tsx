@@ -21,6 +21,7 @@ import Table from "@/components/Table";
 import usePagination from "@/hook/usePagination";
 import { CardTableHeaders } from "./table-headers";
 import useSearchDebounce from "@/hook/useSearchDebouce";
+import CardDetail from "./CardDetail";
 
 const filterOptions = [
   { display: "Card Number", value: "cardNumber" },
@@ -29,6 +30,14 @@ const filterOptions = [
 
 export default function CardTable() {
   const [disable, setDisable] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<CardProps | null>(null);
+
+  const handleRowClick = (card: CardProps) => {
+    setSelectedCard(card);
+    setShowDetail(true);
+  };
+
   const {
     pagination,
     handleChangeRowsPerPage,
@@ -70,13 +79,23 @@ export default function CardTable() {
     }
 
     return cards.map((card: CardProps) => (
-      <TableRow key={card.id}>
-        <TableCell>{card.cardNumber}</TableCell>
-        <TableCell>{card.plateNumber}</TableCell>
-        <TableCell>
-          {new Date(card.createdDate).toLocaleDateString("en-GB")}
+      <TableRow key={card.id} hover={true}>
+        <TableCell
+          onClick={() => handleRowClick(card)}
+          className="cursor-pointer"
+        >
+          {card.cardNumber}
         </TableCell>
-        <TableCell>
+        <TableCell
+          onClick={() => handleRowClick(card)}
+          className="cursor-pointer"
+        >
+          {card.plateNumber}
+        </TableCell>
+        <TableCell
+          onClick={() => handleRowClick(card)}
+          className="cursor-pointer"
+        >
           <Chip
             variant={
               card.status === "ACTIVE"
@@ -89,11 +108,26 @@ export default function CardTable() {
             {card.status}
           </Chip>
         </TableCell>
-        <TableCell>{card.plateNumberSession}</TableCell>
+        <TableCell
+          onClick={() => handleRowClick(card)}
+          className="cursor-pointer"
+        >
+          <Chip
+            variant={
+              card.isInUse === true
+                ? "success"
+                : card.isInUse === false
+                ? "warning"
+                : "error"
+            }
+          >
+            {card.isInUse ? "In Use" : "Not In Use"}
+          </Chip>
+        </TableCell>
         <TableCell>
-          <div className='flex flex-row space-x-2'>
+          <div className="flex flex-row space-x-2">
             <EditCard
-              value={card.plateNumber}
+              value={card.plateNumber ?? ""}
               id={card.id}
               refetch={refetch}
               setIsPending={setDisable}
@@ -131,7 +165,7 @@ export default function CardTable() {
   }, [data?.data.data]);
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className="flex flex-col gap-5">
       <SearchContainer>
         <SearchField
           inputValue={searchText}
@@ -143,10 +177,10 @@ export default function CardTable() {
           listFilter={filterOptions}
         />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-center w-full'>
+      <div className="flex flex-row gap-3 items-center justify-end w-full">
         <Button
-          variant='contained'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={() => refetch()}
           disabled={false}
         >
@@ -161,15 +195,24 @@ export default function CardTable() {
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess && (
-        <Table
-          onPageChange={handlePageChange}
-          onPageSizeChange={handleChangeRowsPerPage}
-          pagination={pagination}
-          tableHeads={CardTableHeaders}
-          tableRows={tableRows}
-          isLoading={isLoading}
-          totalRecord={data.data.totalRecord}
-        />
+        <>
+          <Table
+            onPageChange={handlePageChange}
+            onPageSizeChange={handleChangeRowsPerPage}
+            pagination={pagination}
+            tableHeads={CardTableHeaders}
+            tableRows={tableRows}
+            isLoading={isLoading}
+            totalRecord={data.data.totalRecord}
+          />
+          {showDetail && selectedCard && (
+            <CardDetail
+              isOpen={showDetail}
+              setIsOpen={setShowDetail}
+              CardProps={selectedCard}
+            />
+          )}
+        </>
       )}
     </div>
   );

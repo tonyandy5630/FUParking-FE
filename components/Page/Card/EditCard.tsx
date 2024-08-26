@@ -103,8 +103,8 @@ export default function EditCard({
           onCancel={handleToggleDialog}
           onConfirm={handleConfirmDialog}
           onOpenChange={handleToggleDialog}
-          title='Cancel Edit card ?'
-          content='By clicking OK will RESET and CLOSE this form ?'
+          title="Cancel Edit card ?"
+          content="By clicking OK will RESET and CLOSE this form ?"
         />
       )}
       <Button
@@ -127,22 +127,22 @@ export default function EditCard({
       </Button>
       {isOpen && (
         <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-          <div className='pl-5 pr-5 pt-10 pb-10'>
-            <div className='flex flex-col w-full space-y-5'>
-              <h1 className='text-center font-semibold text-2xl'>Edit Card</h1>
+          <div className="pl-5 pr-5 pt-10 pb-10">
+            <div className="flex flex-col w-full space-y-5">
+              <h1 className="text-center font-semibold text-2xl">Edit Card</h1>
               <FormProvider {...methods}>
                 <form
-                  className='flex flex-col space-y-2'
+                  className="flex flex-col space-y-2"
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <FormInput
-                    name='plateNumber'
-                    label='Plate Number'
-                    placeholder='Enter Plate Number'
+                    name="plateNumber"
+                    label="Plate Number"
+                    placeholder="Enter Plate Number"
                     autoFocus={true}
                     defaultValue={value}
                   />
-                  <Button type='submit' variant='contained' color='primary'>
+                  <Button type="submit" variant="contained" color="primary">
                     Submit
                   </Button>
                 </form>

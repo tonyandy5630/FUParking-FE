@@ -18,6 +18,7 @@ import { AxiosResponse } from "axios";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function AddCard({
   setIsPending,
@@ -116,43 +117,46 @@ export default function AddCard({
         onCancel={handleToggleDialog}
         onConfirm={handleConfirmDialog}
         onOpenChange={handleToggleDialog}
-        title='Cancel create card ?'
-        content='By clicking OK will RESET and CLOSE this form ?'
+        title="Cancel create card ?"
+        content="By clicking OK will RESET and CLOSE this form ?"
       />
       <Button
-        variant='contained'
-        color='primary'
+        variant="outlined"
+        color="primary"
         disabled={disable}
         onClick={() => setIsOpen(true)}
       >
         Add Card
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className='pl-5 pr-5 pt-10 pb-10'>
-          <div className='flex flex-col w-full space-y-5'>
-            <h1 className='text-center font-semibold text-2xl'>
+        <div className="pl-5 pr-5 pt-5 pb-5">
+          <div className="flex justify-end">
+            <CloseIcon onClick={handleClose} className="cursor-pointer" />
+          </div>
+          <div className="flex flex-col w-full space-y-5">
+            <h1 className="text-center font-semibold text-2xl">
               Create new Card
             </h1>
             <FormProvider {...methods}>
               <FormControl>
                 <form
-                  className='flex flex-col space-y-2'
+                  className="flex flex-col space-y-2"
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <FormInput
-                    name='cardNumber'
-                    label='Card Number'
-                    placeholder='Enter Card Number'
+                    name="cardNumber"
+                    label="Card Number"
+                    placeholder="Enter Card Number"
                     autoFocus={true}
-                    key='cardNumber'
+                    key="cardNumber"
                   />
                   <FormInput
-                    name='plateNumber'
-                    label='Plate Number'
-                    placeholder='Enter Plate Number'
-                    key='plateNumber'
+                    name="plateNumber"
+                    label="Plate Number"
+                    placeholder="Enter Plate Number"
+                    key="plateNumber"
                   />
-                  <Button type='submit' variant='contained' color='primary'>
+                  <Button type="submit" variant="contained" color="primary">
                     Submit
                   </Button>
                 </form>

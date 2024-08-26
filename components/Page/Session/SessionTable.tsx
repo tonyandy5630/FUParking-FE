@@ -94,7 +94,7 @@ export default function SessionTable() {
       <TableRow
         key={session.id}
         hover={true}
-        className='cursor-pointer'
+        className="cursor-pointer"
         onClick={() => handleClickOpen(session.id)}
       >
         <TableCell>{session.cardNumber}</TableCell>
@@ -125,7 +125,7 @@ export default function SessionTable() {
   }, [data?.data.data]);
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className="flex flex-col gap-5">
       <SearchContainer>
         <SearchField
           inputValue={searchText}
@@ -137,10 +137,10 @@ export default function SessionTable() {
           listFilter={filterOptions}
         />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-end w-full'>
+      <div className="flex flex-row gap-3 items-center justify-end w-full">
         <Button
-          variant='outlined'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={() => refetch()}
           disabled={false}
         >

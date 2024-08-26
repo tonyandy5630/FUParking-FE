@@ -107,11 +107,11 @@ export default function Customer() {
         <TableCell>{row.email}</TableCell>
         <TableCell>
           {row.customerType === "PAID" ? (
-            <span className='inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center'>
+            <span className="inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center">
               Paid
             </span>
           ) : row.customerType === "FREE" ? (
-            <span className='inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center'>
+            <span className="inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center">
               Free
             </span>
           ) : (
@@ -121,7 +121,7 @@ export default function Customer() {
         <TableCell>
           {row.statusCustomer === "ACTIVE" ? (
             <span
-              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
                 color: "#62a34f",
                 backgroundColor: "#dcfce7",
@@ -131,7 +131,7 @@ export default function Customer() {
             </span>
           ) : row.statusCustomer === "INACTIVE" ? (
             <span
-              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
                 color: "#fcca46",
                 backgroundColor: "#fef9c3",
@@ -144,13 +144,13 @@ export default function Customer() {
           )}
         </TableCell>
         <TableCell>
-          <div className='flex flex-row gap-3'>
+          <div className="flex flex-row gap-3">
             {(() => {
               if (row.statusCustomer === "INACTIVE") {
                 return (
                   <>
                     <ActionButton
-                      variant='primary'
+                      variant="primary"
                       onClick={() => handleOpenDialog(row.customerId, true)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
@@ -161,7 +161,7 @@ export default function Customer() {
               } else if (row.statusCustomer === "ACTIVE") {
                 return (
                   <ActionButton
-                    variant='danger'
+                    variant="danger"
                     onClick={() => handleOpenDialog(row.customerId, false)}
                     disabled={changeStatusCustomerMutation.isPending}
                   >
@@ -208,10 +208,10 @@ export default function Customer() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-start w-full py-2'>
+      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
         <Button
-          variant='outlined'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={() => refetch()}
           disabled={changeStatusCustomerMutation.isPending}
         >

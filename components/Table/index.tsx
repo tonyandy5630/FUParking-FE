@@ -35,7 +35,7 @@ export default memo(function DataTable({
   const renderTableHeads = useMemo(() => {
     return tableHeads.map((item) => (
       <TableCell key={item}>
-        <p className='text-base font-bold'>{item}</p>
+        <p className="text-base font-bold">{item}</p>
       </TableCell>
     ));
   }, [tableHeads.length]);
@@ -56,7 +56,7 @@ export default memo(function DataTable({
       {isLoading ? (
         <Loading />
       ) : (
-        <Table className='w-full' aria-label='simple table'>
+        <Table className="w-full" aria-label="simple table">
           <TableHead>
             <TableRow>{renderTableHeads}</TableRow>
           </TableHead>

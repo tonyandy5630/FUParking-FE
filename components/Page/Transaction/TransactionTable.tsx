@@ -17,6 +17,7 @@ import { TransactionTableHeaders } from "./table-headers";
 import Chip from "@/components/Chip";
 import dynamic from "next/dynamic";
 import useSearchDebounce from "@/hook/useSearchDebouce";
+import { Button } from "@mui/material";
 
 type FilterOption = {
   display: string;
@@ -71,11 +72,19 @@ export default function TransactionTable() {
 
     return transactions.map((transaction: TransactionWithFillerProps) => (
       <TableRow key={transaction.id}>
-        <TableCell>{transaction.email}</TableCell>
-        <TableCell>{transaction.walletType}</TableCell>
+        <TableCell>
+          {transaction.email === "" ? "None" : transaction.email}
+        </TableCell>
+        <TableCell>
+          {transaction.walletType === "" ? "None" : transaction.walletType}
+        </TableCell>
         <TableCell>{transaction.paymentMethod}</TableCell>
-        <TableCell>{transaction.packageName}</TableCell>
-        <TableCell>{transaction.amount}</TableCell>
+        <TableCell>
+          {transaction.packageName === "" ? "None" : transaction.packageName}
+        </TableCell>
+        <TableCell>
+          {transaction.amount === "" ? "None" : transaction.amount}
+        </TableCell>
         <TableCell>{transaction.transactionDescription}</TableCell>
         <TableCell>
           <Chip
@@ -106,6 +115,11 @@ export default function TransactionTable() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
+      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
+        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+          Refresh
+        </Button>
+      </div>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
       {isSuccess &&
