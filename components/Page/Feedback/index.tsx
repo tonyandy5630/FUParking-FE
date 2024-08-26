@@ -18,6 +18,7 @@ import { getAllParkingAreaAPI } from "@/api/parkingArea";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import dynamic from "next/dynamic";
 import Loading from "../LoadingPage/Loading";
+import { Button } from "@mui/material";
 
 // const FILTER: listFilter[] = [
 //   {
@@ -49,6 +50,7 @@ export default function FeedbackPage() {
     data: feedbackData,
     isSuccess,
     isLoading,
+    refetch,
   } = useQuery({
     queryKey: [
       "/manager-get-all-feedback",
@@ -111,7 +113,7 @@ export default function FeedbackPage() {
           <TableCell>{item.title}</TableCell>
           <TableCell>{item.customerName}</TableCell>
           <TableCell>{item.parkingAreaName}</TableCell>
-          <Tooltip title={item.description} placement='bottom-start'>
+          <Tooltip title={item.description} placement="bottom-start">
             <TableCell>{wrapText(item.description, 20)}</TableCell>
           </Tooltip>
           <TableCell>{toLocaleDate(item.createdDate)}</TableCell>
@@ -127,15 +129,20 @@ export default function FeedbackPage() {
         <SearchField
           inputValue={searchText}
           setInputValue={handleSearchTextChange}
-          placeholder='Search Customer Name'
+          placeholder="Search Customer Name"
         />
         <SelectFilter
           listFilter={parkingAreasOptions}
           filterAttribute={parkingArea}
           setFilterAttribute={handleParkingAreaChange}
-          label='Parking Area'
+          label="Parking Area"
         />
       </SearchContainer>
+      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
+        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+          Refresh
+        </Button>
+      </div>
       {isLoading && <Loading />}
       {isSuccess && (
         <Table

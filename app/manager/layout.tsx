@@ -16,6 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isAuthRole, setIsAuthRole] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [fullName, setFullName] = useState("");
   const headerHeight = 80;
 
   const authMutation = useMutation({
@@ -29,30 +30,30 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 900px)');
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
     let timeoutId: NodeJS.Timeout;
 
     const handleMediaQueryChange = (event: MediaQueryListEvent) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-            if (event.matches) {
-                setIsOpen(false);
-            } else {
-                setIsOpen(true);
-            }
-        }, 100); // Adjust the debounce delay as needed
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        if (event.matches) {
+          setIsOpen(false);
+        } else {
+          setIsOpen(true);
+        }
+      }, 100); // Adjust the debounce delay as needed
     };
 
     if (mediaQuery.matches) {
-        setIsOpen(false);
+      setIsOpen(false);
     }
 
-    mediaQuery.addEventListener('change', handleMediaQueryChange);
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
     return () => {
-        clearTimeout(timeoutId);
-        mediaQuery.removeEventListener('change', handleMediaQueryChange);
+      clearTimeout(timeoutId);
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
     };
-}, []);
+  }, []);
 
   const isAuth = async () => {
     try {
@@ -60,10 +61,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {},
         {
           onSuccess: (data) => {
-            if (data.data.data.role == EnumAuthRole.MANAGER) {
+            if (data.data.data.role == EnumAuthRole.SUPERVISOR) {
               setIsAuthRole(true);
             } else {
               setIsAuthRole(false);
+            }
+            if (data.data.data.name !== null) {
+              setFullName(data.data.data.name);
             }
             setIsLoading(false);
           },
@@ -77,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   if (isLoading) {
     return (
-      <div className='h-screen'>
+      <div className="h-screen">
         <Loading />
       </div>
     );
@@ -88,19 +92,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className='h-screen'>
+    <div className="h-screen">
       <div>
-        <Headers isOpen={isOpen} setIsOpen={setIsOpen} height={headerHeight} />
+        <Headers
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          height={headerHeight}
+          fullName={fullName}
+        />
       </div>
       <div
-        className='flex flex-row h-full'
+        className="flex flex-row h-full"
         style={{ height: `calc(100vh - ${headerHeight}px` }}
       >
-        <div className='bg-gray-800'>
+        <div className="bg-gray-800">
           <LeftNavbar open={isOpen} />
         </div>
-        <main className='flex-grow overflow-auto mt-5 mb-5 pt-2 pb-2 pl-10 pr-10'>
-          <div className='w-full bg-white rounded-md border shadow-lg gap-4 flex flex-col p-5'>
+        <main className="flex-grow overflow-auto mt-5 mb-5 pt-2 pb-2 pl-10 pr-10">
+          <div className="w-full bg-white rounded-md border shadow-lg gap-4 flex flex-col p-5">
             {children}
           </div>
         </main>

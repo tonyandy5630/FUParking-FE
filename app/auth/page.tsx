@@ -1,20 +1,15 @@
 import React from "react";
 import Image from "next/image";
 import LoginForm from "@/components/Page/Auth/LoginForm";
+import logo from "@/public/Bai_Logo.svg";
 
 export default function Page() {
   return (
-    <main className='flex flex-col justify-center w-full items-center p-14 h-full space-y-5'>
-      <Image
-        src='/bai_logo.svg'
-        alt='logo'
-        width={150}
-        height={150}
-        className='p-1.5'
-      />
-      <div className='text-center'>
+    <main className="flex flex-col justify-center w-full items-center p-14 h-full space-y-5">
+      <Image src={logo} alt="logo" width={150} height={150} className="p-1.5" />
+      <div className="text-center">
         <span
-          className='text-3xl p-2 font-semibold'
+          className="text-3xl p-2 font-semibold"
           style={{ color: "#f37021" }}
         >
           Sign in to your account

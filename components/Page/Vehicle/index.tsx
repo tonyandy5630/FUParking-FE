@@ -22,6 +22,8 @@ import { VehicleTypeProps } from "@/types/vehicleType.type";
 import ExportToCSVButton from "@/components/ExportCSVButton";
 import ActionButton from "@/components/ActionButton";
 import Loading from "../LoadingPage/Loading";
+import { Button } from "@mui/material";
+import Image from "next/image";
 const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"), {
   loading: () => <Loading />,
 });
@@ -272,7 +274,13 @@ export default function VehiclePage() {
         <TableCell>{item.plateNumber}</TableCell>
         <TableCell>{item.vehicleType}</TableCell>
         <TableCell>
-          <img width={100} height={65} src={item.plateImage} />
+          <Image
+            width={100}
+            height={65}
+            src={item.plateImage}
+            alt="vehicle"
+            loader={() => item.plateImage as string}
+          />
         </TableCell>
         <TableCell>
           <Chip
@@ -288,13 +296,13 @@ export default function VehiclePage() {
           </Chip>
         </TableCell>
         <TableCell>
-          <div className='flex justify-start items-center gap-1 min-w-full'>
+          <div className="flex justify-start items-center gap-1 min-w-full">
             {(() => {
               switch (item.statusVehicle) {
                 case "ACTIVE":
                   return (
                     <ActionButton
-                      variant='danger'
+                      variant="danger"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleOpenConfirmBox(item.id, false);
@@ -306,7 +314,7 @@ export default function VehiclePage() {
                 case "INACTIVE":
                   return (
                     <ActionButton
-                      variant='primary'
+                      variant="primary"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleOpenConfirmBox(item.id, true);
@@ -317,9 +325,9 @@ export default function VehiclePage() {
                   );
                 case "PENDING":
                   return (
-                    <div className='flex justify-between items-center gap-2'>
+                    <div className="flex justify-between items-center gap-2">
                       <ActionButton
-                        variant='primary'
+                        variant="primary"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleUpdateVehicle(item);
@@ -328,7 +336,7 @@ export default function VehiclePage() {
                         Edit
                       </ActionButton>
                       <ActionButton
-                        variant='danger'
+                        variant="danger"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenConfirmBox(item.id, false);
@@ -381,7 +389,7 @@ export default function VehiclePage() {
       <PageTitle>Vehicle List</PageTitle>
       <SearchContainer>
         <SelectFilter
-          label='Vehicle Type'
+          label="Vehicle Type"
           filterAttribute={selectedVehicleTypes}
           listFilter={formatVehicleTypesFilter ?? []}
           setFilterAttribute={handleVehicleTypeChange}
@@ -396,8 +404,11 @@ export default function VehiclePage() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className='min-w-full flex justify-start items-center py-2'>
+      <div className="min-w-full flex justify-end items-center py-2 gap-5">
         <ExportToCSVButton data={vehicleList} />
+        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+          Refresh
+        </Button>
       </div>
       <DataTable
         tableHeads={VehicleTableHeaders}

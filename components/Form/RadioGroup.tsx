@@ -27,6 +27,7 @@ function FormRadioGroup({ name, defaultValue, options, row, label }: Props) {
     return options.map((item) => {
       return (
         <FormControlLabel
+          key={item.value}
           value={item.value}
           control={<Radio />}
           label={item.name}
@@ -47,11 +48,11 @@ function FormRadioGroup({ name, defaultValue, options, row, label }: Props) {
               return (
                 <FormControl
                   fullWidth
-                  size='small'
+                  size="small"
                   error={errors[name]?.message !== undefined}
                 >
                   <FormLabel>{label}</FormLabel>
-                      <RadioGroup
+                  <RadioGroup
                     {...rest}
                     defaultValue={defaultValue ?? ""}
                     row={row}
@@ -59,9 +60,7 @@ function FormRadioGroup({ name, defaultValue, options, row, label }: Props) {
                     {radioOptions}
                   </RadioGroup>
                   <FormHelperText>
-                    {errors[name]?.message === undefined
-                      ? ""
-                      : (errors[name].message as string)}
+                    {errors[name]?.message ? String(errors[name]?.message) : ""}
                   </FormHelperText>
                 </FormControl>
               );

@@ -46,7 +46,7 @@ export default function OccupancyRate() {
     <div className="flex flex-col sm:flex-row items-center justify-between">
       <div className="flex flex-col gap-2">
         <p>Average session duration per day</p>
-        <p className="font-extrabold">{data?.data.data} hours</p>
+        <p className="font-extrabold">{data?.data.data.toFixed(2)} hours</p>
       </div>
       <div className="h-px w-full bg-gray-300 sm:hidden mt-5 mb-5"></div>
       <div className="h-16 w-px bg-gray-300 hidden sm:block"></div>

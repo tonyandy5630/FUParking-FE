@@ -1,3 +1,5 @@
+import TerserPlugin from "terser-webpack-plugin";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   async redirects() {
@@ -8,6 +10,20 @@ const nextConfig = {
         permanent: true,
       },
     ];
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.optimization.minimizer = [
+        new TerserPlugin({
+          terserOptions: {
+            output: {
+              ascii_only: true,
+            },
+          },
+        }),
+      ];
+    }
+    return config;
   },
 };
 
