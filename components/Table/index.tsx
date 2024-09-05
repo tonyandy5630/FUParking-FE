@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -15,7 +15,7 @@ const Loading = dynamic(() => import("../Page/LoadingPage/Loading"));
 
 type Props = {
   tableHeads: Array<string>;
-  tableRows: any;
+  tableRows: React.JSX.Element[];
   pagination: PaginationType;
   totalRecord?: number;
   onPageChange: any;

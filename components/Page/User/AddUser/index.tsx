@@ -79,12 +79,12 @@ export default function AddUserDialog({
           open={openAlertDialog}
           onCancel={toggleAlertDialog}
           onConfirm={handleConfirmAlertDialog}
-          title='Confirm cancel Add User?'
-          content='Click OK will CLOSE and RESET the form'
+          title="Confirm cancel Add User?"
+          content="Click OK will CLOSE and RESET the form"
           onOpenChange={toggleAlertDialog}
         />
       )}
-      <Dialog open={open} maxWidth='sm' onClose={handleAddUserClose}>
+      <Dialog open={open} maxWidth="sm" onClose={handleAddUserClose}>
         <DialogTitle>Add User</DialogTitle>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(handleAddUser)}>
@@ -92,39 +92,39 @@ export default function AddUserDialog({
               <Grid container spacing={2}>
                 <Grid xs={12}>
                   <FormInput
-                    name='email'
-                    label='Email'
-                    placeholder='Enter email'
+                    name="email"
+                    label="Email"
+                    placeholder="Enter email"
                   />
                 </Grid>
                 <Grid xs={12}>
                   <FormInput
-                    name='fullName'
-                    label='Full Name'
-                    placeholder='Enter fullname'
+                    name="fullName"
+                    label="Full Name"
+                    placeholder="Enter fullname"
                   />
                 </Grid>
                 <Grid xs={12}>
                   <FormInput
-                    type='password'
-                    name='password'
-                    label='Password'
-                    placeholder='Enter password'
+                    type="password"
+                    name="password"
+                    label="Password"
+                    placeholder="Enter password"
                   />
                 </Grid>
                 <Grid>
                   <FormRadioGroup
                     row={true}
                     options={RoleOptions}
-                    name='role'
-                    label='Role'
+                    name="role"
+                    label="Role"
                   />
                 </Grid>
               </Grid>
               <Grid>
                 <DialogActions>
                   <ComboFormButton
-                    submitLabel='Create'
+                    submitLabel="Create"
                     onClose={onOpenChange}
                     onReset={reset}
                     isLoading={isPendingAddUser}
@@ -135,7 +135,6 @@ export default function AddUserDialog({
           </form>
         </FormProvider>
       </Dialog>
-      ;
     </>
   );
 }

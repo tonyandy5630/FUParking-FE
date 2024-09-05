@@ -23,3 +23,11 @@ export const GET_LIST_VEHICLE_API_URL = ({
 export const CHANGE_VEHICLE_STATUS_API_URL = `${baseURL}/vehicles/user/vehicle/status`;
 
 export const UPDATE_VEHICLE_API_URL = `${baseURL}/vehicles/user/update`;
+
+export const GET_LIST_VEHICLE_BY_CUSTOMER_API_URL = ({
+  customerId,
+}: {
+  customerId: string;
+}) => `${baseURL}/vehicles/customers/${customerId}`;
+
+export const CREATE_VEHICLE_FOR_CUSTOMER_BY_USER_API_URL = `${baseURL}/vehicles`;

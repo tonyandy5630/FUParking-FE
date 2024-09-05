@@ -61,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {},
         {
           onSuccess: (data) => {
-            if (data.data.data.role == EnumAuthRole.SUPERVISOR) {
+            if (data.data.data.role == EnumAuthRole.MANAGER) {
               setIsAuthRole(true);
             } else {
               setIsAuthRole(false);

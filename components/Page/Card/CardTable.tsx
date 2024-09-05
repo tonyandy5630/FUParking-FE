@@ -12,7 +12,7 @@ import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
 const EditCard = dynamic(() => import("./EditCard"));
 const DeleteCard = dynamic(() => import("./DeleteCard"));
-const AddCard = dynamic(() => import("./AddCard"));
+const AddCard = dynamic(() => import("./Action/AddCard"));
 const MissCard = dynamic(() => import("./MissCard"));
 const ActiveAndDeactiveCard = dynamic(() => import("./ActiveAndDeactiveCard"));
 import SearchContainer from "@/components/Common/SearchContainer";
@@ -22,6 +22,7 @@ import usePagination from "@/hook/usePagination";
 import { CardTableHeaders } from "./table-headers";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import CardDetail from "./CardDetail";
+import useHandleDialog from "@/hook/useHandleDialog";
 
 const filterOptions = [
   { display: "Card Number", value: "cardNumber" },
@@ -32,7 +33,8 @@ export default function CardTable() {
   const [disable, setDisable] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CardProps | null>(null);
-
+  const { openDialog: openCreateCard, handleToggleDialog: toggleCreateCard } =
+    useHandleDialog(false);
   const handleRowClick = (card: CardProps) => {
     setSelectedCard(card);
     setShowDetail(true);
@@ -186,11 +188,17 @@ export default function CardTable() {
         >
           Refresh
         </Button>
-        <AddCard
-          refetch={refetch}
-          setIsPending={setDisable}
-          disable={disable}
-        />
+        {openCreateCard && (
+          <AddCard
+            onOpenChange={toggleCreateCard}
+            refetch={refetch}
+            open={openCreateCard}
+            onClose={toggleCreateCard}
+          />
+        )}
+        <Button variant="contained" color="primary" onClick={toggleCreateCard}>
+          Add Card
+        </Button>
       </div>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}
