@@ -9,7 +9,7 @@ export const GET_TOTAL_REVENUE_API_URL = () =>
   `${baseURL}/statistic/revenue/today`;
 
 export const GET_TOTAL_VEHICLE_PARKED_TODAY_API_URL = () =>
-  `${baseURL}/statistic/session/today`;
+  `${baseURL}/statistic/session/parked`;
 
 export const GET_AVERAGE_SESSION_DURATION_PER_DAY_API_URL = () =>
   `${baseURL}/statistic/session/average`;

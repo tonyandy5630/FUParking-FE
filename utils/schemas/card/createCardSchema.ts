@@ -1,9 +1,12 @@
-import { InferType, object, string } from "yup";
+import { array, InferType, object, string } from "yup";
 
-const AddCardSchema = object({
-  plateNumber: string().trim(),
-  cardNumber: string().trim().required("Card number is required"),
+const CardSchema = object({
+  cardNumber: string().required("Card number is required"),
 });
 
-export type AddCardSchemaType = InferType<typeof AddCardSchema>;
+const AddCardSchema = object({
+  cardNumbers: array().of(CardSchema).default([]),
+});
+
+export type AddCardSchemaType = typeof AddCardSchema;
 export default AddCardSchema;

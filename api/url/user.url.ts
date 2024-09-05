@@ -12,3 +12,6 @@ export const GET_LIST_USER_API_URL = (
   }&SearchInput=${SearchInput}&Attribute=${Attribute}`;
 
 export const ADD_USER_API_URL = (role: Role) => `${baseURL}/user/${role}`;
+
+export const DELETE_USER_API_URL = (userId: string) =>
+  `${baseURL}/user/${userId}`;

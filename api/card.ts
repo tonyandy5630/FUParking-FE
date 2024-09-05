@@ -3,6 +3,7 @@ import {
   ADD_CUSTOMER_API_URL,
   EDIT_CARD_API_URL,
   GET_LIST_CARD_API_URL,
+  GET_LIST_CARD_INACTIVE_API_URL,
   MISSING_CARD_API_URL,
 } from "./url/card.url";
 import http from "@/utils/http";
@@ -27,13 +28,14 @@ export const editCardAPI = (
 
 export const deleteCardAPI = (id: string) => http.delete(EDIT_CARD_API_URL(id));
 
-export const addCardAPI = (body: {
-  cardNumber: string;
-  plateNumber?: string | undefined;
-}) => http.post(ADD_CUSTOMER_API_URL, body);
+export const addCardAPI = (body: { cardNumbers: string[] }) =>
+  http.post(ADD_CUSTOMER_API_URL, body);
 
 export const activeAndDeactiveCardAPI = (id: string, isActive: boolean) =>
   http.put(ACTIVE_AND_DEACTIVE_CARD_API_URL(id, isActive));
 
 export const missingCardAPI = (id: string) =>
   http.put(MISSING_CARD_API_URL(id));
+
+export const getListCardInactiveAPI = () =>
+  http.get(GET_LIST_CARD_INACTIVE_API_URL);

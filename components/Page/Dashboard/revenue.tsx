@@ -20,7 +20,7 @@ export default function Revenue() {
   return (
     <div className="flex rounded-md border shadow-lg bg-white items-center justify-around pl-10 pr-10 gap-10 h-full">
       <div className="flex flex-col items-start justify-center gap-2">
-        <p className="text-wrap">Total revenue</p>
+        <p className="text-wrap">Total revenue today</p>
         <p className="text-3xl font-extrabold">
           {Intl.NumberFormat("de-DE").format(data?.data.data)}
         </p>

@@ -1,4 +1,5 @@
 export const CustomerTableHeaders = [
+  "",
   "FullName",
   "Email",
   "Type",

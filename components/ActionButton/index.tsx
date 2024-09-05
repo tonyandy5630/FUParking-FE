@@ -9,6 +9,7 @@ const ActionButton = React.forwardRef<HTMLButtonElement, Props>(
   ({ variant, onClick, disabled, children, ...props }, ref) => {
     return (
       <Button
+        size="small"
         sx={{
           backgroundColor: `${variant === "primary" ? "#3b82f6" : "#ef4444"}`,
           color: "white",

@@ -27,6 +27,7 @@ export default function Modal({
       open={open}
       onClose={handleClose}
       ref={overlayRef}
+      maxWidth="sm"
       sx={{
         "& .MuiDialog-paper": {
           borderRadius: "10px", // adjust this value to change the roundness of the corners
@@ -40,7 +41,7 @@ export default function Modal({
           backgroundColor: "rgba(75, 85, 99, 0.6)", // equivalent to bg-gray-800 with 60% opacity
         },
       }}
-      className='fixed inset-0 z-10 flex items-center justify-center'
+      className="fixed inset-0 z-10 flex items-center justify-center"
     >
       {children}
     </Dialog>

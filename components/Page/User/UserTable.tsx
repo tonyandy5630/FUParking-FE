@@ -22,6 +22,7 @@ import ActionArea from "@/components/ActionArea";
 import { Button } from "@mui/material";
 import useHandleDialog from "@/hook/useHandleDialog";
 import AddUserDialog from "./AddUser";
+import Delete from "./Delete";
 
 type FilterOption = {
   display: string;
@@ -68,6 +69,9 @@ export default function UserTable() {
     goToFirstPage();
   };
 
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
     queryKey: [
       "/user",
@@ -103,7 +107,18 @@ export default function UserTable() {
           </Chip>
         </TableCell>
         <TableCell>{toLocaleDate(packs.createdDate)}</TableCell>
-        <TableCell></TableCell>
+        <TableCell>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={() => {
+              setSelectedUserId(packs.id);
+              setOpenDeleteDialog(true);
+            }}
+          >
+            DELETE
+          </Button>
+        </TableCell>
       </TableRow>
     ));
   }, [data]);
@@ -119,6 +134,13 @@ export default function UserTable() {
           onClose={toggleAddDialog}
         />
       )}
+      {selectedUserId && (
+        <Delete
+          userId={selectedUserId}
+          isOpen={openDeleteDialog}
+          setIsOpen={setOpenDeleteDialog}
+        />
+      )}
       <SearchContainer>
         <SearchField
           inputValue={searchText}
@@ -131,7 +153,7 @@ export default function UserTable() {
         />
       </SearchContainer>
       <ActionArea>
-        <Button variant='outlined' onClick={toggleAddDialog}>
+        <Button variant="outlined" onClick={toggleAddDialog}>
           New User
         </Button>
       </ActionArea>
