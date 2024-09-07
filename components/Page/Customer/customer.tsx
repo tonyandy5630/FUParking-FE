@@ -22,7 +22,7 @@ import usePagination from "@/hook/usePagination";
 import Table from "@/components/Table";
 import { CustomerTableHeaders } from "./table-headers";
 import useSearchDebounce from "@/hook/useSearchDebouce";
-import RegisterNewCustomer from "./Action/RegisterNewCustomer";
+import RegisterNewCustomer from "./Action/Customer/RegisterNewCustomer";
 import useHandleDialog from "@/hook/useHandleDialog";
 import Collapse from "@mui/material/Collapse";
 import IconButton from "@mui/material/IconButton";
@@ -34,6 +34,13 @@ import { Grid, Typography } from "@mui/material";
 import { VehicleProps } from "@/types/vehicle.type";
 import toLocaleDate from "@/utils/date";
 import AddVehicle from "./Action/Vehicle/AddVehicle";
+import Image from "next/image";
+import DeleteVehicle from "./Action/Vehicle/DeleteVehicle";
+import DeactiveAndActiveVehicle from "./Action/Vehicle/DeactiveAndActiveVehicle";
+import Bai_Logo from "@/public/Bai_Logo.svg";
+import { UpdateVehicleSchemaType } from "@/utils/schemas/vehicle/updateVehicleSchema";
+import { Edit } from "lucide-react";
+import EditVehicle from "./Action/Vehicle/EditVehicle";
 
 const filterOptions = [
   { display: "Name", value: "fullName" },
@@ -45,6 +52,8 @@ const filterOptions = [
 export default function Customer() {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = Active , false = Deactive
+  const [isActiveOrDeActiveVehicle, setIsActiveOrDeActiveVehicle] =
+    useState(false); //* true = Active , false = Deactive
   const {
     openDialog: openRgisterNewCustomer,
     handleToggleDialog: toggleAddCustomer,
@@ -52,6 +61,19 @@ export default function Customer() {
 
   const { openDialog: openAddVehicle, handleToggleDialog: toggleAddVehicle } =
     useHandleDialog(false);
+
+  const {
+    openDialog: openDeactiveAndActiveVehicle,
+    handleToggleDialog: toggleDeactiveAndActiveVehicle,
+  } = useHandleDialog(false);
+
+  const { openDialog: openEditVehicle, handleToggleDialog: toggleEditVehicle } =
+    useHandleDialog(false);
+
+  const {
+    openDialog: openDeleteVehicle,
+    handleToggleDialog: toggleDeleteVehicle,
+  } = useHandleDialog(false);
 
   const {
     pagination,
@@ -64,7 +86,10 @@ export default function Customer() {
     useSearchDebounce(goToFirstPage);
   const [rowId, setRowId] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-
+  const [deleteVehicleId, setDeleteVehicleId] = useState("");
+  const [activeAndDeactiveVehicleId, setActiveAndDeactiveVehicleId] =
+    useState("");
+  const [editVehicle, setEditVehicle] = useState<UpdateVehicleSchemaType>();
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CustomerWithFillerProps>("fullName");
   const { data, isLoading, isSuccess, isError, error, refetch } = useQuery({
@@ -89,6 +114,22 @@ export default function Customer() {
     setOpenConfirmDialog(true);
     setRowId(id);
     setIsActiveOrDeActive(isActive);
+  };
+
+  const handleEditVehicle = (data: UpdateVehicleSchemaType) => {
+    setEditVehicle(data);
+    toggleEditVehicle();
+  };
+
+  const handleDeleteVehicle = (id: string) => {
+    setDeleteVehicleId(id);
+    toggleDeleteVehicle();
+  };
+
+  const handleDeactiveAndActiveVehicle = (id: string, isActive: boolean) => {
+    setActiveAndDeactiveVehicleId(id);
+    toggleDeactiveAndActiveVehicle();
+    setIsActiveOrDeActiveVehicle(isActive);
   };
 
   const handleCloseDialog = () => {
@@ -146,12 +187,37 @@ export default function Customer() {
     return vehicles.map((vehicle: VehicleProps) => (
       <TableRow key={vehicle.id}>
         <TableCell>{vehicle.plateNumber}</TableCell>
+        <TableCell>{vehicle.vehicleType}</TableCell>
+        <TableCell>
+          {vehicle.plateImage ? (
+            <Image
+              loader={({ src }) => src as string}
+              src={vehicle.plateImage}
+              alt="vehicle"
+              width={100}
+              height={100}
+              onError={(e) => {
+                e.currentTarget.src = Bai_Logo.src;
+                e.currentTarget.alt = "Image error";
+              }}
+            />
+          ) : (
+            <Typography
+              height={70}
+              display={"flex"}
+              alignItems={"center"}
+              justifyItems={"center"}
+            >
+              No image
+            </Typography>
+          )}
+        </TableCell>
         <TableCell>{toLocaleDate(vehicle.createdDate)}</TableCell>
         <TableCell>
           {vehicle.staffApproval ? vehicle.staffApproval : "N/A"}
         </TableCell>
         <TableCell>
-          {vehicle.statusVehicle ? (
+          {vehicle.statusVehicle === "ACTIVE" ? (
             <span
               className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
@@ -161,7 +227,7 @@ export default function Customer() {
             >
               Active
             </span>
-          ) : (
+          ) : vehicle.statusVehicle === "INACTIVE" ? (
             <span
               className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
@@ -171,7 +237,73 @@ export default function Customer() {
             >
               Inactive
             </span>
+          ) : vehicle.statusVehicle === "REJECTED" ? (
+            <span
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+              style={{
+                color: "#d9534f",
+                backgroundColor: "#f8d7da",
+              }}
+            >
+              Rejected
+            </span>
+          ) : vehicle.statusVehicle === "PENDING" ? (
+            <span
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+              style={{
+                color: "#f0ad4e",
+                backgroundColor: "#fcf8e3",
+              }}
+            >
+              Pending
+            </span>
+          ) : (
+            <span>{vehicle.statusVehicle}</span>
           )}
+        </TableCell>
+        <TableCell>
+          <div className="flex flex-row gap-3">
+            <ActionButton
+              variant="danger"
+              onClick={() => {
+                handleDeleteVehicle(vehicle.id);
+              }}
+            >
+              Delete
+            </ActionButton>
+            {vehicle.statusVehicle === "INACTIVE" ||
+            vehicle.statusVehicle === "PENDING" ? (
+              <ActionButton
+                variant="primary"
+                onClick={() => {
+                  handleDeactiveAndActiveVehicle(vehicle.id, true);
+                }}
+              >
+                Activate
+              </ActionButton>
+            ) : (
+              <ActionButton
+                variant="danger"
+                onClick={() => {
+                  handleDeactiveAndActiveVehicle(vehicle.id, false);
+                }}
+              >
+                Deactivate
+              </ActionButton>
+            )}
+            <ActionButton
+              variant="primary"
+              onClick={() => {
+                handleEditVehicle({
+                  plateNumber: vehicle.plateNumber,
+                  vehicleTypeId: vehicle.vehicleTypeId,
+                  vehicleId: vehicle.id,
+                });
+              }}
+            >
+              Edit
+            </ActionButton>
+          </div>
         </TableCell>
       </TableRow>
     ));
@@ -309,11 +441,15 @@ export default function Customer() {
                     {vehicleIsPending ? (
                       <Loading />
                     ) : vehicleData?.data?.data?.length === 0 ? (
-                      <p>There is no data to show.</p>
+                      <Grid item xs={12} style={{ textAlign: "left" }}>
+                        <p>There is no data to show.</p>
+                      </Grid>
                     ) : (
                       <Table
                         tableHeads={[
                           "PlateNumber",
+                          "Vehicle Type",
+                          "Image",
                           "Created Date",
                           "Staff Approval",
                           "Status",
@@ -340,6 +476,8 @@ export default function Customer() {
     vehicleData?.data?.data,
     vehicleIsPending,
     openAddVehicle,
+    openDeleteVehicle,
+    openDeactiveAndActiveVehicle,
   ]);
 
   const handleFilterAttributeChange = (value: string) => {
@@ -349,6 +487,34 @@ export default function Customer() {
 
   return (
     <>
+      {openDeactiveAndActiveVehicle && (
+        <DeactiveAndActiveVehicle
+          open={openDeactiveAndActiveVehicle}
+          onClose={toggleDeactiveAndActiveVehicle}
+          onOpenChange={toggleDeactiveAndActiveVehicle}
+          vehicleId={activeAndDeactiveVehicleId}
+          refresh={vehicleRefetch}
+          status={isActiveOrDeActiveVehicle ? "inactive" : "active"}
+        />
+      )}
+      {openDeleteVehicle && (
+        <DeleteVehicle
+          open={openDeleteVehicle}
+          onClose={toggleDeleteVehicle}
+          onOpenChange={toggleDeleteVehicle}
+          vehicleId={deleteVehicleId}
+          refresh={vehicleRefetch}
+        />
+      )}
+      {openEditVehicle && (
+        <EditVehicle
+          open={openEditVehicle}
+          onOpenChange={toggleEditVehicle}
+          onClose={toggleEditVehicle}
+          refresh={vehicleRefetch}
+          EditVehicleForm={editVehicle}
+        />
+      )}
       <AlertDialog
         open={openConfirmDialog}
         title={

@@ -68,24 +68,15 @@ export default function DeleteCard({
         }}
         onOpenChange={handleToggleDialog}
         open={openConfirmDialog}
-        title='Delete this card ?'
-        content='Click OK will DELETE this card'
+        title="Delete this card ?"
+        content="Click OK will DELETE this card"
       />
       <Button
-        sx={{
-          backgroundColor: "#ef4444",
-          color: "white",
-          width: "80px",
-          "&:disabled": {
-            backgroundColor: "grey",
-            color: "white",
-          },
-          "&:hover": {
-            backgroundColor: "#dc2626",
-          },
-        }}
         disabled={disable}
         onClick={handleConfirmDialog}
+        size="small"
+        variant="outlined"
+        color="error"
       >
         Delete
       </Button>

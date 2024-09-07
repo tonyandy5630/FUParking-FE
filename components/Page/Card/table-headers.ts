@@ -1,7 +1,1 @@
-export const CardTableHeaders = [
-  "Card Number",
-  "Plate Number",
-  "Status",
-  "In Use",
-  "Action",
-];
+export const CardTableHeaders = ["Card Number", "Status", "In Use", "Action"];

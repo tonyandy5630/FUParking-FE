@@ -22,6 +22,7 @@ export interface VehicleProps {
   lastModifyBy: string;
   lastModifyDate: string;
   createdDate: string;
+  vehicleTypeId: string;
 }
 
 export type VehicleKey = keyof VehicleProps;

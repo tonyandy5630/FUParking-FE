@@ -9,7 +9,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import UpdateVehicleSchema, {
   UpdateVehicleSchemaType,
-} from "@/utils/schemas/updateVehicleSchema";
+} from "@/utils/schemas/vehicle/updateVehicleSchema";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { updateVehicleAPI } from "@/api/vehicle";
 import { toast } from "react-toastify";
@@ -111,7 +111,7 @@ export default function EditVehicleDialog({
     <>
       {openAlertDialog && (
         <AlertDialog
-          title='Cancel Edit this vehicle session ?'
+          title="Cancel Edit this vehicle session ?"
           open={openAlertDialog}
           onCancel={toggleAlertDialog}
           onConfirm={handleConfirmAlertDialog}
@@ -119,7 +119,7 @@ export default function EditVehicleDialog({
           onClose={handleConfirmAlertDialog}
         />
       )}
-      <Dialog open={open} maxWidth='xs' onClose={handleCloseEdit}>
+      <Dialog open={open} maxWidth="xs" onClose={handleCloseEdit}>
         <DialogTitle>
           {" "}
           Update Vehicle With Plate Number : {vehicle.plateNumber}
@@ -130,17 +130,17 @@ export default function EditVehicleDialog({
               <Grid container spacing={2}>
                 <Grid xs={12}>
                   <FormSelect
-                    name='vehicleTypeId'
-                    label='Vehicle Type'
+                    name="vehicleTypeId"
+                    label="Vehicle Type"
                     options={vehicleTypesOptions}
                   />
                 </Grid>
                 <Grid xs={12}>
-                  <DialogActions className='flex justify-end min-w-full'>
+                  <DialogActions className="flex justify-end min-w-full">
                     <ComboFormButton
                       onClose={handleCloseUpdate}
                       onReset={() => reset()}
-                      submitLabel='Update'
+                      submitLabel="Update"
                       isLoading={isPending}
                     />
                   </DialogActions>

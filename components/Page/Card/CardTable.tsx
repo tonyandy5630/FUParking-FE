@@ -10,7 +10,6 @@ import { useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchField from "@/components/Common/searchField";
-const EditCard = dynamic(() => import("./EditCard"));
 const DeleteCard = dynamic(() => import("./DeleteCard"));
 const AddCard = dynamic(() => import("./Action/AddCard"));
 const MissCard = dynamic(() => import("./MissCard"));
@@ -88,12 +87,7 @@ export default function CardTable() {
         >
           {card.cardNumber}
         </TableCell>
-        <TableCell
-          onClick={() => handleRowClick(card)}
-          className="cursor-pointer"
-        >
-          {card.plateNumber}
-        </TableCell>
+
         <TableCell
           onClick={() => handleRowClick(card)}
           className="cursor-pointer"
@@ -128,13 +122,6 @@ export default function CardTable() {
         </TableCell>
         <TableCell>
           <div className="flex flex-row space-x-2">
-            <EditCard
-              value={card.plateNumber ?? ""}
-              id={card.id}
-              refetch={refetch}
-              setIsPending={setDisable}
-              disable={disable}
-            />
             <DeleteCard
               id={card.id}
               refetch={refetch}
@@ -169,14 +156,14 @@ export default function CardTable() {
   return (
     <div className="flex flex-col gap-5">
       <SearchContainer>
-        <SearchField
-          inputValue={searchText}
-          setInputValue={handleSearchTextChange}
-        />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
+        />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
       <div className="flex flex-row gap-3 items-center justify-end w-full">
@@ -196,7 +183,7 @@ export default function CardTable() {
             onClose={toggleCreateCard}
           />
         )}
-        <Button variant="contained" color="primary" onClick={toggleCreateCard}>
+        <Button variant="outlined" color="primary" onClick={toggleCreateCard}>
           Add Card
         </Button>
       </div>

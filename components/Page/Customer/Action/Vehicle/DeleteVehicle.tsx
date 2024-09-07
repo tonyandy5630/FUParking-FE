@@ -1,0 +1,87 @@
+import { deleteVehicleAPI } from "@/api/vehicle";
+import Modal from "@/components/modal/modal";
+import { DialogProps } from "@/types/dialog.type";
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+} from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import CloseIcon from "@mui/icons-material/Close";
+
+type DeleteVehicleProps = DialogProps & {
+  vehicleId: string;
+  refresh: () => void;
+};
+
+export default function DeleteVehicle({
+  open,
+  onClose,
+  onOpenChange,
+  vehicleId,
+  refresh,
+}: DeleteVehicleProps) {
+  const { mutateAsync: deleteVehicleAsync } = useMutation({
+    mutationKey: ["/vehicles/delete"],
+    mutationFn: deleteVehicleAPI,
+  });
+
+  const handleDelete = async () => {
+    try {
+      await deleteVehicleAsync(vehicleId, {
+        onSuccess: () => {
+          refresh();
+          onOpenChange();
+          toast.success("Delete vehicle successfully");
+        },
+      });
+    } catch (error) {
+      onOpenChange();
+    }
+  };
+
+  const handleClose = () => {
+    onClose && onClose();
+  };
+
+  return (
+    <>
+      <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
+        <div className="p-5 flex flex-col">
+          <div className="flex justify-end">
+            <Button
+              sx={{
+                position: "absolute",
+                padding: "0",
+                margin: "10px",
+                width: "0",
+                right: "0",
+                top: "0",
+                color: "black",
+                backgroundColor: "white",
+                "&:hover": {
+                  backgroundColor: "white",
+                },
+              }}
+            >
+              <CloseIcon onClick={handleClose} className="cursor-pointer" />
+            </Button>
+          </div>
+          <DialogContent>
+            <DialogContentText>
+              Are you sure you want to delete this vehicle?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button variant="outlined" color="error" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogActions>
+        </div>
+      </Modal>
+    </>
+  );
+}

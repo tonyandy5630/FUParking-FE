@@ -5,7 +5,6 @@ export type ListCardResponse = ResponseAPI<CardProps[]>;
 export interface CardProps {
   id: string;
   cardNumber: string;
-  plateNumber?: string;
   createdDate: string;
   status: string;
   session: cardSession;
