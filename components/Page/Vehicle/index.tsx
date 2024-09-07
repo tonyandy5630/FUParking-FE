@@ -22,19 +22,19 @@ import { VehicleTypeProps } from "@/types/vehicleType.type";
 import ExportToCSVButton from "@/components/ExportCSVButton";
 import ActionButton from "@/components/ActionButton";
 import Loading from "../LoadingPage/Loading";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import Image from "next/image";
+import Bai_Logo from "@/public/Bai_Logo.svg";
+
 const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"), {
   loading: () => <Loading />,
 });
 const EditVehicleDialog = dynamic(() => import("./EditVehicleDialog"));
-
 const FILTER: listFilter[] = [
   { display: "Plate Number", value: "PLATENUMBER" },
   { display: "Email", value: "EMAIL" },
   { display: "Vehicle Type", value: "VEHICLETYPE" },
 ];
-
 const ALL_VEHICLE_TYPE_VALUE = "ALL";
 
 export default function VehiclePage() {
@@ -274,13 +274,28 @@ export default function VehiclePage() {
         <TableCell>{item.plateNumber}</TableCell>
         <TableCell>{item.vehicleType}</TableCell>
         <TableCell>
-          <Image
-            width={100}
-            height={65}
-            src={item.plateImage}
-            alt="vehicle"
-            loader={() => item.plateImage as string}
-          />
+          {item.plateImage ? (
+            <Image
+              width={100}
+              height={60}
+              src={item.plateImage}
+              alt="vehicle"
+              loader={() => item.plateImage as string}
+              onError={(e) => {
+                e.currentTarget.src = Bai_Logo.src;
+                e.currentTarget.alt = "Image error";
+              }}
+            />
+          ) : (
+            <Typography
+              height={70}
+              display={"flex"}
+              alignItems={"center"}
+              justifyItems={"center"}
+            >
+              No image
+            </Typography>
+          )}
         </TableCell>
         <TableCell>
           <Chip

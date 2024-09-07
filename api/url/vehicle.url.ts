@@ -31,3 +31,6 @@ export const GET_LIST_VEHICLE_BY_CUSTOMER_API_URL = ({
 }) => `${baseURL}/vehicles/customers/${customerId}`;
 
 export const CREATE_VEHICLE_FOR_CUSTOMER_BY_USER_API_URL = `${baseURL}/vehicles`;
+
+export const DELETE_VEHICLE_API_URL = ({ vehicleId }: { vehicleId: string }) =>
+  `${baseURL}/vehicles/${vehicleId}`;
