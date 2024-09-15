@@ -27,3 +27,5 @@ export const PLATE_NUMBER_EXISTED = "Plate Number is exist in system";
 export const CARD_NUMBER_EXISTED = "Card Number is exist in system";
 
 export const NOT_EMAIL_MESSAGE = "Not an email";
+
+export const DELETE_MESSAGE = "Delete Successfully";
