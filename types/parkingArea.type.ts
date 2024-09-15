@@ -17,3 +17,15 @@ export interface ParkingAreas {
 }
 
 export type ParkingAreaWithFillerKey = keyof ParkingAreas;
+
+//
+
+export type ListParkingAreaOption = ResponseAPI<ParkingAreaOption[]>;
+
+export interface ParkingAreaOption {
+  id: string;
+  name: string;
+  description: string;
+}
+
+export type ParkingAreaOptionWithFillerKey = keyof ParkingAreaOption;

@@ -19,3 +19,9 @@ export type ErrorResponse<Data> = {
   data?: Data;
   totalRecord?: number;
 };
+
+export type DynamicResponse = {
+  message?: string;
+  data?: any;
+  totalRecord?: number;
+};

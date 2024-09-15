@@ -47,10 +47,7 @@ export default function AddVehicle({
   });
 
   const handleClose = () => {
-    const { isDirty, dirtyFields } = methods.formState;
-    const hasChanges = Object.keys(dirtyFields).length > 0;
-
-    if (isDirty && hasChanges) {
+    if (isDirty && Object.keys(dirtyFields).length > 0) {
       setShowConfirmDialog(true);
     } else {
       onClose && onClose();

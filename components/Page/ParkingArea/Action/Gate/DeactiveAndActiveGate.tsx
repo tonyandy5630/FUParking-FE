@@ -1,3 +1,4 @@
+import { gateStatusChangeAPI } from "@/api/gate";
 import Modal from "@/components/modal/modal";
 import { DialogProps } from "@/types/dialog.type";
 import {
@@ -6,48 +7,50 @@ import {
   DialogContent,
   DialogContentText,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import { useMutation } from "@tanstack/react-query";
-import { changeVehicleStatusAPI } from "@/api/vehicle";
-import { toast } from "react-toastify";
+import CloseIcon from "@mui/icons-material/Close";
+import { useEffect } from "react";
 
-type DeactiveAndActiveVehicleProps = DialogProps & {
-  vehicleId: string;
+type DeactiveAndActiveGateProps = DialogProps & {
+  gateId: string;
   refresh: () => void;
   status: string;
 };
 
-export default function DeactiveAndActiveVehicle({
+export default function DeactiveAndActiveGate({
   open,
   onClose,
   onOpenChange,
-  vehicleId,
+  gateId,
   refresh,
   status,
-}: DeactiveAndActiveVehicleProps) {
+}: DeactiveAndActiveGateProps) {
   const handleClose = () => {
     onClose && onClose();
   };
 
-  const vehicleStatusChangeMutation = useMutation({
-    mutationKey: ["/status-vehicle-change"],
-    mutationFn: changeVehicleStatusAPI,
+  useEffect(() => {
+    console.log("status", status);
+  }, [status]);
+
+  const gateStatusChangeMutation = useMutation({
+    mutationKey: ["/gate/status"],
+    mutationFn: gateStatusChangeAPI,
   });
 
-  const handleVehicleStatusChange = async (vehicleData: {
-    vehicleId: string;
+  const handleGateStatusChange = async (gateData: {
+    gateId: string;
     isActive: boolean;
   }) => {
-    if (!vehicleData.vehicleId) {
+    if (!gateData.gateId) {
       return;
     }
-    if (vehicleData.isActive === undefined) {
+    if (gateData.isActive === undefined) {
       return;
     }
     try {
-      await vehicleStatusChangeMutation.mutateAsync(vehicleData, {
+      await gateStatusChangeMutation.mutateAsync(gateData, {
         onSuccess: (res) => {
-          toast.success("Update successfully");
           refresh();
           onOpenChange();
         },
@@ -59,7 +62,7 @@ export default function DeactiveAndActiveVehicle({
 
   return (
     <>
-      <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
+      <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
           <div className="flex justify-end">
             <Button
@@ -83,7 +86,7 @@ export default function DeactiveAndActiveVehicle({
           </div>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete this vehicle?
+              Are you sure you want to change status this gate?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -94,8 +97,8 @@ export default function DeactiveAndActiveVehicle({
                 color="error"
                 onClick={() => {
                   refresh();
-                  handleVehicleStatusChange({
-                    vehicleId: vehicleId,
+                  handleGateStatusChange({
+                    gateId: gateId,
                     isActive: false,
                   });
                 }}
@@ -108,8 +111,8 @@ export default function DeactiveAndActiveVehicle({
                 color="error"
                 onClick={() => {
                   refresh();
-                  handleVehicleStatusChange({
-                    vehicleId: vehicleId,
+                  handleGateStatusChange({
+                    gateId: gateId,
                     isActive: true,
                   });
                 }}

@@ -2,12 +2,6 @@ import { ResponseAPI } from ".";
 
 export type ListGate = ResponseAPI<Gates[]>;
 
-export type GateType = {
-  id: string;
-  name: string;
-  description?: string;
-};
-
 export interface Gates {
   id: string;
   name: string;
@@ -26,3 +20,18 @@ export interface Gates {
   createdBy: string;
   lastModifyBy: string;
 }
+
+export interface GateProps {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  parkingAreaId: string;
+}
+
+export type AddGateProps = {
+  name: string;
+  description?: string;
+};
+
+export type ListGateByParking = ResponseAPI<GateProps[]>;

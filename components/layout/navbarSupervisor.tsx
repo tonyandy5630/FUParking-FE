@@ -67,11 +67,6 @@ const menuSupervisor: LeftNavbarProps["menu"] = [
     icon: ChatTwoToneIcon,
   },
   {
-    name: "Gate",
-    path: "/supervisor/gate",
-    icon: CameraRearTwoToneIcon,
-  },
-  {
     name: "Price",
     path: "/supervisor/price",
     icon: PriceChangeTwoToneIcon,

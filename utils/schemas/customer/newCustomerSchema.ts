@@ -1,5 +1,5 @@
 import { InferType, object, string, array } from "yup";
-import getRules from "../rules/auth";
+import getRules from "../../rules/auth";
 
 const rules = getRules();
 

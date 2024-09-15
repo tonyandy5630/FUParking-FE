@@ -13,3 +13,13 @@ export const GET_LIST_CUSTOMER_WITH_FILLER_API_URL = (
 export const CHANGE_STATUS_CUSTOMER_API_URL = `${baseURL}/customers/status`;
 
 export const CREATE_CUSTOMER_NON_PAID_API_URL = `${baseURL}/customers/nonpaid`;
+
+export const DELETE_CUSTOMER_API_URL = ({
+  customerId,
+}: {
+  customerId: string;
+}) => `${baseURL}/customers/${customerId}`;
+
+export const GET_LIST_CUSTOMER_TYPE_API_URL = `${baseURL}/customers/type`;
+
+export const EDIT_CUSTOMER_API_URL = `${baseURL}/customers/info`;
