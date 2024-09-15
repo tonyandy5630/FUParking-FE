@@ -23,3 +23,6 @@ export const DELETE_CUSTOMER_API_URL = ({
 export const GET_LIST_CUSTOMER_TYPE_API_URL = `${baseURL}/customers/type`;
 
 export const EDIT_CUSTOMER_API_URL = `${baseURL}/customers/info`;
+
+export const VIEW_CUSTOMER_BALANCE_API_URL = (customerId: string) =>
+  `${baseURL}/wallet/balance/${customerId}`;

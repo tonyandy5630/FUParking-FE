@@ -6,12 +6,20 @@ import {
   EDIT_CUSTOMER_API_URL,
   GET_LIST_CUSTOMER_TYPE_API_URL,
   GET_LIST_CUSTOMER_WITH_FILLER_API_URL,
+  VIEW_CUSTOMER_BALANCE_API_URL,
 } from "./url/customer.url";
 import {
+  CustomerBalance,
   CustomerTypeResponse,
   ListCustomerWithFillerReponse,
 } from "@/types/customer.type";
 import { AuthResponse } from "@/types/auth.type";
+import { ErrorResponse } from "@/types";
+
+export const getCustomerBalanceAPI = (customerId: string) =>
+  http.get<ErrorResponse<CustomerBalance>>(
+    VIEW_CUSTOMER_BALANCE_API_URL(customerId)
+  );
 
 export const getListCustomerWithFillerAPI = (
   pageSize: number,
