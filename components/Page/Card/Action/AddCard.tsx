@@ -14,7 +14,7 @@ import {
   IconButton,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import { useState } from "react";
+import { KeyboardEventHandler, useState } from "react";
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import { DialogProps } from "@/types/dialog.type";
@@ -64,7 +64,7 @@ export default function AddCard({
   });
 
   const { mutateAsync: createCardAsync } = useMutation({
-    mutationKey: ["/cards"],
+    mutationKey: ["/add-cards"],
     mutationFn: addCardAPI,
   });
 
@@ -111,16 +111,23 @@ export default function AddCard({
     onClose && onClose();
   };
 
+  const checkKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+    if (e.code === "Enter") e.preventDefault();
+  };
+
   return (
     <>
       <Modal onClose={handleClose} open={open} setOpen={onOpenChange}>
-        <div className="pl-5 pr-5 pt-5 pb-5">
-          <div className="flex justify-end">
-            <CloseIcon onClick={handleClose} className="cursor-pointer" />
+        <div className='pl-5 pr-5 pt-5 pb-5'>
+          <div className='flex justify-end'>
+            <CloseIcon onClick={handleClose} className='cursor-pointer' />
           </div>
           <DialogTitle>Create card</DialogTitle>
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(handleCreateCard)}>
+            <form
+              onSubmit={handleSubmit(handleCreateCard)}
+              onKeyDown={checkKeyDown}
+            >
               <DialogContent
                 sx={{
                   maxHeight: "70vh",
@@ -139,14 +146,14 @@ export default function AddCard({
                       <Grid item xs={1.5}>
                         {index > 0 ? (
                           <IconButton
-                            color="secondary"
+                            color='secondary'
                             onClick={() => remove(index)}
                           >
                             <RemoveIcon />
                           </IconButton>
                         ) : (
                           <IconButton
-                            color="primary"
+                            color='primary'
                             onClick={() => append({ cardNumber: "" })}
                           >
                             <AddIcon />
@@ -157,8 +164,8 @@ export default function AddCard({
                         <FormControl fullWidth>
                           <FormInput
                             name={`cardNumbers[${index}].cardNumber`} // Adjusted name to match the array structure
-                            label="Card number"
-                            placeholder="Card number"
+                            label='Card number'
+                            placeholder='Card number'
                           />
                         </FormControl>
                       </Grid>
@@ -167,7 +174,7 @@ export default function AddCard({
                   <Grid item xs={12}>
                     <DialogActions>
                       <ComboFormButton
-                        submitLabel="Create"
+                        submitLabel='Create'
                         onClose={onOpenChange}
                         onReset={reset}
                         isLoading={false}
@@ -191,7 +198,7 @@ export default function AddCard({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>
