@@ -19,13 +19,28 @@ import usePagination from "@/hook/usePagination";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 const Table = dynamic(() => import("@/components/Table"));
 import { SessionTableHeaders } from "./table-headers";
-import toLocaleDate from "@/utils/date";
+import toLocaleDate, { getLocalISOString } from "@/utils/date";
 import dynamic from "next/dynamic";
-
+import { Moment } from "moment";
+import CustomDatePicker from "@/components/DatePicker";
+const initDateFilter = {
+  startDate: null,
+  endDate: null,
+};
+const filterOptions = [
+  { display: "Card Number", value: "cardNumber" },
+  { display: "Plate Number", value: "plateNumber" },
+  { display: "Email", value: "customeremail" },
+];
 export default function SessionTable() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(
     null
   );
+  const [apiDateFilter, setApiDateFilter] = useState<{
+    startDate: Moment | null;
+    endDate: Moment | null;
+  }>(initDateFilter);
+
   const {
     goToFirstPage,
     handleChangeRowsPerPage,
@@ -38,22 +53,14 @@ export default function SessionTable() {
   const [isOpen, setIsOpen] = useState(false);
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CardProps>("cardNumber");
-  const filterOptions = [
-    { display: "Card Number", value: "cardNumber" },
-    { display: "Plate Number", value: "plateNumber" },
-    { display: "Email", value: "customeremail" },
-  ];
-
-  const startDate = "";
-  const endDate = "";
 
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
     queryKey: [
-      "/session",
+      "/session-list",
       pagination.pageSize,
       pagination.pageIndex,
-      startDate,
-      endDate,
+      apiDateFilter.startDate,
+      apiDateFilter.endDate,
       debounceSearchText,
       filterAttribute,
     ],
@@ -61,8 +68,8 @@ export default function SessionTable() {
       listSessionAPI(
         pagination.pageSize,
         pagination.pageIndex + 1,
-        startDate,
-        endDate,
+        apiLocalISOString(apiDateFilter.startDate?.toString()),
+        apiLocalISOString(apiDateFilter.endDate?.toString()),
         debounceSearchText,
         filterAttribute.toString()
       ),
@@ -77,6 +84,22 @@ export default function SessionTable() {
   const handleClickOpen = (sessionId: string) => {
     setSelectedSessionId(sessionId);
     setIsOpen(true);
+  };
+
+  const handleFromDateChange = (e: Moment | null) => {
+    if (e === null) {
+      setApiDateFilter((prev) => ({ ...prev, startDate: null }));
+      return;
+    }
+    setApiDateFilter((prev) => ({ ...prev, startDate: e }));
+  };
+
+  const handleToDateChange = (e: Moment | null) => {
+    if (e === null) {
+      setApiDateFilter((prev) => ({ ...prev, endDate: null }));
+      return;
+    }
+    setApiDateFilter((prev) => ({ ...prev, endDate: e }));
   };
 
   const handleClose = () => {
@@ -94,7 +117,7 @@ export default function SessionTable() {
       <TableRow
         key={session.id}
         hover={true}
-        className="cursor-pointer"
+        className='cursor-pointer'
         onClick={() => handleClickOpen(session.id)}
       >
         <TableCell>{session.cardNumber}</TableCell>
@@ -125,22 +148,40 @@ export default function SessionTable() {
   }, [data?.data.data]);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className='flex flex-col gap-5'>
       <SearchContainer>
-        <SearchField
-          inputValue={searchText}
-          setInputValue={handleSearchTextChange}
-        />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
+        <CustomDatePicker
+          label='From Date'
+          value={apiDateFilter.startDate}
+          onValueChange={handleFromDateChange}
+          maxDate={
+            apiDateFilter.endDate !== null ? apiDateFilter.endDate : undefined
+          }
+        />
+        <CustomDatePicker
+          label='To Date'
+          value={apiDateFilter.endDate}
+          onValueChange={handleToDateChange}
+          minDate={
+            apiDateFilter.startDate !== null
+              ? apiDateFilter.startDate
+              : undefined
+          }
+        />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
       </SearchContainer>
-      <div className="flex flex-row gap-3 items-center justify-end w-full">
+      <div className='flex flex-row gap-3 items-center justify-end w-full'>
         <Button
-          variant="outlined"
-          color="primary"
+          variant='outlined'
+          color='primary'
           onClick={() => refetch()}
           disabled={false}
         >
@@ -171,4 +212,11 @@ export default function SessionTable() {
       )}
     </div>
   );
+}
+
+function apiLocalISOString(date?: string): string {
+  if (!date || !Date.parse(date)) {
+    return "";
+  }
+  return getLocalISOString(new Date(date));
 }

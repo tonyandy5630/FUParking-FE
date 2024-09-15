@@ -12,6 +12,7 @@ interface Props extends DialogProps {
   onCancel: () => void;
   title: string;
   content?: any;
+  disabled?: boolean;
 }
 export default function AlertDialog({
   open,
@@ -20,8 +21,10 @@ export default function AlertDialog({
   onConfirm,
   onCancel,
   content,
+  disabled,
 }: Props) {
-  const handleConfirm = () => {
+  const handleConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     onOpenChange();
     onConfirm();
   };
@@ -31,16 +34,26 @@ export default function AlertDialog({
         open={open}
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
+        onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
+          e.stopPropagation();
+          onOpenChange();
+        }}
       >
         <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
         <DialogContent>
           <DialogContentText>{content}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button color='error' onClick={onCancel}>
+          <Button
+            color='error'
+            onClick={(e) => {
+              e.stopPropagation();
+              onCancel();
+            }}
+          >
             Cancel
           </Button>
-          <Button onClick={handleConfirm} autoFocus>
+          <Button onClick={handleConfirm} autoFocus disabled={disabled}>
             Ok
           </Button>
         </DialogActions>

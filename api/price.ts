@@ -1,12 +1,17 @@
 import http from "@/utils/http";
 import {
   CREATE_TABLE_API_URL,
+  DELETE_TABLE_PRICE_API_URL,
   GET_TABLE_PRICE_API_URL,
+  UPDATE_PRICE_TABLE_API_URL,
   UPDATE_TABLE_STATUS_API_URL,
 } from "./url/price.url";
 import { ErrorResponse } from "@/types";
 import { PriceTable } from "@/types/price.type";
-import { PriceTableTableSchemaType } from "@/utils/schemas/priceTableSchema";
+import {
+  PriceTableTableSchemaType,
+  UpdatePriceTableSchemaType,
+} from "@/utils/schemas/priceTableSchema";
 import { PaginationType } from "@/types/pagination.type";
 
 export const getPriceTableAPI = ({
@@ -31,3 +36,9 @@ export const updatePriceTableStatusAPI = (data: {
 
 export const createTableAPI = (data: PriceTableTableSchemaType) =>
   http.post(CREATE_TABLE_API_URL, data);
+
+export const deletePriceTableAPI = (tableId: string) =>
+  http.delete(DELETE_TABLE_PRICE_API_URL(tableId));
+
+export const updatePriceTableAPI = (body: UpdatePriceTableSchemaType) =>
+  http.put(UPDATE_PRICE_TABLE_API_URL, body);

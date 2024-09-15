@@ -1,5 +1,9 @@
 "use client";
-import { getPriceTableAPI, updatePriceTableStatusAPI } from "@/api/price";
+import {
+  deletePriceTableAPI,
+  getPriceTableAPI,
+  updatePriceTableStatusAPI,
+} from "@/api/price";
 import Chip from "@/components/Chip";
 import SearchContainer from "@/components/Common/SearchContainer";
 import SearchField from "@/components/Common/searchField";
@@ -23,6 +27,9 @@ import { useRouter } from "next/navigation";
 import ActionButton from "@/components/ActionButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import useSearchDebounce from "@/hook/useSearchDebouce";
+import DeleteTable from "./DeleteTable";
+import useHandleDialog from "@/hook/useHandleDialog";
+const EditPriceTable = dynamic(() => import("./EditPriceTable"));
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
 
 const FILTER: listFilter[] = [
@@ -50,9 +57,19 @@ export default function PriceTablePage() {
   const [tableList, setTableList] = useState<PriceTable[]>([]);
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [
+    openActiveOrDeactivateConfirmDialog,
+    setOpenActiveOrDeactivateConfirmDialog,
+  ] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = active, false = deactive
   const [rowId, setRowId] = useState("");
+  const {
+    openDialog: openEditDialog,
+    handleToggleDialog: handleToggleEditDialog,
+    handleCloseDialog: handleCloseEditDialog,
+  } = useHandleDialog();
+
+  const [editTable, setEditTable] = useState<PriceTable | undefined>(undefined);
   const {
     data: priceTableData,
     isSuccess,
@@ -70,7 +87,6 @@ export default function PriceTablePage() {
   });
 
   const handleCloseCreatePriceTable = () => {
-    refetch();
     setOpenCreate((prev) => !prev);
   };
 
@@ -79,13 +95,13 @@ export default function PriceTablePage() {
   };
 
   const handleOpenDialog = (id: string, isActive: boolean) => {
-    setOpenConfirmDialog(true);
+    setOpenActiveOrDeactivateConfirmDialog(true);
     setRowId(id);
     setIsActiveOrDeActive(isActive);
   };
 
   const handleCloseDialog = () => {
-    setOpenConfirmDialog(false);
+    setOpenActiveOrDeactivateConfirmDialog(false);
   };
 
   const handleFilterChange = (value: string) => {
@@ -97,6 +113,7 @@ export default function PriceTablePage() {
     mutationKey: ["/update-table-status"],
     mutationFn: updatePriceTableStatusAPI,
   });
+
   useEffect(() => {
     if (isSuccess && priceTableData.data.data) {
       setTableList(priceTableData.data.data || []);
@@ -125,7 +142,9 @@ export default function PriceTablePage() {
         <TableRow
           key={item.id}
           hover={true}
-          onClick={() => router.push("price/" + item.id + "/price-item")}
+          onClick={(e) => {
+            router.push("price/" + item.id + "/price-item");
+          }}
           className='cursor-pointer'
         >
           <TableCell>{item.name}</TableCell>
@@ -172,6 +191,17 @@ export default function PriceTablePage() {
                     );
                 }
               })()}
+              <ActionButton
+                variant='primary'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditTable(item);
+                  handleToggleEditDialog();
+                }}
+              >
+                Edit
+              </ActionButton>
+              <DeleteTable table={item} successCallBack={refetch} />
             </div>
           </TableCell>
         </TableRow>
@@ -182,7 +212,7 @@ export default function PriceTablePage() {
   return (
     <>
       <AlertDialog
-        open={openConfirmDialog}
+        open={openActiveOrDeactivateConfirmDialog}
         onCancel={handleCloseDialog}
         onOpenChange={handleCloseDialog}
         title={
@@ -197,17 +227,26 @@ export default function PriceTablePage() {
           });
         }}
       />
+      {openEditDialog && editTable && (
+        <EditPriceTable
+          open={openEditDialog}
+          onOpenChange={handleCloseEditDialog}
+          table={editTable}
+          successCallback={refetch}
+          onClose={handleCloseEditDialog}
+        />
+      )}
       <PageTitle>Price Page</PageTitle>
       <SearchContainer>
-        <SearchField
-          inputValue={searchText}
-          setInputValue={handleSearchTextChange}
-          placeholder={"Enter price table name"}
-        />
         <SelectFilter
           filterAttribute={filter}
           setFilterAttribute={handleFilterChange}
           listFilter={FILTER}
+        />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+          placeholder={"Enter price table name"}
         />
       </SearchContainer>
       <div className='min-w-full flex justify-start items-center py-2'>
@@ -215,10 +254,12 @@ export default function PriceTablePage() {
           <AddIcon /> <span>New Table</span>
         </Button>
       </div>
-      <AddPriceTableDialog
-        open={openCreate}
-        onClose={handleCloseCreatePriceTable}
-      />
+      {openCreate && (
+        <AddPriceTableDialog
+          open={openCreate}
+          onClose={handleCloseCreatePriceTable}
+        />
+      )}
       <Table
         onPageChange={handlePageChange}
         onPageSizeChange={handleChangeRowsPerPage}

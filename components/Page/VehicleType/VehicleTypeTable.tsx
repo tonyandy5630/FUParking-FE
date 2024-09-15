@@ -73,7 +73,7 @@ export default function VehicleTypeTable() {
       <TableRow key={vehicleType.id}>
         <TableCell>{vehicleType.name}</TableCell>
         <TableCell>{vehicleType.description ?? "Nan"}</TableCell>
-        <TableCell>{toVNDateString(vehicleType.createdDate)}</TableCell>
+        <TableCell>{toVNDateString(vehicleType.createDatetime)}</TableCell>
         <TableCell>
           <div className='flex flex-row space-x-2'>
             <EditVehicleType
