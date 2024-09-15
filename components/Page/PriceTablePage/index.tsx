@@ -87,7 +87,6 @@ export default function PriceTablePage() {
   });
 
   const handleCloseCreatePriceTable = () => {
-    refetch();
     setOpenCreate((prev) => !prev);
   };
 
@@ -163,7 +162,7 @@ export default function PriceTablePage() {
             </Chip>
           </TableCell>
           <TableCell>
-            <div className='flex justify-between items-center min-w-full'>
+            <div className='flex justify-start items-center gap-1 min-w-full'>
               {(() => {
                 switch (item.statusPriceTable) {
                   case "ACTIVE":

@@ -47,10 +47,17 @@ export type PriceTableTableSchemaType = InferType<typeof PriceTableTableSchema>;
 export default PriceTableTableSchema;
 
 export const UpdatePriceTableSchema = object({
-  id: string().required("CANNOT FIND TABLE"),
+  priceTableId: string().required("CANNOT FIND TABLE"),
   name: string()
+    .trim()
     .required(REQUIRED_MESSAGE)
     .max(name.maxLength.value, name.maxLength.message),
+  applyFromDate: date(),
+  applyToDate: date().when("applyFromDate", ([applyFromDate], schema) => {
+    return applyFromDate
+      ? schema.min(applyFromDate, "End date is before Start date")
+      : schema;
+  }),
 });
 
 export type UpdatePriceTableSchemaType = InferType<

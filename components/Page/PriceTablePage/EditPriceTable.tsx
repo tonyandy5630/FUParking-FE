@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import React from "react";
+import Grid from "@mui/material/Unstable_Grid2";
 import { FormProvider, useForm } from "react-hook-form";
 import FormInput from "@/components/Form/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,6 +22,8 @@ import { toast } from "react-toastify";
 import { UPDATE_SUCCEED_MESSAGE } from "@/constant/message";
 import useHandleDialog from "@/hook/useHandleDialog";
 import dynamic from "next/dynamic";
+import FormDatePicker from "@/components/Form/DatePicker";
+import moment from "moment";
 const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 interface Props extends DialogProps {
   successCallback: any;
@@ -33,7 +36,9 @@ export default function EditPriceTable({
 }: Props) {
   const methods = useForm({
     defaultValues: {
-      id: table.id,
+      priceTableId: table.id,
+      applyFromDate: new Date(moment(table.applyFromDate).toString()),
+      applyToDate: new Date(moment(table.applyToDate).toString()),
     },
     resolver: yupResolver(UpdatePriceTableSchema),
   });
@@ -59,6 +64,7 @@ export default function EditPriceTable({
       await updatePriceTableAsync(body, {
         onSuccess: () => {
           successCallback();
+          reset({}, { keepValues: true });
           toast.success(UPDATE_SUCCEED_MESSAGE);
         },
       });
@@ -71,20 +77,9 @@ export default function EditPriceTable({
     //*  close edit dialog with out confirm
     if (!isDirty) {
       props.onOpenChange();
-      handleToggleConfirmDialog();
       return;
     }
     //* close confirm dialog + close edit form
-    handleCloseConfirm();
-    props.onOpenChange();
-  };
-
-  const handleCloseEditDialog = () => {
-    //* closed edit dialog with out confirm
-    if (!isDirty) {
-      props.onOpenChange();
-      return;
-    }
     handleOpenConfirmDialog();
   };
 
@@ -93,10 +88,10 @@ export default function EditPriceTable({
       {openConfirmDialog && (
         <AlertDialog
           open={openConfirmDialog}
-          title='Cancel'
+          title='Close Edit Price Table'
           onOpenChange={props.onOpenChange}
           onCancel={handleCloseConfirmDialog}
-          onConfirm={handleCloseConfirmDialog}
+          onConfirm={props.onOpenChange}
           content='This action cannot be reverted'
           onClose={handleCloseConfirmDialog}
         />
@@ -110,19 +105,39 @@ export default function EditPriceTable({
         <DialogContent>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleEdit)}>
-              <FormInput name='name' autoFocus defaultValue={table.name} />
+              <Grid container spacing={2}>
+                <Grid xs={12}>
+                  <FormInput name='name' autoFocus defaultValue={table.name} />
+                </Grid>
+                <Grid xs={12}>
+                  <FormDatePicker
+                    name='applyFromDate'
+                    defaultValue={moment(table.applyFromDate)}
+                    label='Apply From'
+                    error={errors.applyFromDate?.message}
+                  />
+                </Grid>
+                <Grid xs={12}>
+                  <FormDatePicker
+                    name='applyToDate'
+                    label='Apply To'
+                    defaultValue={moment(table.applyToDate)}
+                    error={errors.applyToDate?.message}
+                  />
+                </Grid>
+              </Grid>
+              <DialogActions>
+                <ComboFormButton
+                  submitLabel='Update'
+                  onClose={props.onOpenChange}
+                  onReset={reset}
+                  isDirty={isDirty}
+                  isLoading={isUpdatingTable}
+                />
+              </DialogActions>
             </form>
           </FormProvider>
         </DialogContent>
-        <DialogActions>
-          <ComboFormButton
-            submitLabel='Update'
-            onClose={handleCloseEditDialog}
-            onReset={reset}
-            isDirty={isDirty}
-            isLoading={isUpdatingTable}
-          />
-        </DialogActions>
       </Dialog>
     </>
   );

@@ -19,6 +19,7 @@ import { toast } from "react-toastify";
 import dayjs from "dayjs";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import { PRIORITY_EXISTED } from "@/constant/message";
+import moment from "moment";
 
 type Props = {
   open: boolean;
@@ -53,7 +54,6 @@ export default function AddPriceTable({ open, onClose }: Props) {
 
   const handleClose = () => {
     onClose();
-    reset();
   };
 
   const vehicleTypeOptions: FormOptions[] = useMemo(() => {
@@ -129,7 +129,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
               </Grid>
               <Grid xs={6}>
                 <FormDatePicker
-                  minDate={dayjs()}
+                  minDate={moment()}
                   name='applyFromDate'
                   label='Apply From'
                   error={errors.applyFromDate?.message}
@@ -139,7 +139,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
                 <FormDatePicker
                   name='applyToDate'
                   label='Apply To'
-                  minDate={dayjs()}
+                  minDate={moment()}
                   error={errors.applyToDate?.message}
                 />
               </Grid>

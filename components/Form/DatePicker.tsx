@@ -1,21 +1,17 @@
 import React, { HTMLInputTypeAttribute, InputHTMLAttributes } from "react";
 import ConnectForm from "./ConnectForm";
 import { Controller, UseFormReturn } from "react-hook-form";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker, DatePickerProps } from "@mui/x-date-pickers/DatePicker";
 import { FormControl, FormHelperText } from "@mui/material";
-import dayjs from "dayjs";
+import { Moment } from "moment";
 
-interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+interface Props extends DatePickerProps<Moment> {
   name: string;
   error?: string;
   label: string;
-  minDate?: any;
-  maxDate?: string;
 }
 
-const FormDatePicker = React.forwardRef<HTMLInputElement, Props>(
+const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
   ({ name, error, minDate, maxDate, label, ...props }, ref) => (
     <ConnectForm>
       {({ control, formState: { errors } }: UseFormReturn) => {
@@ -27,21 +23,20 @@ const FormDatePicker = React.forwardRef<HTMLInputElement, Props>(
               render={({ field }) => {
                 const { value, ...rest } = field;
                 return (
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      slotProps={{
-                        textField: {
-                          size: "small",
-                        },
-                      }}
-                      format='DD - MM - YYYY'
-                      minDate={minDate}
-                      maxDate={maxDate}
-                      className='w-full'
-                      {...rest}
-                      label={label}
-                    />
-                  </LocalizationProvider>
+                  <DatePicker
+                    slotProps={{
+                      textField: {
+                        size: "small",
+                      },
+                    }}
+                    format='DD - MM - YYYY'
+                    minDate={minDate}
+                    maxDate={maxDate}
+                    className='w-full'
+                    {...rest}
+                    label={label}
+                    {...props}
+                  />
                 );
               }}
             />
