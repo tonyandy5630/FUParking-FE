@@ -67,11 +67,6 @@ const menuManager: LeftNavbarProps["menu"] = [
     icon: ChatTwoToneIcon,
   },
   {
-    name: "Gate",
-    path: "/manager/gate",
-    icon: CameraRearTwoToneIcon,
-  },
-  {
     name: "Price",
     path: "/manager/price",
     icon: PriceChangeTwoToneIcon,

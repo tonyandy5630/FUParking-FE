@@ -7,9 +7,13 @@ import {
   UPDATE_PARKING_AREA_STATUS_API_URL,
   DELETE_PARKING_AREA_API_URL,
 } from "./url/parkingArea.url";
-import { ListParkingArea } from "@/types/parkingArea.type";
+import {
+  ListParkingArea,
+  ListParkingAreaOption,
+} from "@/types/parkingArea.type";
 import { UpdatePackageSchemaType } from "@/utils/schemas/PackageSchema";
 import { ParkingAreaSchemaType } from "@/utils/schemas/parkingAreaSchema";
+import { AddParkingAreaSchemaType } from "@/utils/schemas/parkingArea/addParkingAreaSchema";
 
 export const getListParkingArea = (
   pageSize?: number,
@@ -22,9 +26,9 @@ export const getListParkingArea = (
   );
 
 export const getAllParkingAreaAPI = () =>
-  http.get<ListParkingArea>(GET_PARKING_AREA_OPTIONS_API_URL);
+  http.get<ListParkingAreaOption>(GET_PARKING_AREA_OPTIONS_API_URL);
 
-export const addParkingAreaAPI = (data: ParkingAreaSchemaType) =>
+export const addParkingAreaAPI = (data: AddParkingAreaSchemaType) =>
   http.post(ADD_PARKING_AREA_API_URL, data);
 
 export const updateParkingAreaAPI = (data: ParkingAreaSchemaType) =>

@@ -1,6 +1,6 @@
 import Modal from "@/components/modal/modal";
 import { DialogProps } from "@/types/dialog.type";
-import NewCustomerSchema from "@/utils/schemas/newCustomerSchema";
+import NewCustomerSchema from "@/utils/schemas/customer/newCustomerSchema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import CloseIcon from "@mui/icons-material/Close";
 import {

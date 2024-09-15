@@ -39,8 +39,11 @@ import DeleteVehicle from "./Action/Vehicle/DeleteVehicle";
 import DeactiveAndActiveVehicle from "./Action/Vehicle/DeactiveAndActiveVehicle";
 import Bai_Logo from "@/public/Bai_Logo.svg";
 import { UpdateVehicleSchemaType } from "@/utils/schemas/vehicle/updateVehicleSchema";
-import { Edit } from "lucide-react";
 import EditVehicle from "./Action/Vehicle/EditVehicle";
+import DeleteCustomer from "./Action/Customer/DeleteCustomer";
+import { EditCustomerSchemaType } from "@/utils/schemas/customer/editCustomerSchema";
+import EditCustomer from "./Action/Customer/EditCustomer";
+import Topup from "./Action/Transaction/Topup";
 
 const filterOptions = [
   { display: "Name", value: "fullName" },
@@ -76,6 +79,21 @@ export default function Customer() {
   } = useHandleDialog(false);
 
   const {
+    openDialog: openTopupDialog,
+    handleToggleDialog: toggleATopupDialog,
+  } = useHandleDialog(false);
+
+  const {
+    openDialog: openEditCustomer,
+    handleToggleDialog: toggleEditCustomer,
+  } = useHandleDialog(false);
+
+  const {
+    openDialog: openDeleteCustomer,
+    handleToggleDialog: toggleDeleteCustomer,
+  } = useHandleDialog(false);
+
+  const {
     pagination,
     handleChangeRowsPerPage,
     handlePageChange,
@@ -87,6 +105,9 @@ export default function Customer() {
   const [rowId, setRowId] = useState("");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [deleteVehicleId, setDeleteVehicleId] = useState("");
+  const [topupCustomerId, setTopupCustomerId] = useState("");
+  const [editCustomerProps, setEditCustomerProps] =
+    useState<EditCustomerSchemaType>();
   const [activeAndDeactiveVehicleId, setActiveAndDeactiveVehicleId] =
     useState("");
   const [editVehicle, setEditVehicle] = useState<UpdateVehicleSchemaType>();
@@ -116,6 +137,11 @@ export default function Customer() {
     setIsActiveOrDeActive(isActive);
   };
 
+  const handleTopupDialog = (id: string) => {
+    setTopupCustomerId(id);
+    toggleATopupDialog();
+  };
+
   const handleEditVehicle = (data: UpdateVehicleSchemaType) => {
     setEditVehicle(data);
     toggleEditVehicle();
@@ -124,6 +150,11 @@ export default function Customer() {
   const handleDeleteVehicle = (id: string) => {
     setDeleteVehicleId(id);
     toggleDeleteVehicle();
+  };
+
+  const handleDeleteCustomer = (id: string) => {
+    setRowId(id);
+    toggleDeleteCustomer();
   };
 
   const handleDeactiveAndActiveVehicle = (id: string, isActive: boolean) => {
@@ -185,7 +216,7 @@ export default function Customer() {
       return [];
     }
     return vehicles.map((vehicle: VehicleProps) => (
-      <TableRow key={vehicle.id}>
+      <TableRow key={vehicle.id} hover={true}>
         <TableCell>{vehicle.plateNumber}</TableCell>
         <TableCell>{vehicle.vehicleType}</TableCell>
         <TableCell>
@@ -317,7 +348,7 @@ export default function Customer() {
 
     return customers.map((row) => (
       <React.Fragment key={row.customerId}>
-        <TableRow>
+        <TableRow hover={true}>
           <TableCell>
             <IconButton
               onClick={() => handleExpandClick(row.customerId)}
@@ -391,16 +422,50 @@ export default function Customer() {
                       onClick={() => handleOpenDialog(row.customerId, false)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
-                      Deactive
+                      Deactivate
                     </ActionButton>
                   );
                 }
               })()}
+              <ActionButton
+                variant="danger"
+                onClick={() => handleDeleteCustomer(row.customerId)}
+              >
+                Delete
+              </ActionButton>
+              <ActionButton
+                variant="primary"
+                onClick={() => {
+                  setEditCustomerProps({
+                    customerId: row.customerId,
+                    customerTypeId: row.customerTypeId,
+                    email: row.email,
+                    fullName: row.fullName,
+                  });
+                  toggleEditCustomer();
+                }}
+              >
+                Edit
+              </ActionButton>
+              <ActionButton
+                variant="primary"
+                onClick={() => {
+                  handleTopupDialog(row.customerId);
+                }}
+              >
+                Topup
+              </ActionButton>
             </div>
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+          <TableCell
+            style={{
+              paddingBottom: 0,
+              paddingTop: 0,
+            }}
+            colSpan={6}
+          >
             <Collapse
               in={expandedRow === row.customerId}
               timeout="auto"
@@ -487,6 +552,33 @@ export default function Customer() {
 
   return (
     <>
+      {openTopupDialog && (
+        <Topup
+          open={openTopupDialog}
+          onOpenChange={toggleATopupDialog}
+          onClose={toggleATopupDialog}
+          customerId={topupCustomerId}
+          refresh={refetch}
+        />
+      )}
+      {openEditCustomer && (
+        <EditCustomer
+          open={openEditCustomer}
+          onOpenChange={toggleEditCustomer}
+          onClose={toggleEditCustomer}
+          refresh={refetch}
+          EditCustomerForm={editCustomerProps}
+        />
+      )}
+      {openDeleteCustomer && (
+        <DeleteCustomer
+          open={openDeleteCustomer}
+          onClose={toggleDeleteCustomer}
+          onOpenChange={toggleDeleteCustomer}
+          customerId={rowId}
+          refresh={refetch}
+        />
+      )}
       {openDeactiveAndActiveVehicle && (
         <DeactiveAndActiveVehicle
           open={openDeactiveAndActiveVehicle}

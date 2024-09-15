@@ -14,6 +14,9 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   multiline?: boolean;
   minRow?: number;
+  positive?: boolean;
+  maxNumber?: number;
+  minNumber?: number;
 }
 
 const FormInput = forwardRef<HTMLInputElement, Props>(
@@ -28,10 +31,27 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
       endAdornment,
       multiline,
       minRow,
+      positive,
+      maxNumber,
+      minNumber,
       ...props
     },
     ref
   ) => {
+    const validateNumber = (value: string) => {
+      let num = parseFloat(value);
+      if (positive && num < 0) {
+        return "Value must be positive";
+      }
+      if (minNumber !== undefined && num < minNumber) {
+        return `Value must be at least ${minNumber}`;
+      }
+      if (maxNumber !== undefined && num > maxNumber) {
+        return `Value must be at most ${maxNumber}`;
+      }
+      return true;
+    };
+
     return (
       <ConnectForm>
         {({ register, formState: { errors } }: UseFormReturn) => {
@@ -41,10 +61,12 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
               fullWidth
             >
               <TextField
-                {...register(name)}
+                {...register(name, {
+                  validate: type === "number" ? validateNumber : undefined,
+                })}
                 error={errors[name]?.message !== undefined}
-                className='w-full border rounded-sm'
-                size='small'
+                className="w-full border rounded-sm"
+                size="small"
                 type={type}
                 id={name}
                 label={label}
@@ -57,8 +79,12 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
                 InputLabelProps={{ shrink: true }}
                 InputProps={{
                   defaultValue: defaultValue,
+                  inputProps: {
+                    min: minNumber,
+                    max: maxNumber,
+                  },
                   endAdornment: endAdornment ? (
-                    <InputAdornment position='end'>
+                    <InputAdornment position="end">
                       {endAdornment}
                     </InputAdornment>
                   ) : (
