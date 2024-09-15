@@ -16,7 +16,7 @@ import { toast } from "react-toastify";
 import dynamic from "next/dynamic";
 import SearchContainer from "@/components/Common/SearchContainer";
 import PageTitle from "@/components/PageTitle";
-import AlertDialog from "@/components/Dialog/ConfirmDialog";
+const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"));
 import ActionButton from "@/components/ActionButton";
 import usePagination from "@/hook/usePagination";
 import Table from "@/components/Table";
@@ -33,17 +33,22 @@ import { getListVehicleByCustomerAPI } from "@/api/vehicle";
 import { Grid, Typography } from "@mui/material";
 import { VehicleProps } from "@/types/vehicle.type";
 import toLocaleDate from "@/utils/date";
-import AddVehicle from "./Action/Vehicle/AddVehicle";
+const AddVehicle = dynamic(() => import("./Action/Vehicle/AddVehicle"));
 import Image from "next/image";
-import DeleteVehicle from "./Action/Vehicle/DeleteVehicle";
-import DeactiveAndActiveVehicle from "./Action/Vehicle/DeactiveAndActiveVehicle";
+const DeleteVehicle = dynamic(() => import("./Action/Vehicle/DeleteVehicle"));
+const DeactiveAndActiveVehicle = dynamic(
+  () => import("./Action/Vehicle/DeactiveAndActiveVehicle")
+);
 import Bai_Logo from "@/public/Bai_Logo.svg";
 import { UpdateVehicleSchemaType } from "@/utils/schemas/vehicle/updateVehicleSchema";
-import EditVehicle from "./Action/Vehicle/EditVehicle";
-import DeleteCustomer from "./Action/Customer/DeleteCustomer";
+const EditVehicle = dynamic(() => import("./Action/Vehicle/EditVehicle"));
+const DeleteCustomer = dynamic(
+  () => import("./Action/Customer/DeleteCustomer")
+);
 import { EditCustomerSchemaType } from "@/utils/schemas/customer/editCustomerSchema";
-import EditCustomer from "./Action/Customer/EditCustomer";
-import Topup from "./Action/Transaction/Topup";
+import { formatPrice } from "@/utils/price";
+const EditCustomer = dynamic(() => import("./Action/Customer/EditCustomer"));
+const Topup = dynamic(() => import("./Action/Transaction/Topup"));
 
 const filterOptions = [
   { display: "Name", value: "fullName" },
@@ -224,7 +229,7 @@ export default function Customer() {
             <Image
               loader={({ src }) => src as string}
               src={vehicle.plateImage}
-              alt="vehicle"
+              alt='vehicle'
               width={100}
               height={100}
               onError={(e) => {
@@ -250,7 +255,7 @@ export default function Customer() {
         <TableCell>
           {vehicle.statusVehicle === "ACTIVE" ? (
             <span
-              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
               style={{
                 color: "#62a34f",
                 backgroundColor: "#dcfce7",
@@ -260,7 +265,7 @@ export default function Customer() {
             </span>
           ) : vehicle.statusVehicle === "INACTIVE" ? (
             <span
-              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
               style={{
                 color: "#fcca46",
                 backgroundColor: "#fef9c3",
@@ -270,7 +275,7 @@ export default function Customer() {
             </span>
           ) : vehicle.statusVehicle === "REJECTED" ? (
             <span
-              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
               style={{
                 color: "#d9534f",
                 backgroundColor: "#f8d7da",
@@ -280,7 +285,7 @@ export default function Customer() {
             </span>
           ) : vehicle.statusVehicle === "PENDING" ? (
             <span
-              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
               style={{
                 color: "#f0ad4e",
                 backgroundColor: "#fcf8e3",
@@ -293,9 +298,9 @@ export default function Customer() {
           )}
         </TableCell>
         <TableCell>
-          <div className="flex flex-row gap-3">
+          <div className='flex flex-row gap-3'>
             <ActionButton
-              variant="danger"
+              variant='danger'
               onClick={() => {
                 handleDeleteVehicle(vehicle.id);
               }}
@@ -305,7 +310,7 @@ export default function Customer() {
             {vehicle.statusVehicle === "INACTIVE" ||
             vehicle.statusVehicle === "PENDING" ? (
               <ActionButton
-                variant="primary"
+                variant='primary'
                 onClick={() => {
                   handleDeactiveAndActiveVehicle(vehicle.id, true);
                 }}
@@ -314,7 +319,7 @@ export default function Customer() {
               </ActionButton>
             ) : (
               <ActionButton
-                variant="danger"
+                variant='danger'
                 onClick={() => {
                   handleDeactiveAndActiveVehicle(vehicle.id, false);
                 }}
@@ -323,7 +328,7 @@ export default function Customer() {
               </ActionButton>
             )}
             <ActionButton
-              variant="primary"
+              variant='primary'
               onClick={() => {
                 handleEditVehicle({
                   plateNumber: vehicle.plateNumber,
@@ -353,7 +358,7 @@ export default function Customer() {
             <IconButton
               onClick={() => handleExpandClick(row.customerId)}
               aria-expanded={expandedRow === row.customerId}
-              aria-label="show more"
+              aria-label='show more'
             >
               {expandedRow === row.customerId ? (
                 <ExpandLessIcon />
@@ -366,11 +371,11 @@ export default function Customer() {
           <TableCell>{row.email}</TableCell>
           <TableCell>
             {row.customerType === "PAID" ? (
-              <span className="inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center">
+              <span className='inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center'>
                 Paid
               </span>
             ) : row.customerType === "FREE" ? (
-              <span className="inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center">
+              <span className='inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center'>
                 Free
               </span>
             ) : (
@@ -380,7 +385,7 @@ export default function Customer() {
           <TableCell>
             {row.statusCustomer === "ACTIVE" ? (
               <span
-                className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+                className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
                 style={{
                   color: "#62a34f",
                   backgroundColor: "#dcfce7",
@@ -390,7 +395,7 @@ export default function Customer() {
               </span>
             ) : row.statusCustomer === "INACTIVE" ? (
               <span
-                className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
+                className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
                 style={{
                   color: "#fcca46",
                   backgroundColor: "#fef9c3",
@@ -403,12 +408,12 @@ export default function Customer() {
             )}
           </TableCell>
           <TableCell>
-            <div className="flex flex-row gap-3">
+            <div className='flex flex-row gap-3'>
               {(() => {
                 if (row.statusCustomer === "INACTIVE") {
                   return (
                     <ActionButton
-                      variant="primary"
+                      variant='primary'
                       onClick={() => handleOpenDialog(row.customerId, true)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
@@ -418,7 +423,7 @@ export default function Customer() {
                 } else if (row.statusCustomer === "ACTIVE") {
                   return (
                     <ActionButton
-                      variant="danger"
+                      variant='danger'
                       onClick={() => handleOpenDialog(row.customerId, false)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
@@ -428,13 +433,13 @@ export default function Customer() {
                 }
               })()}
               <ActionButton
-                variant="danger"
+                variant='danger'
                 onClick={() => handleDeleteCustomer(row.customerId)}
               >
                 Delete
               </ActionButton>
               <ActionButton
-                variant="primary"
+                variant='primary'
                 onClick={() => {
                   setEditCustomerProps({
                     customerId: row.customerId,
@@ -448,7 +453,7 @@ export default function Customer() {
                 Edit
               </ActionButton>
               <ActionButton
-                variant="primary"
+                variant='primary'
                 onClick={() => {
                   handleTopupDialog(row.customerId);
                 }}
@@ -468,12 +473,28 @@ export default function Customer() {
           >
             <Collapse
               in={expandedRow === row.customerId}
-              timeout="auto"
+              timeout='auto'
               unmountOnExit
             >
-              <Grid container spacing={2} className="pt-5 pb-5">
+              <div className='py-2'>
+                <div className='flex justify-start gap-2 items-start flex-col'>
+                  <div className='wallet'>
+                    <Typography fontWeight='bold' className='min-w-20'>
+                      Main Wallet:
+                    </Typography>
+                    <Typography>{formatPrice(100000)} Coin</Typography>
+                  </div>
+                  <div className='wallet'>
+                    <Typography fontWeight='bold' className='min-w-20'>
+                      Extra Wallet:
+                    </Typography>
+                    <Typography>{formatPrice(100000)} Coin</Typography>
+                  </div>
+                </div>
+              </div>
+              <Grid container spacing={1} className='py-1'>
                 <Grid item xs={12}>
-                  <Typography variant="h6" component="div">
+                  <Typography variant='h6' component='div'>
                     Vehicles
                   </Typography>
                 </Grid>
@@ -482,8 +503,8 @@ export default function Customer() {
                     item
                     xs={12}
                     container
-                    className="gap-5"
-                    justifyContent="flex-end"
+                    className='gap-5'
+                    justifyContent='flex-end'
                   >
                     {openAddVehicle && (
                       <AddVehicle
@@ -495,11 +516,11 @@ export default function Customer() {
                       />
                     )}
                     <Button
-                      variant="outlined"
-                      color="primary"
-                      size="small"
+                      variant='outlined'
+                      color='primary'
+                      size='small'
                       onClick={toggleAddVehicle}
-                      className=""
+                      className=''
                     >
                       Add Vehicle
                     </Button>
@@ -607,19 +628,21 @@ export default function Customer() {
           EditVehicleForm={editVehicle}
         />
       )}
-      <AlertDialog
-        open={openConfirmDialog}
-        title={
-          isActiveOrDeActive
-            ? "Confirm re-activate this customer ?"
-            : "Deactivate this customer ?"
-        }
-        onCancel={handleCloseDialog}
-        onOpenChange={handleCloseDialog}
-        onConfirm={() => {
-          onStatusChange(isActiveOrDeActive, rowId);
-        }}
-      />
+      {openConfirmDialog && (
+        <AlertDialog
+          open={openConfirmDialog}
+          title={
+            isActiveOrDeActive
+              ? "Confirm re-activate this customer ?"
+              : "Deactivate this customer ?"
+          }
+          onCancel={handleCloseDialog}
+          onOpenChange={handleCloseDialog}
+          onConfirm={() => {
+            onStatusChange(isActiveOrDeActive, rowId);
+          }}
+        />
+      )}
       <PageTitle>Customer List</PageTitle>
       <SearchContainer>
         <SelectFilter
@@ -632,10 +655,10 @@ export default function Customer() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
+      <div className='flex flex-row gap-3 items-center justify-end w-full py-2'>
         <Button
-          variant="outlined"
-          color="primary"
+          variant='outlined'
+          color='primary'
           onClick={() => refetch()}
           disabled={changeStatusCustomerMutation.isPending}
         >
@@ -648,7 +671,7 @@ export default function Customer() {
             onClose={toggleAddCustomer}
           />
         )}
-        <Button variant="outlined" color="primary" onClick={toggleAddCustomer}>
+        <Button variant='outlined' color='primary' onClick={toggleAddCustomer}>
           Register Non-Paid Customer
         </Button>
       </div>

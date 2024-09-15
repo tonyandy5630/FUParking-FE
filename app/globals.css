@@ -12,6 +12,12 @@ body {
   background-color: #f0f0f0;
 }
 
+@layer components {
+  .wallet {
+    @apply flex gap-2 items-center;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
