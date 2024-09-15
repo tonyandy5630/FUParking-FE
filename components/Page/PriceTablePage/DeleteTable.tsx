@@ -4,10 +4,10 @@ import { DELETE_MESSAGE } from "@/constant/message";
 import { Button } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
-import { MouseEventHandler, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import Loading from "../LoadingPage/Loading";
 import { PriceTable } from "@/types/price.type";
+import ActionButton from "@/components/ActionButton";
 
 type Props = {
   successCallBack: any;
@@ -58,13 +58,9 @@ export default function DeleteTable({ successCallBack, table }: Props) {
           disabled={isDeletingTablePrice}
         />
       )}
-      <Button
-        variant='outlined'
-        color='error'
-        onClick={handleDeleteButtonClick}
-      >
+      <ActionButton variant='danger' onClick={handleDeleteButtonClick}>
         Delete
-      </Button>
+      </ActionButton>
     </>
   );
 }

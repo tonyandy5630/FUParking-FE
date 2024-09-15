@@ -28,6 +28,8 @@ import ActionButton from "@/components/ActionButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import DeleteTable from "./DeleteTable";
+import useHandleDialog from "@/hook/useHandleDialog";
+const EditPriceTable = dynamic(() => import("./EditPriceTable"));
 const AddPriceTableDialog = dynamic(() => import("./AddPriceTable"));
 
 const FILTER: listFilter[] = [
@@ -61,6 +63,13 @@ export default function PriceTablePage() {
   ] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = active, false = deactive
   const [rowId, setRowId] = useState("");
+  const {
+    openDialog: openEditDialog,
+    handleToggleDialog: handleToggleEditDialog,
+    handleCloseDialog: handleCloseEditDialog,
+  } = useHandleDialog();
+
+  const [editTable, setEditTable] = useState<PriceTable | undefined>(undefined);
   const {
     data: priceTableData,
     isSuccess,
@@ -183,6 +192,16 @@ export default function PriceTablePage() {
                     );
                 }
               })()}
+              <ActionButton
+                variant='primary'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditTable(item);
+                  handleToggleEditDialog();
+                }}
+              >
+                Edit
+              </ActionButton>
               <DeleteTable table={item} successCallBack={refetch} />
             </div>
           </TableCell>
@@ -209,6 +228,15 @@ export default function PriceTablePage() {
           });
         }}
       />
+      {openEditDialog && editTable && (
+        <EditPriceTable
+          open={openEditDialog}
+          onOpenChange={handleCloseEditDialog}
+          table={editTable}
+          successCallback={refetch}
+          onClose={handleCloseEditDialog}
+        />
+      )}
       <PageTitle>Price Page</PageTitle>
       <SearchContainer>
         <SelectFilter

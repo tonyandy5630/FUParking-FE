@@ -45,3 +45,14 @@ const PriceTableTableSchema = object({
 
 export type PriceTableTableSchemaType = InferType<typeof PriceTableTableSchema>;
 export default PriceTableTableSchema;
+
+export const UpdatePriceTableSchema = object({
+  id: string().required("CANNOT FIND TABLE"),
+  name: string()
+    .required(REQUIRED_MESSAGE)
+    .max(name.maxLength.value, name.maxLength.message),
+});
+
+export type UpdatePriceTableSchemaType = InferType<
+  typeof UpdatePriceTableSchema
+>;

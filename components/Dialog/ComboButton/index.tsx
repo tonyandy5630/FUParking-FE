@@ -11,6 +11,7 @@ type Props = {
   onReset: () => void;
   isLoading?: boolean;
   submitLabel: string;
+  isDirty?: boolean;
 };
 
 export default function ComboFormButton({
@@ -18,6 +19,7 @@ export default function ComboFormButton({
   onReset,
   isLoading,
   submitLabel,
+  isDirty,
 }: Props) {
   const [confirmBox, setConfirmBox] = useState<{
     open: boolean;
@@ -32,6 +34,9 @@ export default function ComboFormButton({
   });
 
   const handleResetClick = () => {
+    if (!isDirty) {
+      return;
+    }
     setConfirmBox((prev) => ({
       open: true,
       title: "Reset",
@@ -41,10 +46,15 @@ export default function ComboFormButton({
   };
 
   const handleCancelConfirmBox = () => {
+    //* close confirm
     setConfirmBox((prev) => ({ ...prev, open: false }));
   };
 
   const handleCancelClick = () => {
+    if (!isDirty) {
+      onClose();
+      return;
+    }
     setConfirmBox((prev) => ({
       open: true,
       title: "Cancel",
@@ -58,14 +68,16 @@ export default function ComboFormButton({
 
   return (
     <>
-      <AlertDialog
-        open={confirmBox.open}
-        onOpenChange={handleCancelConfirmBox}
-        onCancel={handleCancelConfirmBox}
-        onConfirm={confirmBox.onConfirm}
-        title={confirmBox.title}
-        content={confirmBox.content}
-      />
+      {confirmBox.open && (
+        <AlertDialog
+          open={confirmBox.open}
+          onOpenChange={handleCancelConfirmBox}
+          onCancel={handleCancelConfirmBox}
+          onConfirm={confirmBox.onConfirm}
+          title={confirmBox.title}
+          content={confirmBox.content}
+        />
+      )}
       <Button
         type='button'
         onClick={handleCancelClick}
