@@ -48,10 +48,10 @@ export function getLocalISOString(date?: Date): string {
 }
 
 export function toVNDateString(date: string) {
-  if (!Date.parse(date) && !dayjs(date)) {
+  if (!Date.parse(date) && !moment(date)) {
     return "NaN";
   }
-  return dayjs(date).format("DD/MM/YYYY");
+  return moment(date).format("DD/MM/YYYY");
 }
 
 export default function toLocaleDate(date: string): string {

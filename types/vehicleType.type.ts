@@ -6,7 +6,7 @@ export type VehicleTypeProps = {
   id: string;
   name: string;
   description: string;
-  createdDate: string;
+  createDatetime: string;
 };
 
 export type VehicleTypeKey = keyof VehicleTypeProps;
