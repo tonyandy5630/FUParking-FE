@@ -34,6 +34,10 @@ export default function AlertDialog({
         open={open}
         aria-labelledby='alert-dialog-title'
         aria-describedby='alert-dialog-description'
+        onClose={(e: React.MouseEvent<HTMLButtonElement>) => {
+          e.stopPropagation();
+          onOpenChange();
+        }}
       >
         <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
         <DialogContent>
