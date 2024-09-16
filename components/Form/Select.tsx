@@ -28,7 +28,6 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
               control={control}
               name={name}
               render={({ field }) => {
-                const { value, ...rest } = field;
                 return (
                   <FormControl
                     fullWidth
@@ -38,9 +37,10 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
                     <TextField
                       select
                       size='small'
-                      defaultValue={props.defaultValue ?? ""}
+                      required={props.required}
+                      // defaultValue={props.defaultValue ?? ""}
                       label={label}
-                      {...rest}
+                      {...field}
                     >
                       {options.map((item, index) => (
                         <MenuItem key={item.value} value={item.value}>

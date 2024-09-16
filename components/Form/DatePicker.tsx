@@ -33,7 +33,7 @@ const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
                     minDate={minDate}
                     maxDate={maxDate}
                     className='w-full'
-                    {...rest}
+                    {...field}
                     label={label}
                     {...props}
                   />

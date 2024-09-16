@@ -37,8 +37,14 @@ export default function EditPriceTable({
   const methods = useForm({
     defaultValues: {
       priceTableId: table.id,
-      applyFromDate: new Date(moment(table.applyFromDate).toString()),
-      applyToDate: new Date(moment(table.applyToDate).toString()),
+      applyFromDate:
+        table.applyFromDate !== null
+          ? new Date(moment(table.applyFromDate).toString())
+          : null,
+      applyToDate:
+        table.applyToDate !== null
+          ? new Date(moment(table.applyToDate).toString())
+          : null,
     },
     resolver: yupResolver(UpdatePriceTableSchema),
   });
@@ -52,6 +58,7 @@ export default function EditPriceTable({
     formState: { errors, isDirty },
     handleSubmit,
     reset,
+    setValue,
   } = methods;
   const { mutateAsync: updatePriceTableAsync, isPending: isUpdatingTable } =
     useMutation({
@@ -98,6 +105,7 @@ export default function EditPriceTable({
       )}
       <Dialog
         maxWidth='xs'
+        disableRestoreFocus
         open={props.open}
         onClose={handleCloseConfirmDialog}
       >
@@ -107,12 +115,20 @@ export default function EditPriceTable({
             <form onSubmit={handleSubmit(handleEdit)}>
               <Grid container spacing={2}>
                 <Grid xs={12}>
-                  <FormInput name='name' autoFocus defaultValue={table.name} />
+                  <FormInput
+                    name='name'
+                    autoFocus={true}
+                    defaultValue={table.name}
+                  />
                 </Grid>
                 <Grid xs={12}>
                   <FormDatePicker
                     name='applyFromDate'
-                    defaultValue={moment(table.applyFromDate)}
+                    defaultValue={
+                      table.applyFromDate === null
+                        ? null
+                        : moment(table.applyFromDate)
+                    }
                     label='Apply From'
                     error={errors.applyFromDate?.message}
                   />
@@ -121,7 +137,11 @@ export default function EditPriceTable({
                   <FormDatePicker
                     name='applyToDate'
                     label='Apply To'
-                    defaultValue={moment(table.applyToDate)}
+                    defaultValue={
+                      table.applyToDate === null
+                        ? null
+                        : moment(table.applyToDate)
+                    }
                     error={errors.applyToDate?.message}
                   />
                 </Grid>
