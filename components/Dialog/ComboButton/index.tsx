@@ -35,6 +35,7 @@ export default function ComboFormButton({
 
   const handleResetClick = () => {
     if (!isDirty) {
+      onReset();
       return;
     }
     setConfirmBox((prev) => ({
@@ -88,7 +89,7 @@ export default function ComboFormButton({
         Cancel
       </Button>
       <Button
-        type='button'
+        type='reset'
         variant='contained'
         color='warning'
         onClick={handleResetClick}

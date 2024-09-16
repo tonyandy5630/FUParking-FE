@@ -19,12 +19,14 @@ const PriceTableTableSchema = object({
   name: string()
     .required(REQUIRED_MESSAGE)
     .max(name.maxLength.value, name.maxLength.message),
-  applyFromDate: date(),
-  applyToDate: date().when("applyFromDate", ([applyFromDate], schema) => {
-    return applyFromDate
-      ? schema.min(applyFromDate, "End date is before Start date")
-      : schema;
-  }),
+  applyFromDate: date().nullable(),
+  applyToDate: date()
+    .nullable()
+    .when("applyFromDate", ([applyFromDate], schema) => {
+      return applyFromDate !== null && applyFromDate
+        ? schema.min(applyFromDate, "End date is before Start date")
+        : schema;
+    }),
   pricePerBlock: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
     .min(price.min.value, price.min.message)
@@ -52,12 +54,14 @@ export const UpdatePriceTableSchema = object({
     .trim()
     .required(REQUIRED_MESSAGE)
     .max(name.maxLength.value, name.maxLength.message),
-  applyFromDate: date(),
-  applyToDate: date().when("applyFromDate", ([applyFromDate], schema) => {
-    return applyFromDate
-      ? schema.min(applyFromDate, "End date is before Start date")
-      : schema;
-  }),
+  applyFromDate: date().nullable(),
+  applyToDate: date()
+    .nullable()
+    .when("applyFromDate", ([applyFromDate], schema) => {
+      return applyFromDate !== null && applyFromDate
+        ? schema.min(applyFromDate, "End date is before Start date")
+        : schema;
+    }),
 });
 
 export type UpdatePriceTableSchemaType = InferType<

@@ -248,7 +248,6 @@ export default function VehiclePage() {
 
   const handleOpenChangeUpdateDialog = () => {
     setOpenUpdateDialog((prev) => !prev);
-    refetch();
   };
 
   const handleVehicleStatusChange = async (vehicleData: {
@@ -276,11 +275,14 @@ export default function VehiclePage() {
         <TableCell>
           {item.plateImage ? (
             <Image
-              width={100}
-              height={60}
+              width={0}
+              height={0}
+              priority
               src={item.plateImage}
-              alt="vehicle"
+              alt='vehicle'
               loader={() => item.plateImage as string}
+              unoptimized={true}
+              style={{ width: "100px", height: "auto" }}
               onError={(e) => {
                 e.currentTarget.src = Bai_Logo.src;
                 e.currentTarget.alt = "Image error";
@@ -311,13 +313,13 @@ export default function VehiclePage() {
           </Chip>
         </TableCell>
         <TableCell>
-          <div className="flex justify-start items-center gap-1 min-w-full">
+          <div className='flex justify-start items-center gap-1 min-w-full'>
             {(() => {
               switch (item.statusVehicle) {
                 case "ACTIVE":
                   return (
                     <ActionButton
-                      variant="danger"
+                      variant='danger'
                       onClick={(e) => {
                         e.stopPropagation();
                         handleOpenConfirmBox(item.id, false);
@@ -329,7 +331,7 @@ export default function VehiclePage() {
                 case "INACTIVE":
                   return (
                     <ActionButton
-                      variant="primary"
+                      variant='primary'
                       onClick={(e) => {
                         e.stopPropagation();
                         handleOpenConfirmBox(item.id, true);
@@ -340,9 +342,9 @@ export default function VehiclePage() {
                   );
                 case "PENDING":
                   return (
-                    <div className="flex justify-between items-center gap-2">
+                    <div className='flex justify-between items-center gap-2'>
                       <ActionButton
-                        variant="primary"
+                        variant='primary'
                         onClick={(e) => {
                           e.stopPropagation();
                           handleUpdateVehicle(item);
@@ -351,7 +353,7 @@ export default function VehiclePage() {
                         Edit
                       </ActionButton>
                       <ActionButton
-                        variant="danger"
+                        variant='danger'
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenConfirmBox(item.id, false);
@@ -404,7 +406,7 @@ export default function VehiclePage() {
       <PageTitle>Vehicle List</PageTitle>
       <SearchContainer>
         <SelectFilter
-          label="Vehicle Type"
+          label='Vehicle Type'
           filterAttribute={selectedVehicleTypes}
           listFilter={formatVehicleTypesFilter ?? []}
           setFilterAttribute={handleVehicleTypeChange}
@@ -419,9 +421,9 @@ export default function VehiclePage() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className="min-w-full flex justify-end items-center py-2 gap-5">
+      <div className='min-w-full flex justify-end items-center py-2 gap-5'>
         <ExportToCSVButton data={vehicleList} />
-        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+        <Button variant='outlined' color='primary' onClick={() => refetch()}>
           Refresh
         </Button>
       </div>

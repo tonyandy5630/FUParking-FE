@@ -258,6 +258,7 @@ export default function PriceTablePage() {
         <AddPriceTableDialog
           open={openCreate}
           onClose={handleCloseCreatePriceTable}
+          successCallback={refetch}
         />
       )}
       <Table

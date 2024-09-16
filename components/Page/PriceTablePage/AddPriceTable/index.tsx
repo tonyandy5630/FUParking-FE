@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -24,19 +24,27 @@ import moment from "moment";
 type Props = {
   open: boolean;
   onClose: any;
+  successCallback: any;
 };
 
-export default function AddPriceTable({ open, onClose }: Props) {
+export default function AddPriceTable({
+  open,
+  onClose,
+  successCallback,
+}: Props) {
   const methods = useForm({ resolver: yupResolver(PriceTableTableSchema) });
   const {
     setFocus,
     handleSubmit,
     reset,
-    control,
     setError,
-    formState: { errors },
+    formState: { errors, isDirty },
+    setValue,
     getValues,
   } = methods;
+  const handleReset = () => {
+    reset();
+  };
 
   const createTableMutation = useMutation({
     mutationKey: ["/create-table"],
@@ -77,7 +85,8 @@ export default function AddPriceTable({ open, onClose }: Props) {
       await createTableMutation.mutateAsync(data, {
         onSuccess: (res) => {
           toast.success("Create table successfully");
-          reset();
+          successCallback();
+          handleReset();
         },
         onError: (err: any) => {
           if (err.response.data.message === PRIORITY_EXISTED) {
@@ -93,7 +102,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth='xs'>
+    <Dialog open={open} onClose={onClose} maxWidth='xs' disableRestoreFocus>
       <DialogTitle>Add New Price Table</DialogTitle>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(handleAddPriceTable)}>
@@ -102,8 +111,9 @@ export default function AddPriceTable({ open, onClose }: Props) {
               <Grid xs={12}>
                 <div className='min-w-full'>
                   <FormInput
-                    name='name'
                     autoFocus={true}
+                    required={true}
+                    name='name'
                     label='Table name'
                     placeholder='Table name'
                   />
@@ -112,6 +122,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
               <Grid xs={6}>
                 <FormSelect
                   name='vehicleTypeId'
+                  required={true}
                   options={vehicleTypeOptions}
                   label='Vehicle Types'
                   error={errors.vehicleTypeId?.message}
@@ -121,6 +132,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
                 <div className='w-full'>
                   <FormInput
                     label='Priority'
+                    required={true}
                     name='priority'
                     type='number'
                     placeholder='Priority'
@@ -148,6 +160,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
                   <FormInput
                     label='Price per Block'
                     name='pricePerBlock'
+                    required={true}
                     placeholder='Price per Block'
                     type='number'
                     endAdornment='VND'
@@ -159,6 +172,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
                   <FormInput
                     name='minPrice'
                     label='Min Price'
+                    required={true}
                     placeholder='Min Price'
                     type='number'
                     endAdornment='VND'
@@ -170,6 +184,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
                   <FormInput
                     name='maxPrice'
                     label='Max Price'
+                    required={true}
                     placeholder='Max Price'
                     type='number'
                     endAdornment='VND'
@@ -179,6 +194,7 @@ export default function AddPriceTable({ open, onClose }: Props) {
 
               <DialogActions className='flex justify-end min-w-full'>
                 <ComboFormButton
+                  isDirty={isDirty}
                   onClose={handleClose}
                   onReset={() => reset()}
                   submitLabel='Create'
