@@ -155,6 +155,7 @@ export default function Customer() {
         queryKey: ["/view-customer-balance", customerExpandId],
         queryFn: () => getCustomerBalanceAPI(customerExpandId ?? ""),
         enabled: customerExpandId !== "" && customerExpandId !== null,
+        retry: 0,
       },
     ],
   });
@@ -162,6 +163,10 @@ export default function Customer() {
   useEffect(() => {
     const customerBalance = customerBalanceData?.data.data;
     if (!customerBalance) {
+      setCustomerBalance({
+        extra: "0",
+        main: "0",
+      });
       return;
     }
     setCustomerBalance((prev) => ({
