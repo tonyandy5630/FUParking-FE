@@ -22,6 +22,12 @@ export interface CustomerTypeProps {
   description: string;
 }
 
+export type CustomerBalance = {
+  balanceMain: number;
+  balanceExtra: number;
+  expDate: string | null;
+};
+
 export type CustomerWithFillerKey = keyof CustomerWithFillerProps;
 
 export type CustomerTypeKey = keyof CustomerTypeProps;

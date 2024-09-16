@@ -1,11 +1,12 @@
 "use client";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import SelectFilter from "../../Common/selectFilter";
 import SearchField from "../../Common/searchField";
 import { CustomerWithFillerProps } from "@/types/customer.type";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import {
   changeStatusCustomerAPI,
+  getCustomerBalanceAPI,
   getListCustomerWithFillerAPI,
 } from "@/api/customer";
 const TableRow = dynamic(() => import("@mui/material/TableRow"));
@@ -60,6 +61,10 @@ const filterOptions = [
 export default function Customer() {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false); //* true = Active , false = Deactive
+  const [customerBalance, setCustomerBalance] = useState({
+    main: "0",
+    extra: "0",
+  });
   const [isActiveOrDeActiveVehicle, setIsActiveOrDeActiveVehicle] =
     useState(false); //* true = Active , false = Deactive
   const {
@@ -108,7 +113,9 @@ export default function Customer() {
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
   const [rowId, setRowId] = useState("");
-  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [customerExpandId, setCustomerIdExpandRow] = useState<string | null>(
+    null
+  );
   const [deleteVehicleId, setDeleteVehicleId] = useState("");
   const [topupCustomerId, setTopupCustomerId] = useState("");
   const [editCustomerProps, setEditCustomerProps] =
@@ -118,23 +125,56 @@ export default function Customer() {
   const [editVehicle, setEditVehicle] = useState<UpdateVehicleSchemaType>();
   const [filterAttribute, setFilterAttribute] =
     useState<keyof CustomerWithFillerProps>("fullName");
-  const { data, isLoading, isSuccess, isError, error, refetch } = useQuery({
-    queryKey: [
-      "/customer",
-      pagination.pageSize,
-      pagination.pageIndex,
-      debounceSearchText,
-      filterAttribute,
+  const [
+    { data, isLoading, isSuccess, isError, error, refetch },
+    {
+      data: customerBalanceData,
+      isLoading: isLoadingCustomerBalance,
+      isError: isErrorCustomerBalance,
+    },
+  ] = useQueries({
+    queries: [
+      {
+        queryKey: [
+          "/customer-vehicles",
+          pagination.pageSize,
+          pagination.pageIndex,
+          debounceSearchText,
+          filterAttribute,
+        ],
+        queryFn: () =>
+          getListCustomerWithFillerAPI(
+            pagination.pageSize,
+            pagination.pageIndex + 1,
+            debounceSearchText,
+            filterAttribute.toString()
+          ),
+        retry: 1,
+      },
+      {
+        queryKey: ["/view-customer-balance", customerExpandId],
+        queryFn: () => getCustomerBalanceAPI(customerExpandId ?? ""),
+        enabled: customerExpandId !== "" && customerExpandId !== null,
+        retry: 0,
+      },
     ],
-    queryFn: () =>
-      getListCustomerWithFillerAPI(
-        pagination.pageSize,
-        pagination.pageIndex + 1,
-        debounceSearchText,
-        filterAttribute.toString()
-      ),
-    retry: 1,
   });
+
+  useEffect(() => {
+    const customerBalance = customerBalanceData?.data.data;
+    if (!customerBalance) {
+      setCustomerBalance({
+        extra: "0",
+        main: "0",
+      });
+      return;
+    }
+    setCustomerBalance((prev) => ({
+      ...prev,
+      extra: formatPrice(customerBalance.balanceExtra),
+      main: formatPrice(customerBalance.balanceMain),
+    }));
+  }, [customerBalanceData?.data.data]);
 
   const handleOpenDialog = (id: string, isActive: boolean) => {
     setOpenConfirmDialog(true);
@@ -209,8 +249,8 @@ export default function Customer() {
   };
 
   const handleExpandClick = (customerId: string) => {
-    setExpandedRow((prev) => (prev === customerId ? null : customerId));
-    if (expandedRow !== customerId && customerId !== "") {
+    setCustomerIdExpandRow((prev) => (prev === customerId ? null : customerId));
+    if (customerExpandId !== customerId && customerId !== "") {
       setRowId(customerId);
       vehicleRefetch();
     }
@@ -357,10 +397,10 @@ export default function Customer() {
           <TableCell>
             <IconButton
               onClick={() => handleExpandClick(row.customerId)}
-              aria-expanded={expandedRow === row.customerId}
+              aria-expanded={customerExpandId === row.customerId}
               aria-label='show more'
             >
-              {expandedRow === row.customerId ? (
+              {customerExpandId === row.customerId ? (
                 <ExpandLessIcon />
               ) : (
                 <ExpandMoreIcon />
@@ -472,7 +512,7 @@ export default function Customer() {
             colSpan={6}
           >
             <Collapse
-              in={expandedRow === row.customerId}
+              in={customerExpandId === row.customerId}
               timeout='auto'
               unmountOnExit
             >
@@ -482,13 +522,21 @@ export default function Customer() {
                     <Typography fontWeight='bold' className='min-w-20'>
                       Main Wallet:
                     </Typography>
-                    <Typography>{formatPrice(100000)} Coin</Typography>
+                    <Typography>
+                      {isLoadingCustomerBalance
+                        ? "Loading..."
+                        : `${customerBalance.main} Coin`}
+                    </Typography>
                   </div>
                   <div className='wallet'>
                     <Typography fontWeight='bold' className='min-w-20'>
                       Extra Wallet:
                     </Typography>
-                    <Typography>{formatPrice(100000)} Coin</Typography>
+                    <Typography>
+                      {isLoadingCustomerBalance
+                        ? "Loading..."
+                        : `${customerBalance.extra} Coin`}
+                    </Typography>
                   </div>
                 </div>
               </div>
@@ -558,12 +606,15 @@ export default function Customer() {
     ));
   }, [
     data?.data.data,
-    expandedRow,
+    customerExpandId,
     vehicleData?.data?.data,
     vehicleIsPending,
     openAddVehicle,
     openDeleteVehicle,
     openDeactiveAndActiveVehicle,
+    isLoadingCustomerBalance,
+    customerBalance.main,
+    customerBalance.extra,
   ]);
 
   const handleFilterAttributeChange = (value: string) => {
