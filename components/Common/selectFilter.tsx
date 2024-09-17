@@ -13,6 +13,7 @@ interface SelectFilterProps {
   setFilterAttribute: (value: string) => void;
   listFilter: listFilter[];
   label?: string;
+  className?: string;
 }
 
 export default function SelectFilter({
@@ -20,13 +21,17 @@ export default function SelectFilter({
   setFilterAttribute,
   listFilter,
   label = "Filter",
+  className = "",
 }: SelectFilterProps) {
   const handleChange = (event: any) => {
     setFilterAttribute(event.target.value);
   };
 
   return (
-    <FormControl className='!min-w-40' size='small'>
+    <FormControl
+      className={`${className === "" ? "!min-w-40" : className} `}
+      size='small'
+    >
       <InputLabel id='demo'>{label}</InputLabel>
       <Select
         labelId='demo'
