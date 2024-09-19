@@ -76,7 +76,9 @@ export default function RevenuePage() {
 
   const chartDateFilter = useMemo(() => {
     return DateFilters.map((item) => {
-      return <ButtonRadio label={item.display} value={item.value} />;
+      return (
+        <ButtonRadio key={item.value} label={item.display} value={item.value} />
+      );
     });
   }, [DateFilters]);
 

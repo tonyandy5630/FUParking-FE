@@ -1,13 +1,11 @@
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import Select, { SelectProps, SelectVariants } from "@mui/material/Select";
+import Select, { SelectVariants } from "@mui/material/Select";
 import { useId } from "react";
 
 export interface listFilter<T = string> {
-export interface listFilter<T = string> {
   display: string;
-  value: T;
   value: T;
 }
 
@@ -32,7 +30,6 @@ export default function SelectFilter({
     setFilterAttribute(event.target.value);
   };
   const id = useId();
-  const id = useId();
 
   return (
     <FormControl
@@ -40,13 +37,7 @@ export default function SelectFilter({
       size='small'
     >
       <InputLabel id={id}>{label}</InputLabel>
-    <FormControl
-      className={`${className === "" ? "!min-w-40" : className} `}
-      size='small'
-    >
-      <InputLabel id={id}>{label}</InputLabel>
       <Select
-        labelId={id}
         labelId={id}
         label={label}
         value={filterAttribute}
