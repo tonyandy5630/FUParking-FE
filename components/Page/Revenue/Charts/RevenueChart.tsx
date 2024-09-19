@@ -85,7 +85,7 @@ export default function RevenueChart({ startDate, endDate }: Props) {
                 stack: "wallet",
               },
               {
-                type: "bar",
+                type: "line",
                 label: "Average Revenue",
                 dataKey: "averageRevenue",
               },
