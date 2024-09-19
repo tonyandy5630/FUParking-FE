@@ -17,7 +17,7 @@ import FormInput from "@/components/Form/Input";
 import Grid from "@mui/material/Unstable_Grid2";
 import FormSelect, { FormOptions } from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
-import { ParkingAreas } from "@/types/parkingArea.type";
+import { ParkingAreas } from "@/types/parking-area.type";
 import { MODES } from "@/utils/mode";
 import { OBJECT_EXISTED_MESSAGE } from "@/constant/message";
 import DialogActionWithDelete from "@/components/Dialog/ActionWithDelete";

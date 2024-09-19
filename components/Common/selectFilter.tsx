@@ -4,9 +4,9 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { useId } from "react";
 
-export interface listFilter {
+export interface listFilter<T = string> {
   display: string;
-  value: string;
+  value: T;
 }
 
 interface SelectFilterProps {

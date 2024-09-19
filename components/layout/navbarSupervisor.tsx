@@ -16,6 +16,7 @@ import PersonOutlineTwoToneIcon from "@mui/icons-material/PersonOutlineTwoTone";
 import MinorCrashTwoToneIcon from "@mui/icons-material/MinorCrashTwoTone";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import Tooltip from "@mui/material/Tooltip";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 interface LeftNavbarProps {
   menu: {
@@ -30,6 +31,11 @@ const menuSupervisor: LeftNavbarProps["menu"] = [
     name: "Dashboard",
     path: "/supervisor",
     icon: GridViewRoundedIcon,
+  },
+  {
+    name: "Revenue",
+    path: "/supervisor/revenue",
+    icon: AttachMoneyIcon,
   },
   {
     name: "Customer",

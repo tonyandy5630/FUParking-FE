@@ -6,8 +6,8 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import TableFooter from "@mui/material/TableFooter";
-import TablePagination from "@mui/material/TablePagination";
+const TableFooter = dynamic(() => import("@mui/material/TableFooter"));
+const TablePagination = dynamic(() => import("@mui/material/TablePagination"));
 import TablePaginationActions from "./Pagination";
 import { PaginationType } from "@/types/pagination.type";
 import dynamic from "next/dynamic";
@@ -16,10 +16,10 @@ const Loading = dynamic(() => import("../Page/LoadingPage/Loading"));
 type Props = {
   tableHeads: Array<string>;
   tableRows: React.JSX.Element[];
-  pagination: PaginationType;
+  pagination?: PaginationType;
   totalRecord?: number;
-  onPageChange: any;
-  onPageSizeChange: any;
+  onPageChange?: any;
+  onPageSizeChange?: any;
   isLoading?: boolean;
 };
 
@@ -35,7 +35,7 @@ export default memo(function DataTable({
   const renderTableHeads = useMemo(() => {
     return tableHeads.map((item) => (
       <TableCell key={item}>
-        <p className="text-base font-bold">{item}</p>
+        <p className='text-base font-bold'>{item}</p>
       </TableCell>
     ));
   }, [tableHeads.length]);
@@ -44,43 +44,46 @@ export default memo(function DataTable({
     event: React.MouseEvent<HTMLButtonElement> | null,
     newPage: number
   ) => {
-    onPageChange(newPage);
+    if (onPageChange) onPageChange(newPage);
   };
   const handleRowsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    onPageSizeChange(event.target.value, 10);
+    if (onPageSizeChange) onPageSizeChange(event.target.value, 10);
   };
   return (
     <TableContainer component={Paper}>
       {isLoading ? (
         <Loading />
       ) : (
-        <Table className="w-full" aria-label="simple table">
+        <Table className='w-full' aria-label='simple table'>
           <TableHead>
             <TableRow>{renderTableHeads}</TableRow>
           </TableHead>
           <TableBody>{tableRows}</TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                count={totalRecord ?? 999}
-                rowsPerPage={pagination.pageSize}
-                page={pagination.pageIndex}
-                slotProps={{
-                  select: {
-                    inputProps: {
-                      "aria-label": "rows per page",
+
+          {pagination && (
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  count={totalRecord ?? 999}
+                  rowsPerPage={pagination.pageSize}
+                  page={pagination.pageIndex}
+                  slotProps={{
+                    select: {
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
                     },
-                  },
-                }}
-                onPageChange={handlePageChange}
-                onRowsPerPageChange={handleRowsPerPageChange}
-                ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
+                  }}
+                  onPageChange={handlePageChange}
+                  onRowsPerPageChange={handleRowsPerPageChange}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
       )}
     </TableContainer>

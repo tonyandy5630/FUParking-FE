@@ -4,7 +4,7 @@ import SearchField from "@/components/Common/searchField";
 import { useMemo, useState } from "react";
 const TableRow = dynamic(() => import("@mui/material/TableRow"));
 const TableCell = dynamic(() => import("@mui/material/TableCell"));
-import { ParkingAreas } from "@/types/parkingArea.type";
+import { ParkingAreas } from "@/types/parking-area.type";
 import { getListParkingArea } from "@/api/parkingArea";
 import SelectFilter from "@/components/Common/selectFilter";
 import SearchContainer from "@/components/Common/SearchContainer";
@@ -95,7 +95,7 @@ export default function ParkingAreaTableSupervisor() {
 
   return (
     <>
-      <div className="flex flex-col gap-5">
+      <div className='flex flex-col gap-5'>
         <SearchContainer>
           <SearchField
             inputValue={searchText}
@@ -108,8 +108,8 @@ export default function ParkingAreaTableSupervisor() {
           />
         </SearchContainer>
       </div>
-      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
-        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+      <div className='flex flex-row gap-3 items-center justify-end w-full py-2'>
+        <Button variant='outlined' color='primary' onClick={() => refetch()}>
           Refresh
         </Button>
       </div>

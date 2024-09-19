@@ -29,3 +29,22 @@ export interface ParkingAreaOption {
 }
 
 export type ParkingAreaOptionWithFillerKey = keyof ParkingAreaOption;
+
+export type ParkingAreaRevenueType = {
+  parkingArea: ParkingAreaOption;
+  walletRevenue: number;
+  totalRevenue: number;
+  otherRevenue: number;
+  averageRevenue: number;
+};
+
+export type ParkingAreaRevenueDetailType = {
+  paymentMethod: "WALLET" | "CASH" | "TOTAL";
+  gates: GateRevenue[];
+  total: number;
+};
+
+export type GateRevenue = {
+  name: string;
+  revenue: number;
+};
