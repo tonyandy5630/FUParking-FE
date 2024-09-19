@@ -18,6 +18,10 @@ import Chip from "@/components/Chip";
 import dynamic from "next/dynamic";
 import useSearchDebounce from "@/hook/useSearchDebouce";
 import { Button } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import CustomDatePicker from "@/components/DatePicker";
+import { Moment } from "moment";
+import { getLocalISOString } from "@/utils/date";
 
 type FilterOption = {
   display: string;
@@ -39,6 +43,16 @@ export default function TransactionTable() {
   const { debounceSearchText, handleSearchTextChange, searchText } =
     useSearchDebounce(goToFirstPage);
 
+  const initDateFilter = {
+    startDate: null,
+    endDate: null,
+  };
+
+  const [apiDateFilter, setApiDateFilter] = useState<{
+    startDate: Moment | null;
+    endDate: Moment | null;
+  }>(initDateFilter);
+
   const [filterAttribute, setFilterAttribute] =
     useState<keyof TransactionWithFillerProps>("email");
 
@@ -46,6 +60,23 @@ export default function TransactionTable() {
     setFilterAttribute(value as keyof TransactionWithFillerProps);
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   };
+
+  const handleFromDateChange = (e: Moment | null) => {
+    if (e === null) {
+      setApiDateFilter((prev) => ({ ...prev, startDate: null }));
+      return;
+    }
+    setApiDateFilter((prev) => ({ ...prev, startDate: e }));
+  };
+
+  const handleToDateChange = (e: Moment | null) => {
+    if (e === null) {
+      setApiDateFilter((prev) => ({ ...prev, endDate: null }));
+      return;
+    }
+    setApiDateFilter((prev) => ({ ...prev, endDate: e }));
+  };
+
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
     queryKey: [
       "/transactions",
@@ -53,12 +84,16 @@ export default function TransactionTable() {
       pagination.pageIndex,
       debounceSearchText,
       filterAttribute,
+      apiDateFilter.startDate,
+      apiDateFilter.endDate,
     ],
     queryFn: () =>
       listTransactionAPI(
         pagination.pageSize,
         pagination.pageIndex + 1,
         debounceSearchText,
+        apiLocalISOString(apiDateFilter.startDate?.toString()),
+        apiLocalISOString(apiDateFilter.endDate?.toString()),
         filterAttribute
       ),
     retry: 1,
@@ -110,6 +145,24 @@ export default function TransactionTable() {
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
+        <CustomDatePicker
+          label="From Date"
+          value={apiDateFilter.startDate}
+          onValueChange={handleFromDateChange}
+          maxDate={
+            apiDateFilter.endDate !== null ? apiDateFilter.endDate : undefined
+          }
+        />
+        <CustomDatePicker
+          label="To Date"
+          value={apiDateFilter.endDate}
+          onValueChange={handleToDateChange}
+          minDate={
+            apiDateFilter.startDate !== null
+              ? apiDateFilter.startDate
+              : undefined
+          }
+        />
         <SearchField
           inputValue={searchText}
           setInputValue={handleSearchTextChange}
@@ -138,4 +191,10 @@ export default function TransactionTable() {
         ))}
     </>
   );
+}
+function apiLocalISOString(date?: string): string {
+  if (!date || !Date.parse(date)) {
+    return "";
+  }
+  return getLocalISOString(new Date(date));
 }

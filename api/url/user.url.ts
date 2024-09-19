@@ -15,3 +15,9 @@ export const ADD_USER_API_URL = (role: Role) => `${baseURL}/user/${role}`;
 
 export const DELETE_USER_API_URL = (userId: string) =>
   `${baseURL}/user/${userId}`;
+
+export const CHANGE_STATUS_USER_API_URL = `${baseURL}/user/status`;
+
+export const EDIT_USER_API_URL = `${baseURL}/user`;
+
+export const GET_ROLE_LIST_API_URL = `${baseURL}/user/role`;

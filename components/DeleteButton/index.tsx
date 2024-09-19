@@ -25,7 +25,7 @@ export default function DeleteButton({ onDelete, children }: Props) {
           open={openAlertDialog}
           onCancel={handleToggleAlertDialog}
           onConfirm={onDelete}
-          title='Delete ?'
+          title="Delete ?"
           content={
             <div>
               <p>OK will DELETE this item</p>
@@ -36,7 +36,12 @@ export default function DeleteButton({ onDelete, children }: Props) {
           onOpenChange={handleToggleAlertDialog}
         />
       )}
-      <Button color='error' variant='contained' onClick={handleDeleteClick}>
+      <Button
+        color="error"
+        variant="outlined"
+        onClick={handleDeleteClick}
+        size="small"
+      >
         {children}
       </Button>
     </>

@@ -11,4 +11,13 @@ export interface User {
   role: string;
   status: string;
   createdDate: string;
+  roleId: string;
 }
+
+export interface Role {
+  roleId: string;
+  name: string;
+  description?: string;
+}
+
+export type ListRole = ResponseAPI<Role[]>;

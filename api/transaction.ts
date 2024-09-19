@@ -12,10 +12,19 @@ export const listTransactionAPI = (
   pageSize: number,
   pageIndex: number,
   SearchInput: string,
+  StartDate: string,
+  EndDate: string,
   Attribute: string
 ) =>
   http.get<ListTransactionWithFillerReponse>(
-    GET_LIST_TRANSACTION_API_URL(pageSize, pageIndex, SearchInput, Attribute)
+    GET_LIST_TRANSACTION_API_URL(
+      pageSize,
+      pageIndex,
+      SearchInput,
+      Attribute,
+      StartDate,
+      EndDate
+    )
   );
 
 export const topupAPI = (body: TopUpSchemaType) =>

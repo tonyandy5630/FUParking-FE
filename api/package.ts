@@ -10,6 +10,7 @@ import {
   PackageSchemaType,
   UpdatePackageSchemaType,
 } from "@/utils/schemas/PackageSchema";
+import { EditPackageSchemaType } from "@/utils/schemas/package/EditPackageSchema";
 
 export const getListPackage = (
   pageSize: number,
@@ -25,6 +26,9 @@ export const addPackageAPI = (data: PackageSchemaType) =>
   http.post(ADD_PACKAGE_API_URL, data);
 
 export const updatePackageAPI = (data: UpdatePackageSchemaType) =>
+  http.put(UPDATE_PACKAGE_API_URL(data.packageId), data);
+
+export const editPackageAPI = (data: EditPackageSchemaType) =>
   http.put(UPDATE_PACKAGE_API_URL(data.packageId), data);
 
 export const deletePackageAPI = (packageId: string) =>

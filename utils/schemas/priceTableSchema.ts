@@ -1,4 +1,4 @@
-import { object, string, InferType, number, date } from "yup";
+import { object, string, InferType, number, date, array } from "yup";
 import getRules from "../rules/price-table";
 import {
   MIN_MAX_PRICE_OVERLAP,
@@ -7,6 +7,28 @@ import {
 } from "@/constant/message";
 
 const { name, priority, price } = getRules();
+
+const PriceItemSchema = object({
+  from: number()
+    .min(0, "Price must be greater than 0")
+    .required(REQUIRED_MESSAGE)
+    .max(24, "Price must be less than 24"),
+  to: number()
+    .min(0, "Price must be greater than 0")
+    .required(REQUIRED_MESSAGE)
+    .max(24, "Price must be less than 24"),
+  minPrice: number().required(REQUIRED_MESSAGE),
+  maxPrice: number()
+    .required(REQUIRED_MESSAGE)
+    .when("minPrice", ([minPrice], schema) =>
+      minPrice
+        ? schema.min(minPrice, "Max price must be greater than min price")
+        : schema
+    ),
+  blockPricing: number()
+    .min(0, "Price must be greater than 0")
+    .required(REQUIRED_MESSAGE),
+});
 
 const PriceTableTableSchema = object({
   vehicleTypeId: string().required(REQUIRED_MESSAGE),
@@ -43,6 +65,7 @@ const PriceTableTableSchema = object({
     .when("maxPrice", ([maxPrice], schema) =>
       maxPrice ? schema.max(maxPrice, MIN_MAX_PRICE_OVERLAP) : schema
     ),
+  priceItems: array().of(PriceItemSchema).optional(),
 });
 
 export type PriceTableTableSchemaType = InferType<typeof PriceTableTableSchema>;

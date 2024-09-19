@@ -72,11 +72,6 @@ const menuManager: LeftNavbarProps["menu"] = [
     icon: ChatTwoToneIcon,
   },
   {
-    name: "Price",
-    path: "/manager/price",
-    icon: PriceChangeTwoToneIcon,
-  },
-  {
     name: "Package",
     path: "/manager/package",
     icon: Inventory2TwoToneIcon,

@@ -1,54 +1,53 @@
+import { updatePriceTableStatusAPI } from "@/api/price";
 import Modal from "@/components/modal/modal";
 import { DialogProps } from "@/types/dialog.type";
+import { PriceTable } from "@/types/price.type";
 import {
   Button,
   DialogActions,
   DialogContent,
   DialogContentText,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import { useMutation } from "@tanstack/react-query";
-import { changeVehicleStatusAPI } from "@/api/vehicle";
+import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 
-type DeactiveAndActiveVehicleProps = DialogProps & {
-  vehicleId: string;
-  refresh: () => void;
-  status: string;
+type InactiveAndActivePriceProps = DialogProps & {
+  priceTable: PriceTable | undefined;
+  refetch: () => void;
 };
 
-export default function DeactiveAndActiveVehicle({
+export default function InactiveAndActivePrice({
   open,
   onClose,
   onOpenChange,
-  vehicleId,
-  refresh,
-  status,
-}: DeactiveAndActiveVehicleProps) {
+  priceTable,
+  refetch,
+}: InactiveAndActivePriceProps) {
   const handleClose = () => {
     onClose && onClose();
   };
 
-  const vehicleStatusChangeMutation = useMutation({
-    mutationKey: ["/status-vehicle-change"],
-    mutationFn: changeVehicleStatusAPI,
+  const changeStatusPriceTableMutation = useMutation({
+    mutationKey: ["/status-price-table-change"],
+    mutationFn: updatePriceTableStatusAPI,
   });
 
-  const handleVehicleStatusChange = async (vehicleData: {
-    vehicleId: string;
+  const handlePriceTableStatusChange = async (priceTableData: {
+    priceTableId: string;
     isActive: boolean;
   }) => {
-    if (!vehicleData.vehicleId) {
+    if (!priceTableData.priceTableId) {
       return;
     }
-    if (vehicleData.isActive === undefined) {
+    if (priceTableData.isActive === undefined) {
       return;
     }
     try {
-      await vehicleStatusChangeMutation.mutateAsync(vehicleData, {
+      await changeStatusPriceTableMutation.mutateAsync(priceTableData, {
         onSuccess: (res) => {
-          toast.success("Update successfully");
-          refresh();
+          refetch();
+          toast.success("Price plan status changed successfully");
           onOpenChange();
         },
       });
@@ -83,36 +82,34 @@ export default function DeactiveAndActiveVehicle({
           </div>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to change this vehicle?
+              Are you sure you want to change this price plan?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            {status === "ACTIVE" ? (
+            {priceTable?.statusPriceTable === "ACTIVE" ? (
               <Button
+                onClick={() =>
+                  handlePriceTableStatusChange({
+                    priceTableId: priceTable.id,
+                    isActive: false,
+                  })
+                }
                 variant="outlined"
                 color="error"
-                onClick={() => {
-                  refresh();
-                  handleVehicleStatusChange({
-                    vehicleId: vehicleId,
-                    isActive: false,
-                  });
-                }}
               >
-                Deactive
+                Inactive
               </Button>
             ) : (
               <Button
-                variant="outlined"
-                color="error"
-                onClick={() => {
-                  refresh();
-                  handleVehicleStatusChange({
-                    vehicleId: vehicleId,
+                onClick={() =>
+                  handlePriceTableStatusChange({
+                    priceTableId: priceTable?.id || "",
                     isActive: true,
-                  });
-                }}
+                  })
+                }
+                variant="outlined"
+                color="success"
               >
                 Active
               </Button>

@@ -54,8 +54,6 @@ export default function Header({
         return "Feedback";
       case "gate":
         return "Gate";
-      case "price":
-        return "Price";
       case "package":
         return "Package";
       case "user":
