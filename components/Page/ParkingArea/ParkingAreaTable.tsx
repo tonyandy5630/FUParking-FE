@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Loading from "../LoadingPage/Loading";
 const TableRow = dynamic(() => import("@mui/material/TableRow"));
 const TableCell = dynamic(() => import("@mui/material/TableCell"));
-import { ParkingAreas } from "@/types/parkingArea.type";
+import { ParkingAreas } from "@/types/parking-area.type";
 import {
   getListParkingArea,
   updateParkingAreaStatusAPI,
@@ -244,15 +244,15 @@ export default function ParkingAreaTable() {
         <TableCell>{gate.description}</TableCell>
         <TableCell>{gate.status}</TableCell>
         <TableCell>
-          <div className="flex flex-row gap-2">
+          <div className='flex flex-row gap-2'>
             <ActionButton
-              variant="danger"
+              variant='danger'
               onClick={() => handleDeleteGate(gate.id)}
             >
               Delete
             </ActionButton>
             <ActionButton
-              variant="primary"
+              variant='primary'
               onClick={() =>
                 handleOpenUpdateGateDialog(
                   {
@@ -268,7 +268,7 @@ export default function ParkingAreaTable() {
             </ActionButton>
             {gate.status === "ACTIVE" ? (
               <ActionButton
-                variant="danger"
+                variant='danger'
                 onClick={() =>
                   handleDeactiveAndActiveGateDialog(gate.id, "ACTIVE")
                 }
@@ -277,7 +277,7 @@ export default function ParkingAreaTable() {
               </ActionButton>
             ) : (
               <ActionButton
-                variant="primary"
+                variant='primary'
                 onClick={() =>
                   handleDeactiveAndActiveGateDialog(gate.id, "INACTIVE")
                 }
@@ -304,7 +304,7 @@ export default function ParkingAreaTable() {
             <IconButton
               onClick={() => handleExpandClick(area.id)}
               aria-expanded={expandedRow === area.id}
-              aria-label="show more"
+              aria-label='show more'
             >
               {expandedRow === area.id ? (
                 <ExpandLessIcon />
@@ -328,13 +328,13 @@ export default function ParkingAreaTable() {
             </Chip>
           </TableCell>
           <TableCell>
-            <div className="flex gap-2">
+            <div className='flex gap-2'>
               {(() => {
                 switch (area.statusParkingArea) {
                   case "ACTIVE":
                     return (
                       <ActionButton
-                        variant="danger"
+                        variant='danger'
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenIsActiveOrDeactiveDialog(area.id, false);
@@ -346,7 +346,7 @@ export default function ParkingAreaTable() {
                   case "INACTIVE":
                     return (
                       <ActionButton
-                        variant="primary"
+                        variant='primary'
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenIsActiveOrDeactiveDialog(area.id, true);
@@ -361,13 +361,13 @@ export default function ParkingAreaTable() {
               })()}
               <ActionButton
                 onClick={() => handleOpenUpdateDialog(area)}
-                variant="primary"
+                variant='primary'
               >
                 Update
               </ActionButton>
               <ActionButton
                 onClick={() => handleDeleteParkingArea(area.id)}
-                variant="danger"
+                variant='danger'
               >
                 Delete
               </ActionButton>
@@ -382,10 +382,10 @@ export default function ParkingAreaTable() {
             }}
             colSpan={8}
           >
-            <Collapse in={expandedRow === area.id} timeout="auto" unmountOnExit>
-              <Grid container spacing={2} className="pt-5 pb-5">
+            <Collapse in={expandedRow === area.id} timeout='auto' unmountOnExit>
+              <Grid container spacing={2} className='pt-5 pb-5'>
                 <Grid item xs={12}>
-                  <Typography variant="h6" component="div">
+                  <Typography variant='h6' component='div'>
                     Gates
                   </Typography>
                 </Grid>
@@ -394,19 +394,19 @@ export default function ParkingAreaTable() {
                     item
                     xs={12}
                     container
-                    className="gap-5"
-                    justifyContent="flex-end"
+                    className='gap-5'
+                    justifyContent='flex-end'
                   >
                     <div>
                       <ActionButton
-                        variant="primary"
+                        variant='primary'
                         onClick={() => handleAddGateDialog(area.id)}
                       >
                         Add Gate
                       </ActionButton>
                       <Button
-                        variant="outlined"
-                        color="primary"
+                        variant='outlined'
+                        color='primary'
                         onClick={() => refetchGate()}
                       >
                         Refresh
@@ -518,17 +518,17 @@ export default function ParkingAreaTable() {
         />
       </SearchContainer>
 
-      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
-        <Button variant="outlined" onClick={handleOpenAddDialog}>
+      <div className='flex flex-row gap-3 items-center justify-end w-full py-2'>
+        <Button variant='outlined' onClick={handleOpenAddDialog}>
           <AddIcon /> New Parking Area
         </Button>
         <Button
-          variant="outlined"
+          variant='outlined'
           onClick={() => {
             refetch;
           }}
         >
-          <div className="flex items-center justify-center">
+          <div className='flex items-center justify-center'>
             <Refresh /> Refresh
           </div>
         </Button>

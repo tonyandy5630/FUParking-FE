@@ -2,10 +2,11 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import { useId } from "react";
 
-export interface listFilter {
+export interface listFilter<T = string> {
   display: string;
-  value: string;
+  value: T;
 }
 
 interface SelectFilterProps {
@@ -13,6 +14,7 @@ interface SelectFilterProps {
   setFilterAttribute: (value: string) => void;
   listFilter: listFilter[];
   label?: string;
+  className?: string;
 }
 
 export default function SelectFilter({
@@ -20,16 +22,21 @@ export default function SelectFilter({
   setFilterAttribute,
   listFilter,
   label = "Filter",
+  className = "",
 }: SelectFilterProps) {
   const handleChange = (event: any) => {
     setFilterAttribute(event.target.value);
   };
+  const id = useId();
 
   return (
-    <FormControl className='!min-w-40' size='small'>
-      <InputLabel id='demo'>{label}</InputLabel>
+    <FormControl
+      className={`${className === "" ? "!min-w-40" : className} `}
+      size='small'
+    >
+      <InputLabel id={id}>{label}</InputLabel>
       <Select
-        labelId='demo'
+        labelId={id}
         label={label}
         value={filterAttribute}
         onChange={handleChange}
