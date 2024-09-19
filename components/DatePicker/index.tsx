@@ -8,7 +8,7 @@ interface Props extends DatePickerProps<Moment> {
 export default function CustomDatePicker({ onValueChange, ...props }: Props) {
   return (
     <DatePicker
-      className='w-44'
+      className={`${props.className ? props.className : "w-44"}`}
       label={props.label}
       value={props.value}
       onChange={(e) => onValueChange(e)}

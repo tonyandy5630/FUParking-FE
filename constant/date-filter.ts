@@ -3,4 +3,5 @@ export const DATE_FILTER = {
   week: "week",
   month: "month",
   year: "year",
+  custom: "custom",
 };
