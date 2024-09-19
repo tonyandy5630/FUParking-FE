@@ -68,7 +68,7 @@ export default function VehicleTypeTableSupervisor() {
       <TableRow key={vehicleType.id}>
         <TableCell>{vehicleType.name}</TableCell>
         <TableCell>{vehicleType.description ?? "Nan"}</TableCell>
-        <TableCell>{toVNDateString(vehicleType.createdDate)}</TableCell>
+        <TableCell>{toVNDateString(vehicleType.createDatetime)}</TableCell>
       </TableRow>
     ));
   }, [data?.data.data]);

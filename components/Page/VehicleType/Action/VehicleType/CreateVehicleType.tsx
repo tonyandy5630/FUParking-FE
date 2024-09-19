@@ -24,11 +24,7 @@ export default function CreateVehicleType({
 }: {
   setIsPending: (isPending: boolean) => void;
   disable: boolean;
-  refetch: (
-    options?: RefetchOptions
-  ) => Promise<
-    QueryObserverResult<AxiosResponse<ListVehicleTypeResponse, any>, Error>
-  >;
+  refetch: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const handleClose = () => {
@@ -87,15 +83,15 @@ export default function CreateVehicleType({
   return (
     <>
       <Button
-        variant='contained'
-        color='primary'
+        variant="outlined"
+        color="primary"
         disabled={disable}
         onClick={() => setIsOpen(true)}
       >
         Create Vehicle Type
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className='pl-5 pr-5 pt-10 pb-10'>
+        <div className="pl-5 pr-5 pt-10 pb-10">
           <Button
             onClick={handleClose}
             sx={{
@@ -112,39 +108,39 @@ export default function CreateVehicleType({
                 backgroundColor: "white",
               },
             }}
-            aria-label='Close'
+            aria-label="Close"
           >
             X
           </Button>
-          <div className='flex flex-col w-full space-y-5'>
-            <h1 className='text-center font-semibold text-2xl'>
+          <div className="flex flex-col w-full space-y-5">
+            <h1 className="text-center font-semibold text-2xl">
               Create new Vehicle Type
             </h1>
             <FormProvider {...methods}>
               <form
-                className='flex flex-col space-y-2'
+                className="flex flex-col space-y-2"
                 onSubmit={handleSubmit(onSubmit)}
               >
                 <FormInput
-                  name='name'
-                  label='Name Vehicle Type'
-                  placeholder='Enter Name'
+                  name="name"
+                  label="Name Vehicle Type"
+                  placeholder="Enter Name"
                   autoFocus={true}
-                  key='name'
+                  key="name"
                 />
                 {errors.name && (
-                  <p className='text-red-500'>{errors.name.message}</p>
+                  <p className="text-red-500">{errors.name.message}</p>
                 )}
                 <FormInput
-                  name='description'
-                  label='Description'
-                  placeholder='Enter description'
-                  key='description'
+                  name="description"
+                  label="Description"
+                  placeholder="Enter description"
+                  key="description"
                 />
                 {errors.description && (
-                  <p className='text-red-500'>{errors.description.message}</p>
+                  <p className="text-red-500">{errors.description.message}</p>
                 )}
-                <Button type='submit' variant='contained' color='primary'>
+                <Button type="submit" variant="contained" color="primary">
                   Submit
                 </Button>
               </form>

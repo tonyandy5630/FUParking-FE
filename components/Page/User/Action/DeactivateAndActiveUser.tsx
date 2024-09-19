@@ -1,54 +1,53 @@
+import { updateStatusUserAPI } from "@/api/user";
 import Modal from "@/components/modal/modal";
 import { DialogProps } from "@/types/dialog.type";
+import { User } from "@/types/user.type";
 import {
   Button,
   DialogActions,
   DialogContent,
   DialogContentText,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import { useMutation } from "@tanstack/react-query";
-import { changeVehicleStatusAPI } from "@/api/vehicle";
 import { toast } from "react-toastify";
+import CloseIcon from "@mui/icons-material/Close";
 
-type DeactiveAndActiveVehicleProps = DialogProps & {
-  vehicleId: string;
-  refresh: () => void;
-  status: string;
+type DeactivateAndActiveUserProps = DialogProps & {
+  User: User | undefined;
+  refetch: () => void;
 };
 
-export default function DeactiveAndActiveVehicle({
+export default function DeactivateAndActiveUser({
   open,
   onClose,
   onOpenChange,
-  vehicleId,
-  refresh,
-  status,
-}: DeactiveAndActiveVehicleProps) {
+  User,
+  refetch,
+}: DeactivateAndActiveUserProps) {
   const handleClose = () => {
     onClose && onClose();
   };
 
-  const vehicleStatusChangeMutation = useMutation({
-    mutationKey: ["/status-vehicle-change"],
-    mutationFn: changeVehicleStatusAPI,
+  const changeStatusUserMutation = useMutation({
+    mutationKey: ["/status-user-change"],
+    mutationFn: updateStatusUserAPI,
   });
 
-  const handleVehicleStatusChange = async (vehicleData: {
-    vehicleId: string;
+  const handleUserStatusChange = async (UserData: {
+    id: string;
     isActive: boolean;
   }) => {
-    if (!vehicleData.vehicleId) {
+    if (!UserData.id) {
       return;
     }
-    if (vehicleData.isActive === undefined) {
+    if (UserData.isActive === undefined) {
       return;
     }
     try {
-      await vehicleStatusChangeMutation.mutateAsync(vehicleData, {
+      await changeStatusUserMutation.mutateAsync(UserData, {
         onSuccess: (res) => {
-          toast.success("Update successfully");
-          refresh();
+          refetch();
+          toast.success("User status changed successfully");
           onOpenChange();
         },
       });
@@ -59,7 +58,7 @@ export default function DeactiveAndActiveVehicle({
 
   return (
     <>
-      <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
+      <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
           <div className="flex justify-end">
             <Button
@@ -83,38 +82,38 @@ export default function DeactiveAndActiveVehicle({
           </div>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to change this vehicle?
+              Are you sure you want to change this price plan?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
-            {status === "ACTIVE" ? (
+            <Button onClick={handleClose} variant="outlined" color="info">
+              Cancel
+            </Button>
+            {User?.status === "ACTIVE" ? (
               <Button
+                onClick={() =>
+                  handleUserStatusChange({
+                    id: User.id,
+                    isActive: false,
+                  })
+                }
                 variant="outlined"
                 color="error"
-                onClick={() => {
-                  refresh();
-                  handleVehicleStatusChange({
-                    vehicleId: vehicleId,
-                    isActive: false,
-                  });
-                }}
               >
-                Deactive
+                Deactivate
               </Button>
             ) : (
               <Button
-                variant="outlined"
-                color="error"
-                onClick={() => {
-                  refresh();
-                  handleVehicleStatusChange({
-                    vehicleId: vehicleId,
+                onClick={() =>
+                  handleUserStatusChange({
+                    id: User?.id || "",
                     isActive: true,
-                  });
-                }}
+                  })
+                }
+                variant="outlined"
+                color="success"
               >
-                Active
+                Activate
               </Button>
             )}
           </DialogActions>

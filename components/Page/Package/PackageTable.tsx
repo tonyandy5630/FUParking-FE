@@ -27,6 +27,8 @@ import ActionButton from "@/components/ActionButton";
 import AlertDialog from "@/components/Dialog/ConfirmDialog";
 import { UpdatePackageSchemaType } from "@/utils/schemas/PackageSchema";
 import { toast } from "react-toastify";
+import DeletePackage from "./Action/DeletePackage";
+import EditPackage from "./Action/EditPackage";
 
 type FilterOption = {
   display: string;
@@ -59,11 +61,23 @@ export default function PackageTable() {
     handleToggleDialog: toggleUpdateDialog,
   } = useHandleDialog(false);
   const {
+    openDialog: openDeletePackageDialog,
+    handleToggleDialog: toggleDeletePackageDialog,
+  } = useHandleDialog(false);
+  const {
     openDialog: openStatusChangeDialog,
     handleToggleDialog: toggleStatusChangeDialog,
   } = useHandleDialog(false);
+
+  const {
+    openDialog: openEditPackageDialog,
+    handleToggleDialog: toggleEditPackageDialog,
+  } = useHandleDialog(false);
+
   const [updatePackage, setUpdatePackage] = useState<Packages | undefined>();
   const [isActivateOrDeactivate, setIsActivateOrDeactivate] = useState(true);
+  const [deletePackageId, setDeletePackageId] = useState<string>("");
+  const [EditPackageObject, setEditPackageObject] = useState<Packages>();
 
   const [filterAttribute, setFilterAttribute] =
     useState<keyof Packages>("name");
@@ -84,6 +98,11 @@ export default function PackageTable() {
   const handleClickActiveOrDeactivate = (pack: Packages) => {
     setUpdatePackage(pack);
     toggleStatusChangeDialog();
+  };
+
+  const handleDeletePackage = (id: string) => {
+    setDeletePackageId(id);
+    toggleDeletePackageDialog();
   };
 
   const handleUpdatePackageStatus = async (data: Packages) => {
@@ -130,6 +149,11 @@ export default function PackageTable() {
     toggleUpdateDialog();
   };
 
+  const handleEditPackage = (value: Packages) => {
+    setEditPackageObject(value);
+    toggleEditPackageDialog();
+  };
+
   const handleCloseStatusChangeDialog = () => {
     setUpdatePackage(undefined);
     toggleStatusChangeDialog();
@@ -142,12 +166,7 @@ export default function PackageTable() {
     }
 
     return packages.map((packs: Packages, index) => (
-      <TableRow
-        key={packs.id}
-        hover={true}
-        className='cursor-pointer'
-        onClick={() => handleUpdateDialogOpen(packs)}
-      >
+      <TableRow key={packs.id} hover={true} className="cursor-pointer">
         <TableCell>{packs.name}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
@@ -166,27 +185,47 @@ export default function PackageTable() {
         </TableCell>
         <TableCell>{packs.createDate}</TableCell>
         <TableCell>
-          {packs.packageStatus === "ACTIVE" ? (
+          <div className="flex gap-2">
+            {packs.packageStatus === "ACTIVE" ? (
+              <ActionButton
+                variant="danger"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClickActiveOrDeactivate(packs);
+                }}
+              >
+                Deactivate
+              </ActionButton>
+            ) : (
+              <ActionButton
+                variant="primary"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  handleClickActiveOrDeactivate(packs);
+                }}
+              >
+                Activate
+              </ActionButton>
+            )}
             <ActionButton
-              variant='danger'
+              variant="danger"
               onClick={(e) => {
                 e.stopPropagation();
-                handleClickActiveOrDeactivate(packs);
+                handleDeletePackage(packs.id);
               }}
             >
-              Deactivate
+              Delete
             </ActionButton>
-          ) : (
             <ActionButton
-              variant='primary'
-              onClick={async (e) => {
+              variant="primary"
+              onClick={(e) => {
                 e.stopPropagation();
-                handleClickActiveOrDeactivate(packs);
+                handleEditPackage(packs);
               }}
             >
-              Activate
+              Edit
             </ActionButton>
-          )}
+          </div>
         </TableCell>
       </TableRow>
     ));
@@ -194,6 +233,24 @@ export default function PackageTable() {
 
   return (
     <>
+      {openEditPackageDialog && EditPackageObject && (
+        <EditPackage
+          open={openEditPackageDialog}
+          packageObject={EditPackageObject}
+          onClose={toggleEditPackageDialog}
+          onOpenChange={toggleEditPackageDialog}
+          refetch={refetch}
+        />
+      )}
+      {openDeletePackageDialog && (
+        <DeletePackage
+          open={openDeletePackageDialog}
+          id={deletePackageId}
+          onOpenChange={toggleDeletePackageDialog}
+          refetch={refetch}
+          onClose={toggleDeletePackageDialog}
+        />
+      )}
       {updatePackage && openStatusChangeDialog && (
         <AlertDialog
           open={openStatusChangeDialog}
@@ -208,14 +265,6 @@ export default function PackageTable() {
           onClose={handleCloseStatusChangeDialog}
         />
       )}
-      <AddPackageDialog
-        open={openAddDialog}
-        onClose={toggleAddDialog}
-        onOpenChange={toggleAddDialog}
-        successCallback={() => {
-          refetch();
-        }}
-      />
       {updatePackage && (
         <UpdatePackageDialog
           open={openUpdateDialog}
@@ -227,21 +276,34 @@ export default function PackageTable() {
           value={updatePackage}
         />
       )}
+      <AddPackageDialog
+        open={openAddDialog}
+        onClose={toggleAddDialog}
+        onOpenChange={toggleAddDialog}
+        successCallback={() => {
+          refetch();
+        }}
+      />
       <SearchContainer>
-        <SearchField
-          inputValue={searchText}
-          setInputValue={handleSearchTextChange}
-        />
         <SelectFilter
           filterAttribute={filterAttribute}
           setFilterAttribute={handleFilterAttributeChange}
           listFilter={filterOptions}
         />
+        <SearchField
+          inputValue={searchText}
+          setInputValue={handleSearchTextChange}
+        />
       </SearchContainer>
       <ActionArea>
-        <Button variant='outlined' onClick={() => toggleAddDialog()}>
-          New Package
-        </Button>
+        <div className="flex gap-2 items-center justify-end w-full py-2">
+          <Button variant="outlined" onClick={() => toggleAddDialog()}>
+            New Package
+          </Button>
+          <Button variant="outlined" onClick={() => refetch()}>
+            Refresh
+          </Button>
+        </div>
       </ActionArea>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}

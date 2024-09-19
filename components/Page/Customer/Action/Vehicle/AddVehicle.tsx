@@ -117,7 +117,24 @@ export default function AddVehicle({
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
           <div className="flex justify-end">
-            <CloseIcon onClick={handleClose} className="cursor-pointer " />
+            <Button
+              sx={{
+                position: "absolute",
+                padding: "0",
+                margin: "10px",
+                width: "0",
+                right: "0",
+                top: "0",
+                color: "black",
+                backgroundColor: "white",
+                "&:hover": {
+                  backgroundColor: "white",
+                },
+              }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </Button>
           </div>
           <DialogTitle>Register vehicle</DialogTitle>
           <FormProvider {...methods}>

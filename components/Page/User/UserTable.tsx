@@ -23,6 +23,8 @@ import { Button } from "@mui/material";
 import useHandleDialog from "@/hook/useHandleDialog";
 import AddUserDialog from "./AddUser";
 import Delete from "./Delete";
+import DeactivateAndActiveUser from "./Action/DeactivateAndActiveUser";
+import EditUser from "./Action/EditUser";
 
 type FilterOption = {
   display: string;
@@ -62,6 +64,16 @@ export default function UserTable() {
   const { openDialog: openAddDialog, handleToggleDialog: toggleAddDialog } =
     useHandleDialog(false);
 
+  const {
+    openDialog: openChangeStatusUserDialog,
+    handleToggleDialog: toggleChangeStatusUserDialog,
+  } = useHandleDialog(false);
+
+  const {
+    openDialog: openEditUserDialog,
+    handleToggleDialog: toggleEditUserDialog,
+  } = useHandleDialog(false);
+
   const [filterAttribute, setFilterAttribute] = useState("");
 
   const handleFilterAttributeChange = (value: string) => {
@@ -71,6 +83,18 @@ export default function UserTable() {
 
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [changeStatusUserId, setChangeStatusUserId] = useState<User>();
+  const [editUser, setEditUser] = useState<User>();
+
+  const handleChangeStatusUser = (user: User) => {
+    setChangeStatusUserId(user);
+    toggleChangeStatusUserDialog();
+  };
+
+  const handleEditUser = (user: User) => {
+    setEditUser(user);
+    toggleEditUserDialog();
+  };
 
   const { data, isLoading, isError, isSuccess, error, refetch } = useQuery({
     queryKey: [
@@ -108,22 +132,59 @@ export default function UserTable() {
         </TableCell>
         <TableCell>{toLocaleDate(packs.createdDate)}</TableCell>
         <TableCell>
-          <Button
-            variant="outlined"
-            color="error"
-            onClick={() => {
-              setSelectedUserId(packs.id);
-              setOpenDeleteDialog(true);
-            }}
-          >
-            DELETE
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setSelectedUserId(packs.id);
+                setOpenDeleteDialog(true);
+              }}
+              size="small"
+            >
+              DELETE
+            </Button>
+            <Button
+              variant="outlined"
+              color="success"
+              onClick={() => handleChangeStatusUser(packs)}
+              size="small"
+            >
+              {packs.status === "ACTIVE" ? "DEACTIVATE" : "ACTIVATE"}
+            </Button>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => handleEditUser(packs)}
+              size="small"
+            >
+              EDIT
+            </Button>
+          </div>
         </TableCell>
       </TableRow>
     ));
   }, [data]);
   return (
     <>
+      {openEditUserDialog && (
+        <EditUser
+          user={editUser}
+          open={openEditUserDialog}
+          onOpenChange={toggleEditUserDialog}
+          refetch={refetch}
+          onClose={toggleEditUserDialog}
+        />
+      )}
+      {openChangeStatusUserDialog && (
+        <DeactivateAndActiveUser
+          User={changeStatusUserId}
+          open={openChangeStatusUserDialog}
+          onOpenChange={toggleChangeStatusUserDialog}
+          refetch={refetch}
+          onClose={toggleChangeStatusUserDialog}
+        />
+      )}
       {openAddDialog && (
         <AddUserDialog
           open={openAddDialog}

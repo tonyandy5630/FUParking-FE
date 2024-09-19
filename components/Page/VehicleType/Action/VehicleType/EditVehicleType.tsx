@@ -30,11 +30,7 @@ export default function EditVehicleType({
   id: string;
   setIsPending: (isPending: boolean) => void;
   disable: boolean;
-  refetch: (
-    options?: RefetchOptions
-  ) => Promise<
-    QueryObserverResult<AxiosResponse<ListVehicleTypeResponse, any>, Error>
-  >;
+  refetch: () => void;
   value: VehicleTypeProps;
 }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,25 +94,15 @@ export default function EditVehicleType({
   return (
     <>
       <Button
-        sx={{
-          backgroundColor: "#3b82f6",
-          color: "white",
-          width: "80px",
-          "&:disabled": {
-            backgroundColor: "grey",
-            color: "white",
-          },
-          "&:hover": {
-            backgroundColor: "#2563eb",
-          },
-        }}
+        size="small"
         onClick={() => setIsOpen(true)}
         disabled={disable}
+        variant="outlined"
       >
         Edit
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className='pl-5 pr-5 pt-10 pb-10'>
+        <div className="pl-5 pr-5 pt-10 pb-10">
           <Button
             onClick={handleClose}
             sx={{
@@ -133,36 +119,36 @@ export default function EditVehicleType({
                 backgroundColor: "white",
               },
             }}
-            aria-label='Close'
+            aria-label="Close"
           >
             X
           </Button>
-          <div className='flex flex-col w-full space-y-5'>
-            <h1 className='text-center font-semibold text-2xl'>
+          <div className="flex flex-col w-full space-y-5">
+            <h1 className="text-center font-semibold text-2xl">
               Edit Vehicle Type
             </h1>
             <FormProvider {...methods}>
               <FormControl>
                 <form
-                  className='flex flex-col space-y-2'
+                  className="flex flex-col space-y-2"
                   onSubmit={handleSubmit(onSubmit)}
                 >
                   <FormInput
-                    name='name'
-                    label='Name Vehicle Type'
-                    placeholder='Enter Name'
+                    name="name"
+                    label="Name Vehicle Type"
+                    placeholder="Enter Name"
                     autoFocus={true}
-                    key='name'
+                    key="name"
                     defaultValue={value.name}
                   />
                   <FormInput
-                    name='description'
-                    label='Description'
-                    placeholder='Enter description'
-                    key='description'
+                    name="description"
+                    label="Description"
+                    placeholder="Enter description"
+                    key="description"
                     defaultValue={value.description}
                   />
-                  <Button type='submit' variant='contained' color='primary'>
+                  <Button type="submit" variant="contained" color="primary">
                     Submit
                   </Button>
                 </form>

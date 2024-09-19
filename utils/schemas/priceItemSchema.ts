@@ -9,16 +9,16 @@ import getPriceItemRules from "../rules/price-item";
 const { from, to, price } = getPriceItemRules();
 
 const PriceItemSchema = object({
-  from: number()
+  applyFromHour: number()
     .min(from.min.value, from.min.message)
     .max(from.max.value, from.max.message)
     .required(REQUIRED_MESSAGE),
-  to: number()
+  applyToHour: number()
     .min(to.min.value, to.min.message)
     .max(to.max.value, to.max.message)
-    .when("from", ([from], schema) => {
+    .when("applyFromHour", ([applyFromHour], schema) => {
       return from
-        ? schema.min(from + 1, "To Hour must greater than From Hour")
+        ? schema.min(applyFromHour + 1, "To Hour must greater than From Hour")
         : schema;
     })
     .required(REQUIRED_MESSAGE),

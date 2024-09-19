@@ -71,7 +71,7 @@ export default function Customer() {
     openDialog: openRgisterNewCustomer,
     handleToggleDialog: toggleAddCustomer,
   } = useHandleDialog(false);
-
+  const [customerType, setCustomerType] = useState<string | null>(null);
   const { openDialog: openAddVehicle, handleToggleDialog: toggleAddVehicle } =
     useHandleDialog(false);
 
@@ -154,7 +154,10 @@ export default function Customer() {
       {
         queryKey: ["/view-customer-balance", customerExpandId],
         queryFn: () => getCustomerBalanceAPI(customerExpandId ?? ""),
-        enabled: customerExpandId !== "" && customerExpandId !== null,
+        enabled:
+          customerExpandId !== "" &&
+          customerExpandId !== null &&
+          customerType !== "FREE", // Add condition to check customer type
         retry: 0,
       },
     ],
@@ -248,11 +251,12 @@ export default function Customer() {
     }
   };
 
-  const handleExpandClick = (customerId: string) => {
+  const handleExpandClick = (customerId: string, customerType: string) => {
     setCustomerIdExpandRow((prev) => (prev === customerId ? null : customerId));
     if (customerExpandId !== customerId && customerId !== "") {
       setRowId(customerId);
       vehicleRefetch();
+      setCustomerType(customerType);
     }
   };
 
@@ -269,7 +273,7 @@ export default function Customer() {
             <Image
               loader={({ src }) => src as string}
               src={vehicle.plateImage}
-              alt='vehicle'
+              alt="vehicle"
               width={100}
               height={100}
               onError={(e) => {
@@ -295,7 +299,7 @@ export default function Customer() {
         <TableCell>
           {vehicle.statusVehicle === "ACTIVE" ? (
             <span
-              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
                 color: "#62a34f",
                 backgroundColor: "#dcfce7",
@@ -305,7 +309,7 @@ export default function Customer() {
             </span>
           ) : vehicle.statusVehicle === "INACTIVE" ? (
             <span
-              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
                 color: "#fcca46",
                 backgroundColor: "#fef9c3",
@@ -315,7 +319,7 @@ export default function Customer() {
             </span>
           ) : vehicle.statusVehicle === "REJECTED" ? (
             <span
-              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
                 color: "#d9534f",
                 backgroundColor: "#f8d7da",
@@ -325,7 +329,7 @@ export default function Customer() {
             </span>
           ) : vehicle.statusVehicle === "PENDING" ? (
             <span
-              className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+              className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
               style={{
                 color: "#f0ad4e",
                 backgroundColor: "#fcf8e3",
@@ -338,9 +342,9 @@ export default function Customer() {
           )}
         </TableCell>
         <TableCell>
-          <div className='flex flex-row gap-3'>
+          <div className="flex flex-row gap-3">
             <ActionButton
-              variant='danger'
+              variant="danger"
               onClick={() => {
                 handleDeleteVehicle(vehicle.id);
               }}
@@ -350,7 +354,7 @@ export default function Customer() {
             {vehicle.statusVehicle === "INACTIVE" ||
             vehicle.statusVehicle === "PENDING" ? (
               <ActionButton
-                variant='primary'
+                variant="primary"
                 onClick={() => {
                   handleDeactiveAndActiveVehicle(vehicle.id, true);
                 }}
@@ -359,7 +363,7 @@ export default function Customer() {
               </ActionButton>
             ) : (
               <ActionButton
-                variant='danger'
+                variant="danger"
                 onClick={() => {
                   handleDeactiveAndActiveVehicle(vehicle.id, false);
                 }}
@@ -368,7 +372,7 @@ export default function Customer() {
               </ActionButton>
             )}
             <ActionButton
-              variant='primary'
+              variant="primary"
               onClick={() => {
                 handleEditVehicle({
                   plateNumber: vehicle.plateNumber,
@@ -396,9 +400,11 @@ export default function Customer() {
         <TableRow hover={true}>
           <TableCell>
             <IconButton
-              onClick={() => handleExpandClick(row.customerId)}
+              onClick={() =>
+                handleExpandClick(row.customerId, row.customerType)
+              }
               aria-expanded={customerExpandId === row.customerId}
-              aria-label='show more'
+              aria-label="show more"
             >
               {customerExpandId === row.customerId ? (
                 <ExpandLessIcon />
@@ -411,11 +417,11 @@ export default function Customer() {
           <TableCell>{row.email}</TableCell>
           <TableCell>
             {row.customerType === "PAID" ? (
-              <span className='inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center'>
+              <span className="inline-block bg-green-200 text-green-800 px-2 py-1 rounded w-16 text-center">
                 Paid
               </span>
             ) : row.customerType === "FREE" ? (
-              <span className='inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center'>
+              <span className="inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded w-16 text-center">
                 Free
               </span>
             ) : (
@@ -425,7 +431,7 @@ export default function Customer() {
           <TableCell>
             {row.statusCustomer === "ACTIVE" ? (
               <span
-                className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+                className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
                 style={{
                   color: "#62a34f",
                   backgroundColor: "#dcfce7",
@@ -435,7 +441,7 @@ export default function Customer() {
               </span>
             ) : row.statusCustomer === "INACTIVE" ? (
               <span
-                className='p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center'
+                className="p-1 pl-2 pr-2 rounded-xl inline-block w-16 text-center"
                 style={{
                   color: "#fcca46",
                   backgroundColor: "#fef9c3",
@@ -448,12 +454,12 @@ export default function Customer() {
             )}
           </TableCell>
           <TableCell>
-            <div className='flex flex-row gap-3'>
+            <div className="flex flex-row gap-3">
               {(() => {
                 if (row.statusCustomer === "INACTIVE") {
                   return (
                     <ActionButton
-                      variant='primary'
+                      variant="primary"
                       onClick={() => handleOpenDialog(row.customerId, true)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
@@ -463,7 +469,7 @@ export default function Customer() {
                 } else if (row.statusCustomer === "ACTIVE") {
                   return (
                     <ActionButton
-                      variant='danger'
+                      variant="danger"
                       onClick={() => handleOpenDialog(row.customerId, false)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
@@ -473,13 +479,13 @@ export default function Customer() {
                 }
               })()}
               <ActionButton
-                variant='danger'
+                variant="danger"
                 onClick={() => handleDeleteCustomer(row.customerId)}
               >
                 Delete
               </ActionButton>
               <ActionButton
-                variant='primary'
+                variant="primary"
                 onClick={() => {
                   setEditCustomerProps({
                     customerId: row.customerId,
@@ -493,7 +499,7 @@ export default function Customer() {
                 Edit
               </ActionButton>
               <ActionButton
-                variant='primary'
+                variant="primary"
                 onClick={() => {
                   handleTopupDialog(row.customerId);
                 }}
@@ -513,36 +519,38 @@ export default function Customer() {
           >
             <Collapse
               in={customerExpandId === row.customerId}
-              timeout='auto'
+              timeout="auto"
               unmountOnExit
             >
-              <div className='py-2'>
-                <div className='flex justify-start gap-2 items-start flex-col'>
-                  <div className='wallet'>
-                    <Typography fontWeight='bold' className='min-w-20'>
-                      Main Wallet:
-                    </Typography>
-                    <Typography>
-                      {isLoadingCustomerBalance
-                        ? "Loading..."
-                        : `${customerBalance.main} Coin`}
-                    </Typography>
+              <div className="py-2">
+                {row.customerType === "PAID" && (
+                  <div className="flex justify-start gap-2 items-start flex-col">
+                    <div className="wallet">
+                      <Typography fontWeight="bold" className="min-w-20">
+                        Main Wallet:
+                      </Typography>
+                      <Typography>
+                        {isLoadingCustomerBalance
+                          ? "Loading..."
+                          : `${customerBalance.main} Coin`}
+                      </Typography>
+                    </div>
+                    <div className="wallet">
+                      <Typography fontWeight="bold" className="min-w-20">
+                        Extra Wallet:
+                      </Typography>
+                      <Typography>
+                        {isLoadingCustomerBalance
+                          ? "Loading..."
+                          : `${customerBalance.extra} Coin`}
+                      </Typography>
+                    </div>
                   </div>
-                  <div className='wallet'>
-                    <Typography fontWeight='bold' className='min-w-20'>
-                      Extra Wallet:
-                    </Typography>
-                    <Typography>
-                      {isLoadingCustomerBalance
-                        ? "Loading..."
-                        : `${customerBalance.extra} Coin`}
-                    </Typography>
-                  </div>
-                </div>
+                )}
               </div>
-              <Grid container spacing={1} className='py-1'>
+              <Grid container spacing={1} className="py-1">
                 <Grid item xs={12}>
-                  <Typography variant='h6' component='div'>
+                  <Typography variant="h6" component="div">
                     Vehicles
                   </Typography>
                 </Grid>
@@ -551,8 +559,8 @@ export default function Customer() {
                     item
                     xs={12}
                     container
-                    className='gap-5'
-                    justifyContent='flex-end'
+                    className="gap-5"
+                    justifyContent="flex-end"
                   >
                     {openAddVehicle && (
                       <AddVehicle
@@ -564,11 +572,11 @@ export default function Customer() {
                       />
                     )}
                     <Button
-                      variant='outlined'
-                      color='primary'
-                      size='small'
+                      variant="outlined"
+                      color="primary"
+                      size="small"
                       onClick={toggleAddVehicle}
-                      className=''
+                      className=""
                     >
                       Add Vehicle
                     </Button>
@@ -706,10 +714,10 @@ export default function Customer() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-end w-full py-2'>
+      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
         <Button
-          variant='outlined'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={() => refetch()}
           disabled={changeStatusCustomerMutation.isPending}
         >
@@ -722,7 +730,7 @@ export default function Customer() {
             onClose={toggleAddCustomer}
           />
         )}
-        <Button variant='outlined' color='primary' onClick={toggleAddCustomer}>
+        <Button variant="outlined" color="primary" onClick={toggleAddCustomer}>
           Register Non-Paid Customer
         </Button>
       </div>

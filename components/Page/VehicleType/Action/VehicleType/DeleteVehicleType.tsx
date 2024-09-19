@@ -17,11 +17,7 @@ export default function DeleteVehicleType({
   disable,
 }: {
   id: string;
-  refetch: (
-    options?: RefetchOptions
-  ) => Promise<
-    QueryObserverResult<AxiosResponse<ListVehicleTypeResponse, any>, Error>
-  >;
+  refetch: () => void;
   setIsPending: (isPending: boolean) => void;
   disable: boolean;
 }) {

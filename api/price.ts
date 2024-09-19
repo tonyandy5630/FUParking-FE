@@ -2,11 +2,12 @@ import http from "@/utils/http";
 import {
   CREATE_TABLE_API_URL,
   DELETE_TABLE_PRICE_API_URL,
+  GET_PRICE_TABLE_BY_VEHICLE_TYPE_API_URL,
   GET_TABLE_PRICE_API_URL,
   UPDATE_PRICE_TABLE_API_URL,
   UPDATE_TABLE_STATUS_API_URL,
 } from "./url/price.url";
-import { ErrorResponse } from "@/types";
+import { ResponseAPI } from "@/types";
 import { PriceTable } from "@/types/price.type";
 import {
   PriceTableTableSchemaType,
@@ -23,10 +24,15 @@ export const getPriceTableAPI = ({
   searchInput: string;
   attribute: string;
 }) =>
-  http.get<ErrorResponse<PriceTable[]>>(
+  http.get<ResponseAPI<PriceTable[]>>(
     `${GET_TABLE_PRICE_API_URL}?PageSize=${page.pageSize}&PageIndex=${
       page.pageIndex + 1
     }&SearchInput=${searchInput}&Attribute=${attribute}`
+  );
+
+export const getPriceTableByVehicleTypeAPI = (vehicleTypeId: string) =>
+  http.get<ResponseAPI<PriceTable[]>>(
+    GET_PRICE_TABLE_BY_VEHICLE_TYPE_API_URL({ vehicleTypeId })
   );
 
 export const updatePriceTableStatusAPI = (data: {

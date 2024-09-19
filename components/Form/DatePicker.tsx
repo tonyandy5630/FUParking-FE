@@ -9,10 +9,11 @@ interface Props extends DatePickerProps<Moment> {
   name: string;
   error?: string;
   label: string;
+  defaultValue?: Moment;
 }
 
 const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
-  ({ name, error, minDate, maxDate, label, ...props }, ref) => (
+  ({ name, error, minDate, maxDate, label, defaultValue, ...props }, ref) => (
     <ConnectForm>
       {({ control, formState: { errors } }: UseFormReturn) => {
         return (
@@ -20,6 +21,7 @@ const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
             <Controller
               control={control}
               name={name}
+              defaultValue={defaultValue}
               render={({ field }) => {
                 const { value, ...rest } = field;
                 return (
@@ -29,10 +31,10 @@ const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
                         size: "small",
                       },
                     }}
-                    format='DD - MM - YYYY'
+                    format="DD - MM - YYYY"
                     minDate={minDate}
                     maxDate={maxDate}
-                    className='w-full'
+                    className="w-full"
                     {...rest}
                     label={label}
                     {...props}
