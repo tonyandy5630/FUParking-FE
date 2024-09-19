@@ -1,6 +1,9 @@
 import { DATE_FILTER } from "@/constant/date-filter";
 import { DateFilterType } from "@/types/filter.type";
 import moment, { Moment } from "moment-timezone";
+import { DATE_FILTER } from "@/constant/date-filter";
+import { DateFilterType } from "@/types/filter.type";
+import moment, { Moment } from "moment-timezone";
 
 const options: Intl.DateTimeFormatOptions = {
   hour: "numeric",
@@ -12,12 +15,15 @@ const options: Intl.DateTimeFormatOptions = {
 
 export function getLocalISOString(date?: Date | null): string {
   if (!date || date === null) {
+export function getLocalISOString(date?: Date | null): string {
+  if (!date || date === null) {
     return "";
   }
   // Create a formatter for the specified time zone
   if (!Date.parse(date.toString())) {
     return "";
   }
+
 
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: moment.tz.guess(),
