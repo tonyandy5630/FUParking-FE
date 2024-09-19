@@ -77,8 +77,8 @@ export const formatDateTimeUS = (dateString: string) => {
   }).format(date);
 };
 
-export const MomentToDateJS = (toConvert?: Moment) => {
-  if (!toConvert) return null;
+export const MomentToDateJS = (toConvert?: Moment | null) => {
+  if (!toConvert || toConvert === null) return null;
   return new Date(toConvert.toString());
 };
 
