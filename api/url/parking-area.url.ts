@@ -23,3 +23,10 @@ export const UPDATE_PARKING_AREA_STATUS_API_URL = `${baseURL}/areas/status`;
 
 export const DELETE_PARKING_AREA_API_URL = (areaId: string) =>
   `${baseURL}/areas/${areaId}`;
+
+export const GET_PARKING_AREA_REVENUE = (
+  parkingArea: string,
+  startDate: string,
+  endDate: string
+) =>
+  `${baseURL}/statistic/parkings/${parkingArea}/revenue?startDate=${startDate}&endDate=${endDate}`;

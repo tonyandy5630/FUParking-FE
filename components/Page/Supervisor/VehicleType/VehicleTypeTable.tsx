@@ -74,7 +74,7 @@ export default function VehicleTypeTableSupervisor() {
   }, [data?.data.data]);
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className='flex flex-col gap-5'>
       <SearchContainer>
         <SelectFilter
           filterAttribute={filterAttribute}
@@ -86,10 +86,10 @@ export default function VehicleTypeTableSupervisor() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className="flex flex-row gap-3 items-center justify-end w-full">
+      <div className='flex flex-row gap-3 items-center justify-end w-full'>
         <Button
-          variant="outlined"
-          color="primary"
+          variant='outlined'
+          color='primary'
           onClick={() => refetch()}
           disabled={false}
         >

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -44,19 +44,26 @@ export default function EditVehicleDialog({
 
   const { openDialog: openAlertDialog, handleToggleDialog: toggleAlertDialog } =
     useHandleDialog(false);
-
   const methods = useForm({
     resolver: yupResolver(UpdateVehicleSchema),
     defaultValues: {
       vehicleId: vehicle.id,
-      vehicleTypeId: vehicle.vehicleType,
+      vehicleTypeId: vehicle.vehicleTypeId,
     },
   });
+  const { mutateAsync: updateMutationAsync, isPending } = useMutation({
+    mutationKey: ["/update-vehicle"],
+    mutationFn: updateVehicleAPI,
+  });
 
-  const handleCloseEdit = () => {
-    toggleAlertDialog();
-  };
-
+  const {
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty, dirtyFields },
+    getValues,
+    setValue,
+  } = methods;
+  // console.log(dirtyFields, isDirty);
   const vehicleTypesOptions = useMemo(() => {
     const vehicleTypes = vehicleTypesData?.data.data;
     if (!isSuccessVehicleTypes || !vehicleTypes || vehicleTypes.length === 0) {
@@ -73,16 +80,13 @@ export default function EditVehicleDialog({
     });
   }, [vehicleTypesData?.data.data?.length]);
 
-  const {
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = methods;
-
-  const { mutateAsync: updateMutationAsync, isPending } = useMutation({
-    mutationKey: ["/update-vehicle"],
-    mutationFn: updateVehicleAPI,
-  });
+  const handleCloseEdit = () => {
+    if (!isDirty) {
+      if (onClose) onClose();
+      return;
+    }
+    toggleAlertDialog();
+  };
 
   const handleUpdateVehicle = async (data: UpdateVehicleSchemaType) => {
     try {
@@ -98,20 +102,27 @@ export default function EditVehicleDialog({
   };
 
   const handleCloseUpdate = () => {
-    onOpenChange();
+    if (!isDirty) {
+      onOpenChange();
+      return;
+    }
+    if (onClose) onClose();
   };
 
   const handleConfirmAlertDialog = () => {
+    if (!isDirty) {
+      handleCloseEdit();
+      return;
+    }
     toggleAlertDialog();
     handleCloseEdit();
     if (onClose) onClose();
   };
-
   return (
     <>
       {openAlertDialog && (
         <AlertDialog
-          title="Cancel Edit this vehicle session ?"
+          title='Cancel Edit this vehicle session ?'
           open={openAlertDialog}
           onCancel={toggleAlertDialog}
           onConfirm={handleConfirmAlertDialog}
@@ -119,7 +130,12 @@ export default function EditVehicleDialog({
           onClose={handleConfirmAlertDialog}
         />
       )}
-      <Dialog open={open} maxWidth="xs" onClose={handleCloseEdit}>
+      <Dialog
+        open={open}
+        maxWidth='xs'
+        onClose={handleCloseEdit}
+        disableRestoreFocus
+      >
         <DialogTitle>
           {" "}
           Update Vehicle With Plate Number : {vehicle.plateNumber}
@@ -130,17 +146,20 @@ export default function EditVehicleDialog({
               <Grid container spacing={2}>
                 <Grid xs={12}>
                   <FormSelect
-                    name="vehicleTypeId"
-                    label="Vehicle Type"
+                    name='vehicleTypeId'
+                    autoFocus={true}
+                    label='Vehicle Type'
                     options={vehicleTypesOptions}
+                    value={vehicle.vehicleTypeId}
                   />
                 </Grid>
                 <Grid xs={12}>
-                  <DialogActions className="flex justify-end min-w-full">
+                  <DialogActions className='flex justify-end min-w-full'>
                     <ComboFormButton
+                      isDirty={isDirty}
                       onClose={handleCloseUpdate}
                       onReset={() => reset()}
-                      submitLabel="Update"
+                      submitLabel='Update'
                       isLoading={isPending}
                     />
                   </DialogActions>

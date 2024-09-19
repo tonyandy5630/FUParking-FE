@@ -1,5 +1,6 @@
-import dayjs from "dayjs";
-import moment from "moment-timezone";
+import { DATE_FILTER } from "@/constant/date-filter";
+import { DateFilterType } from "@/types/filter.type";
+import moment, { Moment } from "moment-timezone";
 
 const options: Intl.DateTimeFormatOptions = {
   hour: "numeric",
@@ -9,14 +10,15 @@ const options: Intl.DateTimeFormatOptions = {
   day: "numeric",
 };
 
-export function getLocalISOString(date?: Date): string {
-  if (!date) {
+export function getLocalISOString(date?: Date | null): string {
+  if (!date || date === null) {
     return "";
   }
   // Create a formatter for the specified time zone
   if (!Date.parse(date.toString())) {
     return "";
   }
+
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone: moment.tz.guess(),
     year: "numeric",
@@ -73,4 +75,49 @@ export const formatDateTimeUS = (dateString: string) => {
     minute: "2-digit",
     second: "2-digit",
   }).format(date);
+};
+
+export const MomentToDateJS = (toConvert?: Moment | null) => {
+  if (!toConvert || toConvert === null) return null;
+  return new Date(toConvert.toString());
+};
+
+export const getStartEndDateOfTime = (timeLength: DateFilterType) => {
+  switch (timeLength) {
+    case DATE_FILTER.today:
+      const todayISOString = MomentToDateJS(moment());
+      return { startDate: todayISOString, endDate: todayISOString };
+    case DATE_FILTER.week: {
+      const startWeekMoment = moment().startOf("isoWeek");
+      const endWeekMoment = moment().endOf("isoWeek");
+      const startDate = MomentToDateJS(startWeekMoment);
+      const endDate = MomentToDateJS(endWeekMoment);
+      return { startDate, endDate };
+    }
+    case DATE_FILTER.month: {
+      const startMonthMoment = moment().startOf("M");
+      const endMonthMoment = moment().endOf("M");
+      const startDate = MomentToDateJS(startMonthMoment);
+      const endDate = MomentToDateJS(endMonthMoment);
+      return {
+        startDate,
+        endDate,
+      };
+    }
+    case DATE_FILTER.year: {
+      const startYearMoment = moment().startOf("year");
+      const endYearMoment = moment().endOf("year");
+      const startDate = MomentToDateJS(startYearMoment);
+      const endDate = MomentToDateJS(endYearMoment);
+      return {
+        startDate,
+        endDate,
+      };
+    }
+    default:
+      return {
+        startDate: null,
+        endDate: null,
+      };
+  }
 };

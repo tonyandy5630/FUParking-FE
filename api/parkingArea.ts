@@ -6,14 +6,25 @@ import {
   UPDATE_PARKING_AREA_API_URL,
   UPDATE_PARKING_AREA_STATUS_API_URL,
   DELETE_PARKING_AREA_API_URL,
-} from "./url/parkingArea.url";
+  GET_PARKING_AREA_REVENUE,
+} from "./url/parking-area.url";
 import {
   ListParkingArea,
   ListParkingAreaOption,
-} from "@/types/parkingArea.type";
-import { UpdatePackageSchemaType } from "@/utils/schemas/PackageSchema";
+  ParkingAreaRevenueDetailType,
+} from "@/types/parking-area.type";
 import { ParkingAreaSchemaType } from "@/utils/schemas/parkingAreaSchema";
 import { AddParkingAreaSchemaType } from "@/utils/schemas/parkingArea/addParkingAreaSchema";
+import { ErrorResponse } from "@/types";
+
+export const getParkingAreaRevenueAPI = (
+  parkingAreaId: string,
+  startDate: string,
+  endDate: string
+) =>
+  http.get<ErrorResponse<ParkingAreaRevenueDetailType[]>>(
+    GET_PARKING_AREA_REVENUE(parkingAreaId, startDate, endDate)
+  );
 
 export const getListParkingArea = (
   pageSize?: number,

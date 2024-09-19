@@ -9,13 +9,13 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import TwoWheelerOutlinedIcon from "@mui/icons-material/TwoWheelerOutlined";
 import LocalParkingTwoToneIcon from "@mui/icons-material/LocalParkingTwoTone";
 import ChatTwoToneIcon from "@mui/icons-material/ChatTwoTone";
-import CameraRearTwoToneIcon from "@mui/icons-material/CameraRearTwoTone";
 import PriceChangeTwoToneIcon from "@mui/icons-material/PriceChangeTwoTone";
 import Inventory2TwoToneIcon from "@mui/icons-material/Inventory2TwoTone";
 import PersonOutlineTwoToneIcon from "@mui/icons-material/PersonOutlineTwoTone";
 import MinorCrashTwoToneIcon from "@mui/icons-material/MinorCrashTwoTone";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import Tooltip from "@mui/material/Tooltip";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
 interface LeftNavbarProps {
   menu: {
@@ -30,6 +30,11 @@ const menuManager: LeftNavbarProps["menu"] = [
     name: "Dashboard",
     path: "/manager",
     icon: GridViewRoundedIcon,
+  },
+  {
+    name: "Revenue",
+    path: "/manager/revenue",
+    icon: AttachMoneyIcon,
   },
   {
     name: "Customer",

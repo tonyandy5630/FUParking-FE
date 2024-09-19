@@ -26,3 +26,9 @@ export const GET_CARD_STATISTIC_API_URL = () => `${baseURL}/statistic/card`;
 
 export const GET_REVENUE_EACH_PARKING_AREA_API_URL = () =>
   `${baseURL}/statistic/parkingarea/renvenue`;
+
+export const GET_ALL_PARKING_AREA_REVENUE_API_URL = (
+  startDate: string,
+  endDate: string
+) =>
+  `${baseURL}/statistic/parkings/revenue?startDate=${startDate}&endDate=${endDate}`;
