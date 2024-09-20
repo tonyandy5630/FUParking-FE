@@ -66,9 +66,9 @@ export default function RevenueChart({ startDate, endDate }: Props) {
         {!isLoadingRevenueData && isErrorRevenueData && (
           <p className='text-destructive font-bold'>Error loading data</p>
         )}
-        {!isLoadingRevenueData && allParkingAreaRevenue.length === 0 && (
-          <p>No data found</p>
-        )}
+        {!isErrorRevenueData &&
+          !isLoadingRevenueData &&
+          allParkingAreaRevenue.length === 0 && <p>No data found</p>}
         {!isLoadingRevenueData && allParkingAreaRevenue.length > 0 && (
           <ResponsiveChartContainer
             series={[
