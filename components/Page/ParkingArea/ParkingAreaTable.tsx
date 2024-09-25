@@ -546,7 +546,7 @@ export default function ParkingAreaTable() {
         <Button
           variant="outlined"
           onClick={() => {
-            refetch;
+            refetch();
           }}
         >
           <div className="flex items-center justify-center">

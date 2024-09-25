@@ -23,6 +23,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FormInput from "@/components/Form/Input";
 import moment from "moment";
 import FormDatePicker from "@/components/Form/DatePicker";
+import ComboFormButton from "@/components/Dialog/ComboButton";
 
 type UpdatePriceProps = DialogProps & {
   priceTable: PriceTable | undefined;
@@ -145,16 +146,14 @@ export default function UpdatePrice({
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <Button type="submit" variant="contained" color="primary">
-                    Update
-                  </Button>
-                  <Button
-                    onClick={handleClose}
-                    variant="contained"
-                    color="error"
-                  >
-                    Cancel
-                  </Button>
+                  <DialogActions>
+                    <ComboFormButton
+                      isDirty={formState.isDirty}
+                      onClose={handleClose}
+                      onReset={() => reset()}
+                      submitLabel="Update"
+                    />
+                  </DialogActions>
                 </Grid>
               </DialogContent>
             </form>

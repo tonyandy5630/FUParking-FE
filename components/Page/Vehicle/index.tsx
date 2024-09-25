@@ -337,16 +337,29 @@ export default function VehiclePage() {
             >
               Edit
             </ActionButton>
-            <ActionButton
-              variant="outlined"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpenConfirmBox(item.id, false);
-              }}
-              color="error"
-            >
-              DEACTIVATE
-            </ActionButton>
+            {item.statusVehicle === "ACTIVE" ? (
+              <ActionButton
+                variant="outlined"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenConfirmBox(item.id, false);
+                }}
+                color="warning"
+              >
+                Deactivate
+              </ActionButton>
+            ) : (
+              <ActionButton
+                variant="outlined"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenConfirmBox(item.id, true);
+                }}
+                color="primary"
+              >
+                Activate
+              </ActionButton>
+            )}
             <ActionButton
               variant="outlined"
               onClick={() => handleDeleteVehicle(item.id)}

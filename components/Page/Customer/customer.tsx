@@ -352,8 +352,7 @@ export default function Customer() {
             >
               Delete
             </ActionButton>
-            {vehicle.statusVehicle === "INACTIVE" ||
-            vehicle.statusVehicle === "PENDING" ? (
+            {vehicle.statusVehicle === "INACTIVE" || "PENDING" ? (
               <ActionButton
                 variant="outlined"
                 onClick={() => {
@@ -381,6 +380,7 @@ export default function Customer() {
                   vehicleTypeId: vehicle.vehicleTypeId,
                   vehicleId: vehicle.id,
                 });
+                console.log(vehicle.vehicleTypeId);
               }}
               color="primary"
             >
