@@ -13,7 +13,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Grid,
+  Switch,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
@@ -43,16 +45,13 @@ export default function EditPackage({
     defaultValues: {
       packageId: packageObject.id,
       name: packageObject.name,
+      isActive: packageObject.packageStatus === "ACTIVE" ? true : false,
     },
   });
   const {
     reset,
     formState: { errors, isDirty, dirtyFields },
     handleSubmit,
-    setError,
-    setValue,
-    setFocus,
-    getValues,
   } = methods;
 
   const { mutateAsync: updatePackageAsync, isPending } = useMutation({
@@ -96,22 +95,17 @@ export default function EditPackage({
         <div className="p-5 flex flex-col">
           <div className="flex justify-end">
             <Button
+              size="small"
+              variant="text"
+              color="error"
               sx={{
                 position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
+                right: "5",
+                top: "5",
+                padding: "5px",
               }}
-              onClick={handleClose}
             >
-              <CloseIcon />
+              <CloseIcon onClick={handleClose} className="cursor-pointer " />
             </Button>
           </div>
           <DialogTitle>Update package</DialogTitle>
@@ -130,7 +124,17 @@ export default function EditPackage({
                     label="PackageId"
                     defaultValue={packageObject.id}
                   />
-                  <FormInput name="isActive" label="IsActive" />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        {...methods.register("isActive")}
+                        defaultChecked={
+                          packageObject.packageStatus === "ACTIVE"
+                        }
+                      />
+                    }
+                    label="Is Active"
+                  />
                 </div>
                 <Grid item xs={12}>
                   <FormInput
