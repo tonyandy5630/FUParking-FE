@@ -129,21 +129,6 @@ export default function AddPriceTable({
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              size="small"
-              variant="text"
-              color="error"
-              sx={{
-                position: "absolute",
-                right: "5",
-                top: "5",
-                padding: "5px",
-              }}
-            >
-              <CloseIcon onClick={handleClose} className="cursor-pointer " />
-            </Button>
-          </div>
           <DialogTitle>Add New Price Table</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleAddPriceTable)}>

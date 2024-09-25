@@ -344,7 +344,8 @@ export default function Customer() {
         <TableCell>
           <div className="flex flex-row gap-3">
             <ActionButton
-              variant="danger"
+              variant="outlined"
+              color="error"
               onClick={() => {
                 handleDeleteVehicle(vehicle.id);
               }}
@@ -354,7 +355,7 @@ export default function Customer() {
             {vehicle.statusVehicle === "INACTIVE" ||
             vehicle.statusVehicle === "PENDING" ? (
               <ActionButton
-                variant="primary"
+                variant="outlined"
                 onClick={() => {
                   handleDeactiveAndActiveVehicle(vehicle.id, true);
                 }}
@@ -363,16 +364,17 @@ export default function Customer() {
               </ActionButton>
             ) : (
               <ActionButton
-                variant="danger"
+                variant="outlined"
                 onClick={() => {
                   handleDeactiveAndActiveVehicle(vehicle.id, false);
                 }}
+                color="error"
               >
                 Deactivate
               </ActionButton>
             )}
             <ActionButton
-              variant="primary"
+              variant="outlined"
               onClick={() => {
                 handleEditVehicle({
                   plateNumber: vehicle.plateNumber,
@@ -380,6 +382,7 @@ export default function Customer() {
                   vehicleId: vehicle.id,
                 });
               }}
+              color="primary"
             >
               Edit
             </ActionButton>
@@ -459,7 +462,8 @@ export default function Customer() {
                 if (row.statusCustomer === "INACTIVE") {
                   return (
                     <ActionButton
-                      variant="primary"
+                      variant="outlined"
+                      color="primary"
                       onClick={() => handleOpenDialog(row.customerId, true)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
@@ -469,7 +473,8 @@ export default function Customer() {
                 } else if (row.statusCustomer === "ACTIVE") {
                   return (
                     <ActionButton
-                      variant="danger"
+                      variant="outlined"
+                      color="error"
                       onClick={() => handleOpenDialog(row.customerId, false)}
                       disabled={changeStatusCustomerMutation.isPending}
                     >
@@ -479,13 +484,14 @@ export default function Customer() {
                 }
               })()}
               <ActionButton
-                variant="danger"
+                variant="outlined"
+                color="error"
                 onClick={() => handleDeleteCustomer(row.customerId)}
               >
                 Delete
               </ActionButton>
               <ActionButton
-                variant="primary"
+                variant="outlined"
                 onClick={() => {
                   setEditCustomerProps({
                     customerId: row.customerId,
@@ -495,14 +501,16 @@ export default function Customer() {
                   });
                   toggleEditCustomer();
                 }}
+                color="primary"
               >
                 Edit
               </ActionButton>
               <ActionButton
-                variant="primary"
+                variant="outlined"
                 onClick={() => {
                   handleTopupDialog(row.customerId);
                 }}
+                color="warning"
               >
                 Topup
               </ActionButton>
@@ -666,7 +674,7 @@ export default function Customer() {
           onOpenChange={toggleDeactiveAndActiveVehicle}
           vehicleId={activeAndDeactiveVehicleId}
           refresh={vehicleRefetch}
-          status={isActiveOrDeActiveVehicle ? "inactive" : "active"}
+          status={isActiveOrDeActiveVehicle ? "INACTIVE" : "ACTIVE"}
         />
       )}
       {openDeleteVehicle && (

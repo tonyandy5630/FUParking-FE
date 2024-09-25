@@ -144,14 +144,25 @@ export default function UserTable() {
             >
               DELETE
             </Button>
-            <Button
-              variant="outlined"
-              color="success"
-              onClick={() => handleChangeStatusUser(packs)}
-              size="small"
-            >
-              {packs.status === "ACTIVE" ? "DEACTIVATE" : "ACTIVATE"}
-            </Button>
+            {packs.status === "ACTIVE" ? (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => handleChangeStatusUser(packs)}
+                size="small"
+              >
+                DEACTIVATE
+              </Button>
+            ) : (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => handleChangeStatusUser(packs)}
+                size="small"
+              >
+                ACTIVATE
+              </Button>
+            )}
             <Button
               variant="outlined"
               color="primary"
@@ -214,9 +225,19 @@ export default function UserTable() {
         />
       </SearchContainer>
       <ActionArea>
-        <Button variant="outlined" onClick={toggleAddDialog}>
-          New User
-        </Button>
+        <div className="w-full flex flex-row items-center justify-end gap-2">
+          <Button variant="outlined" onClick={toggleAddDialog}>
+            New User
+          </Button>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => refetch()}
+            disabled={false}
+          >
+            Refresh
+          </Button>
+        </div>
       </ActionArea>
       {isLoading && <Loading />}
       {isError && <p>Something wrong, please trying again later...</p>}

@@ -5,11 +5,10 @@ import {
   Button,
   DialogActions,
   DialogContent,
-  DialogContentText,
+  Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import CloseIcon from "@mui/icons-material/Close";
 
 type DeleteVehicleProps = DialogProps & {
   vehicleId: string;
@@ -50,32 +49,15 @@ export default function DeleteVehicle({
     <>
       <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              sx={{
-                position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-            >
-              <CloseIcon onClick={handleClose} className="cursor-pointer" />
-            </Button>
-          </div>
           <DialogContent>
-            <DialogContentText>
+            <Typography variant="h6">
               Are you sure you want to delete this vehicle?
-            </DialogContentText>
+            </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose} variant="outlined">
+              Cancel
+            </Button>
             <Button variant="outlined" color="error" onClick={handleDelete}>
               Delete
             </Button>

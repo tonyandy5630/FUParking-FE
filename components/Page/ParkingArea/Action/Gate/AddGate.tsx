@@ -95,9 +95,6 @@ export default function AddGate({
     <>
       <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <CloseIcon onClick={handleClose} className="cursor-pointer " />
-          </div>
           <DialogTitle>Register Gate</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleAddGate)}>

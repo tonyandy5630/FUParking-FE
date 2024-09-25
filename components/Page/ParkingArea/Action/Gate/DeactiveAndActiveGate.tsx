@@ -64,26 +64,6 @@ export default function DeactiveAndActiveGate({
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              sx={{
-                position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-              onClick={onClose}
-            >
-              <CloseIcon />
-            </Button>
-          </div>
           <DialogContent>
             <DialogContentText>
               Are you sure you want to change status this gate?

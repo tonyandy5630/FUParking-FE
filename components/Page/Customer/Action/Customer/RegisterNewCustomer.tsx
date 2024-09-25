@@ -116,9 +116,6 @@ export default function RegisterNewCustomer({
     <>
       <Modal open={open} setOpen={onOpenChange} onClose={handleClose}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <CloseIcon onClick={handleClose} className="cursor-pointer " />
-          </div>
           <DialogTitle>Register non-paid customer</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleCreateCustomer)}>

@@ -5,6 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { useMutation } from "@tanstack/react-query";
@@ -61,33 +62,17 @@ export default function DeactiveAndActiveVehicle({
     <>
       <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              sx={{
-                position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-              onClick={onClose}
-            >
-              <CloseIcon />
-            </Button>
-          </div>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to change this vehicle?
+              <Typography variant="h6">
+                Are you sure you want to change this vehicle?
+              </Typography>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose} variant="outlined">
+              Cancel
+            </Button>
             {status === "ACTIVE" ? (
               <Button
                 variant="outlined"

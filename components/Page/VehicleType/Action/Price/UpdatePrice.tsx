@@ -21,8 +21,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import FormInput from "@/components/Form/Input";
-import FormDatePicker from "@/components/Form/DatePicker";
 import moment from "moment";
+import FormDatePicker from "@/components/Form/DatePicker";
 
 type UpdatePriceProps = DialogProps & {
   priceTable: PriceTable | undefined;
@@ -39,10 +39,10 @@ export default function UpdatePrice({
   const methods = useForm({
     defaultValues: {
       applyFromDate: priceTable?.applyFromDate
-        ? new Date(priceTable?.applyFromDate)
+        ? moment.utc(priceTable.applyFromDate).toDate()
         : undefined,
       applyToDate: priceTable?.applyToDate
-        ? new Date(priceTable?.applyToDate)
+        ? moment.utc(priceTable.applyToDate).toDate()
         : undefined,
       name: priceTable?.name,
       priceTableId: priceTable?.id,
@@ -82,6 +82,11 @@ export default function UpdatePrice({
 
   const handleUpdatePrice = async (data: UpdatePriceTableSchemaType) => {
     try {
+      const updatedData = {
+        ...data,
+        applyFromDate: moment.utc(data.applyFromDate).format(),
+        applyToDate: moment.utc(data.applyToDate).format(),
+      };
       await updatePriceTableAsync(data, {
         onSuccess: () => {
           refetch();
@@ -98,26 +103,6 @@ export default function UpdatePrice({
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              sx={{
-                position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-              onClick={handleClose}
-            >
-              <CloseIcon />
-            </Button>
-          </div>
           <DialogTitle>Update price plan</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleUpdatePrice)}>
@@ -139,10 +124,10 @@ export default function UpdatePrice({
                   <FormDatePicker
                     name={"applyFromDate"}
                     label="Apply From"
-                    minDate={moment()}
+                    minDate={moment.utc()}
                     defaultValue={
                       priceTable?.applyFromDate
-                        ? moment(priceTable.applyFromDate)
+                        ? moment.utc(priceTable.applyFromDate)
                         : undefined
                     }
                   />
@@ -151,10 +136,10 @@ export default function UpdatePrice({
                   <FormDatePicker
                     name={"applyToDate"}
                     label="Apply To"
-                    minDate={moment()}
+                    minDate={moment.utc()}
                     defaultValue={
                       priceTable?.applyToDate
-                        ? moment(priceTable.applyToDate)
+                        ? moment.utc(priceTable.applyToDate)
                         : undefined
                     }
                   />

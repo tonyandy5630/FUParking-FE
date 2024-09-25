@@ -50,12 +50,9 @@ export default function CreateVehicleType({
   });
 
   const {
-    register,
     handleSubmit,
     reset,
-    control,
-    setError,
-    formState: { errors, dirtyFields, isDirty },
+    formState: { dirtyFields, isDirty },
   } = methods;
   const createVehicleTypeMutation = useMutation({
     mutationKey: ["/vehicleTypes"],
@@ -107,21 +104,6 @@ export default function CreateVehicleType({
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              size="small"
-              variant="text"
-              color="error"
-              sx={{
-                position: "absolute",
-                right: "5",
-                top: "5",
-                padding: "5px",
-              }}
-            >
-              <CloseIcon onClick={handleClose} className="cursor-pointer " />
-            </Button>
-          </div>
           <DialogContent>Vehicle Type</DialogContent>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -150,11 +132,6 @@ export default function CreateVehicleType({
                       key="description"
                       required={false}
                     />
-                    {errors.description && (
-                      <p className="text-red-500">
-                        {errors.description.message}
-                      </p>
-                    )}
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <FormInput

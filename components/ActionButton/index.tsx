@@ -1,29 +1,17 @@
-import { Button } from "@mui/material";
+import { Button, ButtonProps } from "@mui/material";
 import React from "react";
 
-interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant: "primary" | "danger";
-}
+interface Props extends ButtonProps {}
 
 const ActionButton = React.forwardRef<HTMLButtonElement, Props>(
-  ({ variant, onClick, disabled, children, ...props }, ref) => {
+  ({ onClick, disabled, children, ...props }, ref) => {
     return (
       <Button
-        size='small'
-        sx={{
-          backgroundColor: `${variant === "primary" ? "#3b82f6" : "#ef4444"}`,
-          color: "white",
-          minWidth: "4rem",
-          "&:disabled": {
-            backgroundColor: "grey",
-            color: "white",
-          },
-          "&:hover": {
-            backgroundColor: `${variant === "primary" ? "#2563eb" : "#dc2626"}`,
-          },
-        }}
+        size="small"
         onClick={onClick}
         disabled={disabled}
+        ref={ref}
+        {...props}
       >
         {children}
       </Button>

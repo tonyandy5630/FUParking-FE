@@ -20,7 +20,6 @@ import Table from "@/components/Table";
 import { ParkingAreaTableHeaders } from "./table-headers";
 import dynamic from "next/dynamic";
 import useSearchDebounce from "@/hook/useSearchDebouce";
-import ActionArea from "@/components/ActionArea";
 import { Button, Collapse, Grid, IconButton, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Refresh from "@mui/icons-material/Refresh";
@@ -242,17 +241,30 @@ export default function ParkingAreaTable() {
       <TableRow key={gate.id}>
         <TableCell>{gate.name}</TableCell>
         <TableCell>{gate.description}</TableCell>
-        <TableCell>{gate.status}</TableCell>
         <TableCell>
-          <div className='flex flex-row gap-2'>
+          <Chip
+            variant={
+              gate.status === "ACTIVE"
+                ? "success"
+                : gate.status === "INACTIVE"
+                ? "warning"
+                : "error"
+            }
+          >
+            {gate.status}
+          </Chip>
+        </TableCell>
+        <TableCell>
+          <div className="flex flex-row gap-2">
             <ActionButton
-              variant='danger'
+              variant="outlined"
               onClick={() => handleDeleteGate(gate.id)}
+              color="error"
             >
               Delete
             </ActionButton>
             <ActionButton
-              variant='primary'
+              variant="outlined"
               onClick={() =>
                 handleOpenUpdateGateDialog(
                   {
@@ -263,24 +275,27 @@ export default function ParkingAreaTable() {
                   gate.id
                 )
               }
+              color="primary"
             >
               Update
             </ActionButton>
             {gate.status === "ACTIVE" ? (
               <ActionButton
-                variant='danger'
+                variant="outlined"
                 onClick={() =>
                   handleDeactiveAndActiveGateDialog(gate.id, "ACTIVE")
                 }
+                color="error"
               >
                 Deactivate
               </ActionButton>
             ) : (
               <ActionButton
-                variant='primary'
+                variant="outlined"
                 onClick={() =>
                   handleDeactiveAndActiveGateDialog(gate.id, "INACTIVE")
                 }
+                color="primary"
               >
                 Activate
               </ActionButton>
@@ -304,7 +319,7 @@ export default function ParkingAreaTable() {
             <IconButton
               onClick={() => handleExpandClick(area.id)}
               aria-expanded={expandedRow === area.id}
-              aria-label='show more'
+              aria-label="show more"
             >
               {expandedRow === area.id ? (
                 <ExpandLessIcon />
@@ -328,17 +343,18 @@ export default function ParkingAreaTable() {
             </Chip>
           </TableCell>
           <TableCell>
-            <div className='flex gap-2'>
+            <div className="flex gap-2">
               {(() => {
                 switch (area.statusParkingArea) {
                   case "ACTIVE":
                     return (
                       <ActionButton
-                        variant='danger'
+                        variant="outlined"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenIsActiveOrDeactiveDialog(area.id, false);
                         }}
+                        color="error"
                       >
                         Deactivate
                       </ActionButton>
@@ -346,11 +362,12 @@ export default function ParkingAreaTable() {
                   case "INACTIVE":
                     return (
                       <ActionButton
-                        variant='primary'
+                        variant="outlined"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOpenIsActiveOrDeactiveDialog(area.id, true);
                         }}
+                        color="primary"
                       >
                         Activate
                       </ActionButton>
@@ -361,13 +378,15 @@ export default function ParkingAreaTable() {
               })()}
               <ActionButton
                 onClick={() => handleOpenUpdateDialog(area)}
-                variant='primary'
+                variant="outlined"
+                color="primary"
               >
                 Update
               </ActionButton>
               <ActionButton
                 onClick={() => handleDeleteParkingArea(area.id)}
-                variant='danger'
+                variant="outlined"
+                color="error"
               >
                 Delete
               </ActionButton>
@@ -382,10 +401,10 @@ export default function ParkingAreaTable() {
             }}
             colSpan={8}
           >
-            <Collapse in={expandedRow === area.id} timeout='auto' unmountOnExit>
-              <Grid container spacing={2} className='pt-5 pb-5'>
+            <Collapse in={expandedRow === area.id} timeout="auto" unmountOnExit>
+              <Grid container spacing={2} className="pt-5 pb-5">
                 <Grid item xs={12}>
-                  <Typography variant='h6' component='div'>
+                  <Typography variant="h6" component="div">
                     Gates
                   </Typography>
                 </Grid>
@@ -394,19 +413,21 @@ export default function ParkingAreaTable() {
                     item
                     xs={12}
                     container
-                    className='gap-5'
-                    justifyContent='flex-end'
+                    className="gap-5"
+                    justifyContent="flex-end"
                   >
-                    <div>
+                    <div className="flex flex-row gap-2">
                       <ActionButton
-                        variant='primary'
+                        variant="outlined"
                         onClick={() => handleAddGateDialog(area.id)}
+                        color="primary"
                       >
                         Add Gate
                       </ActionButton>
                       <Button
-                        variant='outlined'
-                        color='primary'
+                        variant="outlined"
+                        color="primary"
+                        size="small"
                         onClick={() => refetchGate()}
                       >
                         Refresh
@@ -518,17 +539,17 @@ export default function ParkingAreaTable() {
         />
       </SearchContainer>
 
-      <div className='flex flex-row gap-3 items-center justify-end w-full py-2'>
-        <Button variant='outlined' onClick={handleOpenAddDialog}>
+      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
+        <Button variant="outlined" onClick={handleOpenAddDialog}>
           <AddIcon /> New Parking Area
         </Button>
         <Button
-          variant='outlined'
+          variant="outlined"
           onClick={() => {
             refetch;
           }}
         >
-          <div className='flex items-center justify-center'>
+          <div className="flex items-center justify-center">
             <Refresh /> Refresh
           </div>
         </Button>

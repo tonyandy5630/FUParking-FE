@@ -27,6 +27,7 @@ import {
   EditPackageSchema,
   EditPackageSchemaType,
 } from "@/utils/schemas/package/EditPackageSchema";
+import ComboFormButton from "@/components/Dialog/ComboButton";
 
 type EditPackageProps = DialogProps & {
   packageObject: Packages;
@@ -93,21 +94,6 @@ export default function EditPackage({
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              size="small"
-              variant="text"
-              color="error"
-              sx={{
-                position: "absolute",
-                right: "5",
-                top: "5",
-                padding: "5px",
-              }}
-            >
-              <CloseIcon onClick={handleClose} className="cursor-pointer " />
-            </Button>
-          </div>
           <DialogTitle>Update package</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleUpdatePackage)}>
@@ -144,23 +130,14 @@ export default function EditPackage({
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <div className="flex justify-between items-center">
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={handleClose}
-                      disabled={isPending}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      disabled={isPending}
-                    >
-                      Update
-                    </Button>
-                  </div>
+                  <DialogActions>
+                    <ComboFormButton
+                      submitLabel="Update"
+                      onClose={onOpenChange}
+                      onReset={reset}
+                      isLoading={false}
+                    />
+                  </DialogActions>
                 </Grid>
               </DialogContent>
             </form>

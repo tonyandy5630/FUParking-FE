@@ -4,6 +4,7 @@ import { Controller, UseFormReturn } from "react-hook-form";
 import { DatePicker, DatePickerProps } from "@mui/x-date-pickers/DatePicker";
 import { FormControl, FormHelperText } from "@mui/material";
 import { Moment } from "moment";
+import moment from "moment";
 
 interface Props extends DatePickerProps<Moment> {
   name: string;
@@ -24,6 +25,7 @@ const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
               defaultValue={defaultValue}
               render={({ field }) => {
                 const { value, ...rest } = field;
+                const inputValue = moment(value as string);
                 return (
                   <DatePicker
                     slotProps={{
@@ -32,10 +34,11 @@ const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
                       },
                     }}
                     format="DD - MM - YYYY"
-                    minDate={minDate}
-                    maxDate={maxDate}
+                    minDate={minDate ? moment(minDate) : undefined}
+                    maxDate={maxDate ? moment(maxDate) : undefined}
+                    value={inputValue}
                     className="w-full"
-                    {...field}
+                    {...rest}
                     label={label}
                     {...props}
                   />
