@@ -1,6 +1,11 @@
 import { deleteUserAPI } from "@/api/user";
 import Modal from "@/components/modal/modal";
-import { Button } from "@mui/material";
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -47,28 +52,30 @@ export default function Delete({
   return (
     <>
       <Modal open={isOpen} onClose={handleClose} setOpen={setIsOpen}>
-        <div className="flex flex-col gap-4 p-4">
-          <div className="flex flex-row">
-            <p>Are you sure you want to delete this user?</p>
-            <div className="flex gap-4">
-              <Button
-                onClick={onSubmit}
-                disabled={isPending}
-                variant="contained"
-                color="primary"
-              >
-                Yes
-              </Button>
-              <Button
-                onClick={handleClose}
-                disabled={isPending}
-                variant="contained"
-                color="error"
-              >
-                No
-              </Button>
-            </div>
-          </div>
+        <div className="p-5 flex flex-col">
+          <DialogContent>
+            <Typography variant="h6">
+              Are you sure you want to delete this user?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={onSubmit}
+              disabled={isPending}
+              variant="outlined"
+              color="error"
+            >
+              Delete
+            </Button>
+            <Button
+              onClick={handleClose}
+              disabled={isPending}
+              variant="outlined"
+              color="primary"
+            >
+              Cancel
+            </Button>
+          </DialogActions>
         </div>
       </Modal>
     </>

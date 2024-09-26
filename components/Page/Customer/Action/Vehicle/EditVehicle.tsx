@@ -15,10 +15,10 @@ import {
   Grid,
 } from "@mui/material";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
-import FormSelectSearch from "@/components/Form/SelectSearch";
+import FormSelectSearch, { FormOptions } from "@/components/Form/SelectSearch";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import FormInput from "@/components/Form/Input";
 import { toast } from "react-toastify";
@@ -67,7 +67,7 @@ export default function EditVehicle({
     mutationKey: ["/vehicles/update"],
     mutationFn: updateVehicleAPI,
   });
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isSuccess } = useQuery({
     queryKey: ["/vehicles/type"],
     queryFn: () => getAllVehicleTypeAPI(),
   });
@@ -75,6 +75,22 @@ export default function EditVehicle({
     setShowConfirmDialog(false);
     onClose && onClose();
   };
+
+  const vehicleTypesOptions = useMemo(() => {
+    const vehicleTypes = data?.data.data;
+    if (!isSuccess || !vehicleTypes || vehicleTypes.length === 0) {
+      return [];
+    }
+
+    return vehicleTypes.map((item) => {
+      const option: FormOptions = {
+        name: item.name,
+        value: item.id,
+      };
+
+      return option;
+    });
+  }, [data?.data.data?.length]);
 
   const handleUpdateVehicle = async (data: UpdateVehicleSchemaType) => {
     try {
@@ -94,26 +110,6 @@ export default function EditVehicle({
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              sx={{
-                position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-              onClick={onClose}
-            >
-              <CloseIcon />
-            </Button>
-          </div>
           <DialogTitle>Update vehicle information</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleUpdateVehicle)}>
@@ -136,16 +132,9 @@ export default function EditVehicle({
                   <FormSelectSearch
                     name={"vehicleTypeId"}
                     label="Vehicle Type"
-                    options={
-                      isLoading
-                        ? [{ name: "Loading...", value: "" }]
-                        : data?.data?.data?.map((item) => ({
-                            name: item.name,
-                            value: item.id,
-                          })) || []
-                    }
+                    options={vehicleTypesOptions}
                     disabled={isLoading}
-                    defaultValue={EditVehicleForm?.vehicleTypeId}
+                    value={EditVehicleForm?.vehicleTypeId}
                   />
                 </Grid>
                 <Grid item xs={12}>

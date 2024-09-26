@@ -1,24 +1,24 @@
 import { updateVehicleTypeAPI } from "@/api/vehicleType";
 import FormInput from "@/components/Form/Input";
 import Modal from "@/components/modal/modal";
-import {
-  ListVehicleTypeResponse,
-  VehicleTypeProps,
-} from "@/types/vehicleType.type";
+import { VehicleTypeProps } from "@/types/vehicleType.type";
 import EditVehicleTypeSchema, {
   EditVehicleTypeSchemaType,
 } from "@/utils/schemas/vehicleType/editVehicleType";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, FormControl } from "@mui/material";
 import {
-  RefetchOptions,
-  QueryObserverResult,
-  useMutation,
-} from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+  Button,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  Grid,
+} from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import CloseIcon from "@mui/icons-material/Close";
+import ComboFormButton from "@/components/Dialog/ComboButton";
 
 export default function EditVehicleType({
   id,
@@ -34,8 +34,13 @@ export default function EditVehicleType({
   value: VehicleTypeProps;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const handleClose = () => {
-    setIsOpen(false);
+    if (isDirty && Object.keys(dirtyFields).length > 0) {
+      setShowConfirmDialog(true);
+    } else {
+      setIsOpen(false);
+    }
   };
   const methods = useForm<EditVehicleTypeSchemaType>({
     resolver: yupResolver(EditVehicleTypeSchema),
@@ -45,12 +50,10 @@ export default function EditVehicleType({
   });
 
   const {
-    register,
     handleSubmit,
     reset,
-    control,
     setError,
-    formState: { errors },
+    formState: { dirtyFields, isDirty },
   } = methods;
 
   const editVehicleTypeMutation = useMutation({
@@ -102,59 +105,54 @@ export default function EditVehicleType({
         Edit
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className="pl-5 pr-5 pt-10 pb-10">
-          <Button
-            onClick={handleClose}
-            sx={{
-              position: "absolute",
-              padding: "0",
-              margin: "10px",
-              width: "0",
-              right: "0",
-              top: "0",
-              color: "black",
-              border: "1px solid black",
-              backgroundColor: "white",
-              "&:hover": {
-                backgroundColor: "white",
-              },
-            }}
-            aria-label="Close"
-          >
-            X
-          </Button>
-          <div className="flex flex-col w-full space-y-5">
-            <h1 className="text-center font-semibold text-2xl">
-              Edit Vehicle Type
-            </h1>
-            <FormProvider {...methods}>
-              <FormControl>
-                <form
-                  className="flex flex-col space-y-2"
-                  onSubmit={handleSubmit(onSubmit)}
+        <div className="p-5 flex flex-col">
+          <DialogContent>Vehicle Type</DialogContent>
+          <FormProvider {...methods}>
+            <FormControl>
+              <form
+                className="flex flex-col space-y-2"
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                <DialogContent
+                  sx={{
+                    maxHeight: "70vh",
+                    width: "30vw",
+                  }}
                 >
-                  <FormInput
-                    name="name"
-                    label="Name Vehicle Type"
-                    placeholder="Enter Name"
-                    autoFocus={true}
-                    key="name"
-                    defaultValue={value.name}
-                  />
-                  <FormInput
-                    name="description"
-                    label="Description"
-                    placeholder="Enter description"
-                    key="description"
-                    defaultValue={value.description}
-                  />
-                  <Button type="submit" variant="contained" color="primary">
-                    Submit
-                  </Button>
-                </form>
-              </FormControl>
-            </FormProvider>
-          </div>
+                  <Grid container spacing={1}>
+                    <Grid item xs={12}>
+                      <FormInput
+                        name="name"
+                        label="Name Vehicle Type"
+                        placeholder="Enter Name"
+                        autoFocus={true}
+                        key="name"
+                        defaultValue={value.name}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <FormInput
+                        name="description"
+                        label="Description"
+                        placeholder="Enter description"
+                        key="description"
+                        defaultValue={value.description}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <DialogActions className="flex justify-end min-w-full">
+                        <ComboFormButton
+                          onClose={handleClose}
+                          onReset={() => reset()}
+                          submitLabel="Update"
+                        />
+                      </DialogActions>
+                    </Grid>
+                  </Grid>
+                </DialogContent>
+              </form>
+            </FormControl>
+          </FormProvider>
         </div>
       </Modal>
     </>

@@ -188,17 +188,19 @@ export default function PackageTable() {
           <div className="flex gap-2">
             {packs.packageStatus === "ACTIVE" ? (
               <ActionButton
-                variant="danger"
+                variant="outlined"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleClickActiveOrDeactivate(packs);
                 }}
+                color="error"
               >
                 Deactivate
               </ActionButton>
             ) : (
               <ActionButton
-                variant="primary"
+                variant="outlined"
+                color="primary"
                 onClick={async (e) => {
                   e.stopPropagation();
                   handleClickActiveOrDeactivate(packs);
@@ -208,7 +210,8 @@ export default function PackageTable() {
               </ActionButton>
             )}
             <ActionButton
-              variant="danger"
+              variant="outlined"
+              color="error"
               onClick={(e) => {
                 e.stopPropagation();
                 handleDeletePackage(packs.id);
@@ -217,11 +220,12 @@ export default function PackageTable() {
               Delete
             </ActionButton>
             <ActionButton
-              variant="primary"
+              variant="outlined"
               onClick={(e) => {
                 e.stopPropagation();
                 handleEditPackage(packs);
               }}
+              color="primary"
             >
               Edit
             </ActionButton>

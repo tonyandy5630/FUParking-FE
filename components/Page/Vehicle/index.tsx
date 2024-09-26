@@ -25,11 +25,13 @@ import Loading from "../LoadingPage/Loading";
 import { Button, Typography } from "@mui/material";
 import Image from "next/image";
 import Bai_Logo from "@/public/Bai_Logo.svg";
+import useHandleDialog from "@/hook/useHandleDialog";
+import DeleteVehicle from "../Customer/Action/Vehicle/DeleteVehicle";
 
 const AlertDialog = dynamic(() => import("@/components/Dialog/ConfirmDialog"), {
   loading: () => <Loading />,
 });
-const EditVehicleDialog = dynamic(() => import("./EditVehicleDialog"));
+const EditVehicleDialog = dynamic(() => import("./Action/EditVehicleDialog"));
 const FILTER: listFilter[] = [
   { display: "Plate Number", value: "PLATENUMBER" },
   { display: "Email", value: "EMAIL" },
@@ -44,6 +46,17 @@ export default function VehiclePage() {
     pageSize: 5,
     pageIndex: 0,
   });
+
+  const [deleteVehicleId, setDeleteVehicleId] = useState("");
+  const {
+    openDialog: openDeleteVehicleDialog,
+    handleToggleDialog: handleToggleDeleteDialog,
+  } = useHandleDialog(false);
+  const handleDeleteVehicle = (vehicleId: string) => {
+    setDeleteVehicleId(vehicleId);
+    handleToggleDeleteDialog();
+  };
+
   //* open alert dialog
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isActiveOrDeActive, setIsActiveOrDeActive] = useState(false);
@@ -279,7 +292,7 @@ export default function VehiclePage() {
               height={0}
               priority
               src={item.plateImage}
-              alt='vehicle'
+              alt="vehicle"
               loader={() => item.plateImage as string}
               unoptimized={true}
               style={{ width: "100px", height: "auto" }}
@@ -304,7 +317,7 @@ export default function VehiclePage() {
             variant={
               item.statusVehicle === "ACTIVE"
                 ? "success"
-                : item.statusVehicle === "PENDING"
+                : item.statusVehicle === "PENDING" || "INACTIVE"
                 ? "warning"
                 : "error"
             }
@@ -313,58 +326,47 @@ export default function VehiclePage() {
           </Chip>
         </TableCell>
         <TableCell>
-          <div className='flex justify-start items-center gap-1 min-w-full'>
-            {(() => {
-              switch (item.statusVehicle) {
-                case "ACTIVE":
-                  return (
-                    <ActionButton
-                      variant='danger'
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenConfirmBox(item.id, false);
-                      }}
-                    >
-                      DEACTIVATE
-                    </ActionButton>
-                  );
-                case "INACTIVE":
-                  return (
-                    <ActionButton
-                      variant='primary'
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenConfirmBox(item.id, true);
-                      }}
-                    >
-                      ACTIVATE
-                    </ActionButton>
-                  );
-                case "PENDING":
-                  return (
-                    <div className='flex justify-between items-center gap-2'>
-                      <ActionButton
-                        variant='primary'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleUpdateVehicle(item);
-                        }}
-                      >
-                        Edit
-                      </ActionButton>
-                      <ActionButton
-                        variant='danger'
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenConfirmBox(item.id, false);
-                        }}
-                      >
-                        DEACTIVATE
-                      </ActionButton>
-                    </div>
-                  );
-              }
-            })()}
+          <div className="flex justify-start items-center gap-2">
+            <ActionButton
+              variant="outlined"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleUpdateVehicle(item);
+              }}
+              color="primary"
+            >
+              Edit
+            </ActionButton>
+            {item.statusVehicle === "ACTIVE" ? (
+              <ActionButton
+                variant="outlined"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenConfirmBox(item.id, false);
+                }}
+                color="warning"
+              >
+                Deactivate
+              </ActionButton>
+            ) : (
+              <ActionButton
+                variant="outlined"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpenConfirmBox(item.id, true);
+                }}
+                color="primary"
+              >
+                Activate
+              </ActionButton>
+            )}
+            <ActionButton
+              variant="outlined"
+              onClick={() => handleDeleteVehicle(item.id)}
+              color="error"
+            >
+              Delete
+            </ActionButton>
           </div>
         </TableCell>
       </TableRow>
@@ -373,6 +375,15 @@ export default function VehiclePage() {
 
   return (
     <>
+      {openDeleteVehicleDialog && (
+        <DeleteVehicle
+          open={openDeleteVehicleDialog}
+          onClose={handleToggleDeleteDialog}
+          vehicleId={deleteVehicleId}
+          refresh={refetch}
+          onOpenChange={handleToggleDeleteDialog}
+        />
+      )}
       {openConfirmDialog && (
         <AlertDialog
           open={openConfirmDialog}
@@ -406,7 +417,7 @@ export default function VehiclePage() {
       <PageTitle>Vehicle List</PageTitle>
       <SearchContainer>
         <SelectFilter
-          label='Vehicle Type'
+          label="Vehicle Type"
           filterAttribute={selectedVehicleTypes}
           listFilter={formatVehicleTypesFilter ?? []}
           setFilterAttribute={handleVehicleTypeChange}
@@ -421,9 +432,9 @@ export default function VehiclePage() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className='min-w-full flex justify-end items-center py-2 gap-5'>
+      <div className="min-w-full flex justify-end items-center py-2 gap-5">
         <ExportToCSVButton data={vehicleList} />
-        <Button variant='outlined' color='primary' onClick={() => refetch()}>
+        <Button variant="outlined" color="primary" onClick={() => refetch()}>
           Refresh
         </Button>
       </div>

@@ -80,20 +80,20 @@ export default function CardTable() {
       <TableRow key={card.id} hover={true}>
         <TableCell
           onClick={() => handleRowClick(card)}
-          className='cursor-pointer'
+          className="cursor-pointer"
         >
           {card.cardNumber}
         </TableCell>
 
         <TableCell
           onClick={() => handleRowClick(card)}
-          className='cursor-pointer'
+          className="cursor-pointer"
         >
           <Chip
             variant={
               card.status === "ACTIVE"
                 ? "success"
-                : card.status === "MISSING"
+                : card.status === "MISSING" || "INACTIVE"
                 ? "warning"
                 : "error"
             }
@@ -103,7 +103,7 @@ export default function CardTable() {
         </TableCell>
         <TableCell
           onClick={() => handleRowClick(card)}
-          className='cursor-pointer'
+          className="cursor-pointer"
         >
           <Chip
             variant={
@@ -118,7 +118,7 @@ export default function CardTable() {
           </Chip>
         </TableCell>
         <TableCell>
-          <div className='flex flex-row space-x-2'>
+          <div className="flex flex-row space-x-2">
             <DeleteCard
               id={card.id}
               refetch={refetch}
@@ -151,7 +151,7 @@ export default function CardTable() {
   }, [data?.data.data]);
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className="flex flex-col gap-5">
       <SearchContainer>
         <SelectFilter
           filterAttribute={filterAttribute}
@@ -163,10 +163,10 @@ export default function CardTable() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-end w-full'>
+      <div className="flex flex-row gap-3 items-center justify-end w-full">
         <Button
-          variant='outlined'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={() => refetch()}
           disabled={false}
         >
@@ -180,7 +180,7 @@ export default function CardTable() {
             onClose={toggleCreateCard}
           />
         )}
-        <Button variant='outlined' color='primary' onClick={toggleCreateCard}>
+        <Button variant="outlined" color="primary" onClick={toggleCreateCard}>
           Add Card
         </Button>
       </div>

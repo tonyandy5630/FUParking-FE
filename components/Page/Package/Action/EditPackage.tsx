@@ -13,7 +13,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Grid,
+  Switch,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
@@ -25,6 +27,8 @@ import {
   EditPackageSchema,
   EditPackageSchemaType,
 } from "@/utils/schemas/package/EditPackageSchema";
+import ComboFormButton from "@/components/Dialog/ComboButton";
+
 
 type EditPackageProps = DialogProps & {
   packageObject: Packages;
@@ -43,16 +47,13 @@ export default function EditPackage({
     defaultValues: {
       packageId: packageObject.id,
       name: packageObject.name,
+      isActive: packageObject.packageStatus === "ACTIVE" ? true : false,
     },
   });
   const {
     reset,
     formState: { errors, isDirty, dirtyFields },
     handleSubmit,
-    setError,
-    setValue,
-    setFocus,
-    getValues,
   } = methods;
 
   const { mutateAsync: updatePackageAsync, isPending } = useMutation({
@@ -94,26 +95,6 @@ export default function EditPackage({
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              sx={{
-                position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-              onClick={handleClose}
-            >
-              <CloseIcon />
-            </Button>
-          </div>
           <DialogTitle>Update package</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleUpdatePackage)}>
@@ -130,7 +111,17 @@ export default function EditPackage({
                     label="PackageId"
                     defaultValue={packageObject.id}
                   />
-                  <FormInput name="isActive" label="IsActive" />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        {...methods.register("isActive")}
+                        defaultChecked={
+                          packageObject.packageStatus === "ACTIVE"
+                        }
+                      />
+                    }
+                    label="Is Active"
+                  />
                 </div>
                 <Grid item xs={12}>
                   <FormInput
@@ -140,23 +131,14 @@ export default function EditPackage({
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <div className="flex justify-between items-center">
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={handleClose}
-                      disabled={isPending}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      type="submit"
-                      disabled={isPending}
-                    >
-                      Update
-                    </Button>
-                  </div>
+                  <DialogActions>
+                    <ComboFormButton
+                      submitLabel="Update"
+                      onClose={onOpenChange}
+                      onReset={reset}
+                      isLoading={false}
+                    />
+                  </DialogActions>
                 </Grid>
               </DialogContent>
             </form>

@@ -61,6 +61,11 @@ export default function VehicleTypeTable() {
   } = useHandleDialog();
 
   const {
+    openDialog: openDeleteVehicleTypeDialog,
+    handleToggleDialog: handleToggleDeleteVehicleTypeDialog,
+  } = useHandleDialog();
+
+  const {
     openDialog: openUpdatePriceItemDialog,
     handleToggleDialog: handleToggleUpdatePriceItemDialog,
   } = useHandleDialog();
@@ -82,6 +87,7 @@ export default function VehicleTypeTable() {
   const [updatePriceTable, setUpdatePriceTable] = useState<PriceTable>();
   const [priceTableStatus, setPriceTableStatus] = useState<PriceTable>();
   const [updatePriceItem, setUpdatePriceItem] = useState<PriceItem[]>();
+  const [deleteVehicleTypeId, setDeleteVehicleTypeId] = useState("");
   const [updatePriceItemPriceTableId, setUpdatePriceItemPriceTableId] =
     useState<string>("");
 
@@ -129,6 +135,11 @@ export default function VehicleTypeTable() {
   const handleUpdatePriceTable = (priceTable: PriceTable) => {
     setUpdatePriceTable(priceTable);
     handleToggleUpdatePriceTableDialog();
+  };
+
+  const handleDeleteVehicleType = (vehicleTypeId: string) => {
+    setDeleteVehicleTypeId(vehicleTypeId);
+    handleToggleDeleteVehicleTypeDialog();
   };
 
   const handlePriceTableExpandClick = (priceTableId: string) => {
@@ -446,12 +457,14 @@ export default function VehicleTypeTable() {
                 disable={disable}
                 value={vehicleType}
               />
-              <DeleteVehicleType
-                id={vehicleType.id}
-                refetch={refetch}
-                setIsPending={setDisable}
-                disable={disable}
-              />
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={() => handleDeleteVehicleType(vehicleType.id)}
+                size="small"
+              >
+                Delete
+              </Button>
             </div>
           </TableCell>
         </TableRow>
@@ -541,6 +554,17 @@ export default function VehicleTypeTable() {
 
   return (
     <>
+      {openDeleteVehicleTypeDialog && (
+        <DeleteVehicleType
+          id={deleteVehicleTypeId}
+          refetch={refetch}
+          setIsPending={setDisable}
+          disable={disable}
+          onOpenChange={handleToggleDeleteVehicleTypeDialog}
+          open={openDeleteVehicleTypeDialog}
+          onClose={handleToggleDeleteVehicleTypeDialog}
+        />
+      )}
       {openUpdatePriceItemDialog && (
         <UpdatePriceItem
           open={openUpdatePriceItemDialog}

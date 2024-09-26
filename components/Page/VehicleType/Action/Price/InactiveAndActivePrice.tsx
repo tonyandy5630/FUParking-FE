@@ -7,9 +7,9 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
+  Typography,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
-import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 
 type InactiveAndActivePriceProps = DialogProps & {
@@ -60,30 +60,10 @@ export default function InactiveAndActivePrice({
     <>
       <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
         <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
-            <Button
-              sx={{
-                position: "absolute",
-                padding: "0",
-                margin: "10px",
-                width: "0",
-                right: "0",
-                top: "0",
-                color: "black",
-                backgroundColor: "white",
-                "&:hover": {
-                  backgroundColor: "white",
-                },
-              }}
-              onClick={onClose}
-            >
-              <CloseIcon />
-            </Button>
-          </div>
           <DialogContent>
-            <DialogContentText>
+            <Typography variant="h6">
               Are you sure you want to change this price plan?
-            </DialogContentText>
+            </Typography>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>

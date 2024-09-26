@@ -1,5 +1,10 @@
 import { ListCardResponse } from "@/types/card.type";
-import { Button } from "@mui/material";
+import {
+  Button,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from "@mui/material";
 import Modal from "@/components/modal/modal";
 import {
   QueryObserverResult,
@@ -53,6 +58,7 @@ export default function ActiveAndDeactiveCard({
             toast.success(
               `Card ${isActive ? "deactivated" : "activated"} successfully`
             );
+            setIsOpen(false);
           },
           onError: () => {
             setIsPending(false);
@@ -60,69 +66,72 @@ export default function ActiveAndDeactiveCard({
             toast.error(
               `Failed to ${isActive ? "deactivate" : "activate"} card`
             );
+            setIsOpen(false);
           },
         }
       );
     } catch (error) {
       setIsPending(false);
       refetch();
+      setIsOpen(false);
     }
   };
 
   return (
     <div>
-      <Button
-        onClick={() => {
-          setIsOpen(true);
-        }}
-        disabled={disable}
-        size="small"
-        variant="outlined"
-        color="error"
-      >
-        {isActive ? "Deactive" : "Active"}
-      </Button>
+      {isActive ? (
+        <Button
+          variant="outlined"
+          size="small"
+          color="error"
+          disabled={disable}
+          onClick={() => setIsOpen(true)}
+        >
+          Deactivate
+        </Button>
+      ) : (
+        <Button
+          variant="outlined"
+          color="primary"
+          size="small"
+          disabled={disable}
+          onClick={() => setIsOpen(true)}
+        >
+          Activate
+        </Button>
+      )}
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className="pl-5 pr-5 pt-10 pb-10">
-          <Button
-            onClick={handleClose}
-            sx={{
-              position: "absolute",
-              padding: "0",
-              margin: "10px",
-              width: "0",
-              right: "0",
-              top: "0",
-              color: "black",
-              border: "1px solid black",
-              backgroundColor: "white",
-              "&:hover": {
-                backgroundColor: "white",
-              },
-            }}
-          >
-            X
-          </Button>
-          <div className="flex flex-col w-full space-y-5 gap-5">
-            Are you sure want to {isActive ? "deactive" : "active"} this card?
-            <div className="flex flex-row gap-5 justify-center">
+        <div className="p-5 flex flex-col">
+          <DialogContent>
+            <Typography variant="h6">
+              Are you sure you want to{" "}
+              {isActive ? <>inactivate</> : <>activate</>} this card?
+            </Typography>
+          </DialogContent>
+          <DialogActions className="flex justify-end mt-5 gap-1">
+            {isActive ? (
               <Button
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  setIsPending(true);
-                  refetch();
-                  setIsOpen(false);
-                  onClick();
-                }}
+                variant="outlined"
+                color="error"
+                onClick={onClick}
+                disabled={false}
               >
-                Yes
+                Deactivate
               </Button>
-              <Button variant="contained" color="primary" onClick={handleClose}>
-                No
+            ) : (
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={onClick}
+                disabled={false}
+              >
+                Activate
               </Button>
-            </div>
-          </div>
+            )}
+            <Button variant="outlined" onClick={handleClose} disabled={false}>
+              Cancel
+            </Button>
+          </DialogActions>
         </div>
       </Modal>
     </div>

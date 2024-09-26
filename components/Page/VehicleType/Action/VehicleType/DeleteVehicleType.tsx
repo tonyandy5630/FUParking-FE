@@ -1,26 +1,31 @@
 import { deleteVehicleTypeAPI } from "@/api/vehicleType";
-import MyDeleteButton from "@/components/DeleteButton";
-import { ListVehicleTypeResponse } from "@/types/vehicleType.type";
-import { Button } from "@mui/material";
+import { DialogProps } from "@/types/dialog.type";
 import {
-  QueryObserverResult,
-  RefetchOptions,
-  useMutation,
-} from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+  Button,
+  DialogActions,
+  DialogContent,
+  Typography,
+} from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import Modal from "@/components/modal/modal";
 import { toast } from "react-toastify";
+
+type DeleteVehicleTypeProps = DialogProps & {
+  id: string;
+  refetch: () => void;
+  setIsPending: (isPending: boolean) => void;
+  disable: boolean;
+};
 
 export default function DeleteVehicleType({
   id,
   refetch,
   setIsPending,
   disable,
-}: {
-  id: string;
-  refetch: () => void;
-  setIsPending: (isPending: boolean) => void;
-  disable: boolean;
-}) {
+  open,
+  onClose,
+  onOpenChange,
+}: DeleteVehicleTypeProps) {
   const deleteVehicleTypeMutation = useMutation({
     mutationKey: ["/types"],
     mutationFn: (id: string) => deleteVehicleTypeAPI(id),
@@ -45,7 +50,28 @@ export default function DeleteVehicleType({
 
   return (
     <>
-      <MyDeleteButton onDelete={onDelete}>DELETE</MyDeleteButton>
+      <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
+        <div className="p-5 flex flex-col">
+          <DialogContent>
+            <Typography variant="h6">
+              Are you sure to delete this vehicle type?
+            </Typography>
+          </DialogContent>
+          <DialogActions className="flex justify-end gap-1">
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={onDelete}
+              disabled={false}
+            >
+              Delete
+            </Button>
+            <Button variant="outlined" onClick={onClose} disabled={false}>
+              Cancel
+            </Button>
+          </DialogActions>
+        </div>
+      </Modal>
     </>
   );
 }
