@@ -68,6 +68,7 @@ export default function DeletePriceTable({
               Cancel
             </Button>
           </DialogActions>
+
         </div>
       </Modal>
     </>

@@ -20,6 +20,7 @@ import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 
+
 export default function CreateVehicleType({
   setIsPending,
   disable,
@@ -67,7 +68,6 @@ export default function CreateVehicleType({
     setIsOpen(false);
     reset();
   };
-
   const onSubmit = async (data: {
     name: string;
     description?: string | undefined;

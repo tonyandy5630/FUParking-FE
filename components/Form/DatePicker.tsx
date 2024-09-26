@@ -39,6 +39,7 @@ const FormDatePicker = React.forwardRef<DatePickerProps<Moment>, Props>(
                     value={inputValue}
                     className="w-full"
                     {...rest}
+
                     label={label}
                     {...props}
                   />
