@@ -1,1 +1,6 @@
-export const VehicleTypeTableHeaders = ["Name", "Description", "Created Date"];
+export const VehicleTypeTableHeaders = [
+  "",
+  "Name",
+  "Description",
+  "Created Date",
+];

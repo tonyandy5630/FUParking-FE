@@ -238,6 +238,7 @@ export default function VehicleTypeTable() {
             <TableCell>{priceItem.applyToHour ?? "NaN"}</TableCell>
             <TableCell>{priceItem.minPrice}</TableCell>
             <TableCell>{priceItem.maxPrice}</TableCell>
+            <TableCell>{priceItem.blockPricing}</TableCell>
           </TableRow>
         </React.Fragment>
       ));
@@ -359,18 +360,20 @@ export default function VehicleTypeTable() {
                       >
                         Refresh
                       </Button>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() =>
-                          handleUpdatePriceItem(
-                            priceItemData?.data?.data ?? [],
-                            priceTable.id
-                          )
-                        }
-                      >
-                        Update Price Item
-                      </Button>
+                      {priceTable.priority !== 1 && (
+                        <Button
+                          variant="outlined"
+                          color="primary"
+                          onClick={() =>
+                            handleUpdatePriceItem(
+                              priceItemData?.data?.data ?? [],
+                              priceTable.id
+                            )
+                          }
+                        >
+                          Update Price Item
+                        </Button>
+                      )}
                     </Grid>
                     <Grid item xs={12}>
                       {priceItemData?.data?.data?.length === 0 ? (
@@ -384,6 +387,7 @@ export default function VehicleTypeTable() {
                             "Apply To",
                             "Min Price",
                             "Max Price",
+                            "BlockPrrice",
                           ]}
                           tableRows={getPriceItemTableRows(
                             priceItemData?.data?.data
