@@ -17,10 +17,15 @@ export const GET_LIST_SESSION_API_URL = (
 export const GET_SESSION_API_URL = (sessionId: string) =>
   `${baseURL}/session/user/history/${sessionId}`;
 
-export const CHECK_OUT_API_URL = `${baseURL}/session/user/checkout`;
+export const CHECK_OUT_API_URL = `${baseURL}/session/checkout/plateNumber`;
 
 export const PAYMENT_API_URL = (cardNumber: string) =>
   `${baseURL}/session/payment?cardNumber=${cardNumber}`;
 
 export const CANCEL_SESSION_API_URL = (sessionId: string) =>
   `${baseURL}/session/${sessionId}/cancel`;
+
+export const GET_PAYMENT_PLATE_NUMBER_API_URL = (
+  plateNumber: string,
+  timeOut: string
+) => `${baseURL}/session/platenumber/${plateNumber}&${timeOut}`;

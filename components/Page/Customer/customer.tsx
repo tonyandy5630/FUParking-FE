@@ -352,7 +352,8 @@ export default function Customer() {
             >
               Delete
             </ActionButton>
-            {vehicle.statusVehicle === "INACTIVE" || "PENDING" ? (
+            {vehicle.statusVehicle === "INACTIVE" ||
+            vehicle.statusVehicle === "PENDING" ? (
               <ActionButton
                 variant="outlined"
                 onClick={() => {

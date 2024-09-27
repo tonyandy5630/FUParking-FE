@@ -344,52 +344,59 @@ export default function ParkingAreaTable() {
           </TableCell>
           <TableCell>
             <div className="flex gap-2">
-              {(() => {
-                switch (area.statusParkingArea) {
-                  case "ACTIVE":
-                    return (
-                      <ActionButton
-                        variant="outlined"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenIsActiveOrDeactiveDialog(area.id, false);
-                        }}
-                        color="error"
-                      >
-                        Deactivate
-                      </ActionButton>
-                    );
-                  case "INACTIVE":
-                    return (
-                      <ActionButton
-                        variant="outlined"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenIsActiveOrDeactiveDialog(area.id, true);
-                        }}
-                        color="primary"
-                      >
-                        Activate
-                      </ActionButton>
-                    );
-                  default:
-                    return <></>;
-                }
-              })()}
-              <ActionButton
-                onClick={() => handleOpenUpdateDialog(area)}
-                variant="outlined"
-                color="primary"
-              >
-                Update
-              </ActionButton>
-              <ActionButton
-                onClick={() => handleDeleteParkingArea(area.id)}
-                variant="outlined"
-                color="error"
-              >
-                Delete
-              </ActionButton>
+              {area.name !== "VIRTUAL" && (
+                <>
+                  {(() => {
+                    switch (area.statusParkingArea) {
+                      case "ACTIVE":
+                        return (
+                          <ActionButton
+                            variant="outlined"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenIsActiveOrDeactiveDialog(
+                                area.id,
+                                false
+                              );
+                            }}
+                            color="error"
+                          >
+                            Deactivate
+                          </ActionButton>
+                        );
+                      case "INACTIVE":
+                        return (
+                          <ActionButton
+                            variant="outlined"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenIsActiveOrDeactiveDialog(area.id, true);
+                            }}
+                            color="primary"
+                          >
+                            Activate
+                          </ActionButton>
+                        );
+                      default:
+                        return <></>;
+                    }
+                  })()}
+                  <ActionButton
+                    onClick={() => handleOpenUpdateDialog(area)}
+                    variant="outlined"
+                    color="primary"
+                  >
+                    Update
+                  </ActionButton>
+                  <ActionButton
+                    onClick={() => handleDeleteParkingArea(area.id)}
+                    variant="outlined"
+                    color="error"
+                  >
+                    Delete
+                  </ActionButton>
+                </>
+              )}
             </div>
           </TableCell>
         </TableRow>

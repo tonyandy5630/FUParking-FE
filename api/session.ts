@@ -2,6 +2,7 @@ import {
   CANCEL_SESSION_API_URL,
   CHECK_OUT_API_URL,
   GET_LIST_SESSION_API_URL,
+  GET_PAYMENT_PLATE_NUMBER_API_URL,
   GET_SESSION_API_URL,
   PAYMENT_API_URL,
 } from "./url/session.url";
@@ -34,11 +35,23 @@ export const listSessionAPI = (
 export const getSessionAPI = (sessionId: string) =>
   http.get<SessionResponse>(GET_SESSION_API_URL(sessionId));
 
-export const checkOutAPI = (body: { plateNumber: string; timeOut: string }) =>
-  http.post<CheckOutResponse>(CHECK_OUT_API_URL, body);
+export const checkOutAPI = (data: {
+  PlateNumber: string;
+  CheckOutTime: string;
+}) =>
+  http.put<CheckOutResponse>(CHECK_OUT_API_URL, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
 export const paymentAPI = (cardNumber: string) =>
   http.post(PAYMENT_API_URL(cardNumber));
 
 export const cancelSessionAPI = (sessionId: string) =>
   http.post(CANCEL_SESSION_API_URL(sessionId));
+
+export const getPaymentPlateNumberAPI = (
+  plateNumber: string,
+  timeOut: string
+) => http.get(GET_PAYMENT_PLATE_NUMBER_API_URL(plateNumber, timeOut));

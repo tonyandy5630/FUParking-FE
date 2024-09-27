@@ -10,6 +10,7 @@ import Loading from "../LoadingPage/Loading";
 import ButtonCancelSession from "./ButtonCancelSession";
 import dynamic from "next/dynamic";
 import logo from "@/public/Bai_Logo.svg";
+import CloseIcon from "@mui/icons-material/Close";
 
 export default function SessionDetail({
   isOpen,
@@ -45,9 +46,8 @@ export default function SessionDetail({
   return (
     <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
       {sessionId ? (
-        <div className='pl-5 pr-5 pt-10 pb-10'>
+        <div className="pl-5 pr-5 pt-10 pb-10">
           <Button
-            onClick={handleClose}
             sx={{
               position: "absolute",
               padding: "0",
@@ -55,23 +55,24 @@ export default function SessionDetail({
               width: "0",
               right: "0",
               top: "0",
-              color: "black",
-              border: "1px solid black",
               backgroundColor: "white",
               "&:hover": {
                 backgroundColor: "white",
               },
             }}
+            className="cursor-pointer"
+            onClick={handleClose}
+            color="error"
           >
-            X
+            <CloseIcon />
           </Button>
           {isLoading && <Loading />}
           {isError && <p>Server Error</p>}
           {isSuccess && (
             <>
-              <div className='p-4 flex flex-row gap-5 min-h-fit'>
-                <div className='mb-4'>
-                  <p className='text-xl font-bold mb-2'>Session Detail</p>
+              <div className="p-4 flex flex-row gap-5 min-h-fit">
+                <div className="mb-4">
+                  <p className="text-xl font-bold mb-2">Session Detail</p>
                   <p>
                     <strong>Session ID:</strong> {data?.data.data?.id}
                   </p>
@@ -122,41 +123,41 @@ export default function SessionDetail({
                     <strong>Status:</strong> {data?.data.data?.status}
                   </p>
                 </div>
-                <div className='flex flex-col gap-5'>
+                <div className="flex flex-col gap-5">
                   <div>
-                    <p className='font-semibold mb-2'>Image In:</p>
+                    <p className="font-semibold mb-2">Image In:</p>
                     {data?.data.data?.imageInUrl && (
                       <Image
                         loader={() => data?.data.data?.imageInUrl as string}
                         src={(data?.data.data?.imageInUrl as string) ?? logo}
-                        alt='session image in'
+                        alt="session image in"
                         width={200}
                         height={200}
-                        className='rounded-lg'
+                        className="rounded-lg"
                       />
                     )}
                   </div>
                   <div>
-                    <p className='font-semibold mb-2'>Image Out:</p>
+                    <p className="font-semibold mb-2">Image Out:</p>
                     {data?.data.data?.imageOutUrl && (
                       <Image
                         loader={() => data?.data.data?.imageOutUrl as string}
                         src={data?.data.data?.imageOutUrl as string}
-                        alt='session image out'
+                        alt="session image out"
                         width={200}
                         height={200}
-                        className='rounded-lg'
+                        className="rounded-lg"
                       />
                     )}
                   </div>
                 </div>
               </div>
-              <div className='w-full justify-center items-center flex gap-5'>
+              <div className="w-full justify-center items-center flex gap-5">
                 {statusSession === "PARKED" && (
                   <>
                     <ButtonCheckOut
                       plateNumber={data?.data.data?.plateNumber as string}
-                      timeOut={getLocalISOString(new Date())}
+                      checkOutTime={getLocalISOString(new Date())}
                       setIsOpen={setIsOpenModal}
                       isOpen={isOpenModal}
                       cardNumber={data?.data.data?.cardNumber as string}
@@ -173,7 +174,7 @@ export default function SessionDetail({
           )}
         </div>
       ) : (
-        <div className='pl-5 pr-5 pt-10 pb-10'>
+        <div className="pl-5 pr-5 pt-10 pb-10">
           <Button
             onClick={handleClose}
             sx={{
