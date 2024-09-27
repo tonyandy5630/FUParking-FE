@@ -28,8 +28,8 @@ import { getPriceTableByVehicleTypeAPI } from "@/api/price";
 import TableNonPage from "@/components/Table/TableNonPage/TableNonPage";
 import { getPriceItemByTableAPI } from "@/api/price-item";
 import { PriceItem } from "@/types/price-item.type";
-import useHandleDialog from "@/hook/useHandleDialog";
 import Loading from "../../LoadingPage/Loading";
+import Chip from "@/components/Chip";
 
 const keys = ["Name", "Description", "Created Date"];
 
@@ -196,7 +196,19 @@ export default function VehicleTypeTableSupervisor() {
             </TableCell>
             <TableCell>{priceTable.name}</TableCell>
             <TableCell>{priceTable.priority}</TableCell>
-            <TableCell>{priceTable.statusPriceTable}</TableCell>
+            <TableCell>
+              <Chip
+                variant={
+                  priceTable.statusPriceTable === "ACTIVE"
+                    ? "success"
+                    : priceTable.statusPriceTable === "INACTIVE"
+                    ? "warning"
+                    : "error"
+                }
+              >
+                {priceTable.statusPriceTable}
+              </Chip>
+            </TableCell>
             <TableCell>
               {priceTable.applyFromDate
                 ? toLocaleDate(priceTable.applyFromDate)

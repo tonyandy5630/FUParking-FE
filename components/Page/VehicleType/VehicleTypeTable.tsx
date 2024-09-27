@@ -38,6 +38,7 @@ import DeletePriceTable from "./Action/Price/DeletePrice";
 import UpdatePrice from "./Action/Price/UpdatePrice";
 import InactiveAndActivePrice from "./Action/Price/InactiveAndActivePrice";
 import UpdatePriceItem from "./Action/PriceItem/UpdatePriceItem";
+import Chip from "@/components/Chip";
 
 const keys = ["Name", "Description", "Created Date"];
 
@@ -276,7 +277,19 @@ export default function VehicleTypeTable() {
             </TableCell>
             <TableCell>{priceTable.name}</TableCell>
             <TableCell>{priceTable.priority}</TableCell>
-            <TableCell>{priceTable.statusPriceTable}</TableCell>
+            <TableCell>
+              <Chip
+                variant={
+                  priceTable.statusPriceTable === "ACTIVE"
+                    ? "success"
+                    : priceTable.statusPriceTable === "INACTIVE"
+                    ? "warning"
+                    : "error"
+                }
+              >
+                {priceTable.statusPriceTable}
+              </Chip>
+            </TableCell>
             <TableCell>
               {priceTable.applyFromDate
                 ? toLocaleDate(priceTable.applyFromDate)
