@@ -43,51 +43,51 @@ export default function OccupancyRate() {
   });
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between">
-      <div className="flex flex-col gap-2">
-        <p>Average session duration per day</p>
-        <p className="font-extrabold">{data?.data.data.toFixed(2)} hours</p>
+    <div className='flex flex-col sm:flex-row items-center justify-between'>
+      <div className='flex flex-col gap-2'>
+        <p>Today average session duration</p>
+        <p className='font-extrabold'>{data?.data.data.toFixed(2)} hours</p>
       </div>
-      <div className="h-px w-full bg-gray-300 sm:hidden mt-5 mb-5"></div>
-      <div className="h-16 w-px bg-gray-300 hidden sm:block"></div>
-      <div className="flex flex-col gap-2">
+      <div className='h-px w-full bg-gray-300 sm:hidden mt-5 mb-5'></div>
+      <div className='h-16 w-px bg-gray-300 hidden sm:block'></div>
+      <div className='flex flex-col gap-2'>
         <p>Total customers</p>
-        <div className="flex items-center justify-between gap-5">
-          <div className="flex">
+        <div className='flex items-center justify-between gap-5'>
+          <div className='flex'>
             <SupervisorAccountIcon />
-            <p className="ml-1 font-extrabold">
+            <p className='ml-1 font-extrabold'>
               {data1?.data.data.totalCustomer}
             </p>
           </div>
-          <div className="flex items-center justify-around">
+          <div className='flex items-center justify-around'>
             <KeyboardDoubleArrowUpRoundedIcon style={{ color: "#00A676" }} />
-            <div className="flex">
-              <p className="font-extrabold">
+            <div className='flex'>
+              <p className='font-extrabold'>
                 {data1?.data.data.totalNewCustomerInMonth}
               </p>
-              <p className="pl-1">in month</p>
+              <p className='pl-1'>in month</p>
             </div>
           </div>
         </div>
       </div>
-      <div className="h-px w-full bg-gray-300 sm:hidden mt-5 mb-5"></div>
-      <div className="h-16 w-px bg-gray-300 hidden sm:block"></div>
-      <div className="flex flex-col gap-2">
+      <div className='h-px w-full bg-gray-300 sm:hidden mt-5 mb-5'></div>
+      <div className='h-16 w-px bg-gray-300 hidden sm:block'></div>
+      <div className='flex flex-col gap-2'>
         <p>Total vehicles</p>
-        <div className="flex items-center justify-between gap-5">
-          <div className="flex">
+        <div className='flex items-center justify-between gap-5'>
+          <div className='flex'>
             <TwoWheelerRoundedIcon />
-            <p className="ml-1 font-extrabold">
+            <p className='ml-1 font-extrabold'>
               {data2?.data.data.totalVehicle}
             </p>
           </div>
-          <div className="flex">
+          <div className='flex'>
             <KeyboardDoubleArrowUpRoundedIcon style={{ color: "#00A676" }} />
-            <div className="flex">
-              <p className="font-extrabold">
+            <div className='flex'>
+              <p className='font-extrabold'>
                 {data2?.data.data.totalNewResgisterVehicleInMonth}
               </p>
-              <p className="pl-1">in month</p>
+              <p className='pl-1'>in month</p>
             </div>
           </div>
         </div>

@@ -18,16 +18,18 @@ export default function Revenue() {
     return `${time} ${date}`;
   };
   return (
-    <div className="flex rounded-md border shadow-lg bg-white items-center justify-around pl-10 pr-10 gap-10 h-full">
-      <div className="flex flex-col items-start justify-center gap-2">
-        <p className="text-wrap">Total revenue today</p>
-        <p className="text-3xl font-extrabold">
+    <div className='flex rounded-md border shadow-lg bg-white items-center justify-around pl-10 pr-10 gap-10 h-full'>
+      <div className='flex flex-col items-start justify-center gap-2'>
+        <p className='text-wrap'>Total revenue today</p>
+        <p className='text-3xl font-extrabold'>
           {Intl.NumberFormat("de-DE").format(data?.data.data)}
         </p>
-        <p style={{ color: "#D9D9D9" }}>Update: {getCurrentDateTime()}</p>
+        <p style={{ color: "#D9D9D9" }}>
+          Last update at: {getCurrentDateTime()}
+        </p>
       </div>
       <p>
-        <Image src={porter} alt="Total revenue" width={200} height={142} />
+        <Image src={porter} alt='Total revenue' width={200} height={142} />
       </p>
     </div>
   );
