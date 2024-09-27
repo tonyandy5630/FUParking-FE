@@ -74,6 +74,8 @@ export default function UpdatePrice({
     setFocus,
     formState,
     control,
+    getValues,
+    watch,
   } = methods;
 
   const handleConfirmClose = () => {
@@ -130,8 +132,17 @@ export default function UpdatePrice({
                   <FormDatePicker
                     name={"applyFromDate"}
                     label='Apply From'
-                    minDate={moment.utc()}
                     required={false}
+                    minDate={
+                      priceTable?.applyFromDate
+                        ? moment(priceTable.applyFromDate)
+                        : moment()
+                    }
+                    maxDate={
+                      watch("applyToDate") !== undefined
+                        ? moment(watch("applyToDate"))
+                        : undefined
+                    }
                     defaultValue={
                       priceTable?.applyFromDate
                         ? moment.utc(priceTable.applyFromDate)
@@ -143,7 +154,12 @@ export default function UpdatePrice({
                   <FormDatePicker
                     name={"applyToDate"}
                     label='Apply To'
-                    minDate={moment.utc()}
+                    minDate={
+                      getValues("applyFromDate") !== undefined ||
+                      getValues("applyFromDate") !== null
+                        ? moment(getValues("applyFromDate"))
+                        : undefined
+                    }
                     required={false}
                     defaultValue={
                       priceTable?.applyToDate

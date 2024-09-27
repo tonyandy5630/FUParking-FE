@@ -143,15 +143,6 @@ export default function CreateVehicleType({
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <FormInput
-                      name='maxPrice'
-                      label='Max Price'
-                      placeholder='Enter max price'
-                      key='maxPrice'
-                      required={false}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={4}>
-                    <FormInput
                       name='minPrice'
                       label='Min Price'
                       placeholder='Enter min price'
@@ -159,6 +150,16 @@ export default function CreateVehicleType({
                       required={true}
                     />
                   </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <FormInput
+                      name='maxPrice'
+                      label='Max Price'
+                      placeholder='Enter max price'
+                      key='maxPrice'
+                      required={false}
+                    />
+                  </Grid>
+
                   <Grid item xs={12}>
                     <DialogActions className='flex justify-end min-w-full'>
                       <ComboFormButton
