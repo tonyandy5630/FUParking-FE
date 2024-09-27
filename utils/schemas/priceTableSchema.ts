@@ -18,13 +18,11 @@ const PriceItemSchema = object({
     .required(REQUIRED_MESSAGE)
     .max(24, "Price must be less than 24"),
   minPrice: number().required(REQUIRED_MESSAGE),
-  maxPrice: number()
-    .required(REQUIRED_MESSAGE)
-    .when("minPrice", ([minPrice], schema) =>
-      minPrice
-        ? schema.min(minPrice, "Max price must be greater than min price")
-        : schema
-    ),
+  maxPrice: number().when("minPrice", ([minPrice], schema) =>
+    minPrice
+      ? schema.min(minPrice, "Max price must be greater than min price")
+      : schema
+  ),
   blockPricing: number()
     .min(0, "Price must be greater than 0")
     .required(REQUIRED_MESSAGE),

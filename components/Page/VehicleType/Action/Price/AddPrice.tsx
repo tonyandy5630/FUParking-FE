@@ -52,6 +52,7 @@ export default function AddPriceTable({
     setError,
     formState,
     getValues,
+    watch,
   } = methods;
 
   const { isDirty, dirtyFields } = formState;
@@ -125,10 +126,13 @@ export default function AddPriceTable({
   if (VehicleTypeId === null) {
     return null;
   }
+  console.log(
+    getValues("applyToDate") !== undefined || getValues("applyToDate") !== null
+  );
   return (
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogTitle>Add New Price Table</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleAddPriceTable)}>
@@ -146,76 +150,88 @@ export default function AddPriceTable({
                     }}
                   >
                     <FormInput
-                      name="vehicleTypeId"
+                      name='vehicleTypeId'
                       value={VehicleTypeId}
                       defaultValue={VehicleTypeId}
                     />
                   </Grid>
                   <Grid xs={12}>
-                    <div className="min-w-full">
+                    <div className='min-w-full'>
                       <FormInput
-                        name="name"
+                        name='name'
                         autoFocus={true}
-                        label="Table name"
-                        placeholder="Table name"
+                        label='Table name'
+                        placeholder='Table name'
                       />
                     </div>
                   </Grid>
                   <Grid xs={6}>
-                    <div className="w-full">
+                    <div className='w-full'>
                       <FormInput
-                        label="Priority"
-                        name="priority"
-                        type="number"
-                        placeholder="Priority"
+                        label='Priority'
+                        name='priority'
+                        type='number'
+                        placeholder='Priority'
                       />
                     </div>
                   </Grid>
                   <Grid xs={6}>
                     <FormDatePicker
                       minDate={moment()}
-                      name="applyFromDate"
-                      label="Apply From"
-                      defaultValue={moment()}
+                      maxDate={
+                        watch("applyToDate") !== undefined
+                          ? moment(watch("applyToDate"))
+                          : undefined
+                      }
+                      name='applyFromDate'
+                      label='Apply From'
+                      required={false}
                     />
                   </Grid>
                   <Grid xs={6}>
                     <FormDatePicker
-                      name="applyToDate"
-                      label="Apply To"
-                      minDate={moment()}
+                      name='applyToDate'
+                      label='Apply To'
+                      minDate={
+                        getValues("applyFromDate") !== undefined ||
+                        getValues("applyFromDate") !== null
+                          ? moment(getValues("applyFromDate"))
+                          : undefined
+                      }
+                      required={false}
                     />
                   </Grid>
                   <Grid xs={12}>
-                    <div className="min-w-full">
+                    <div className='min-w-full'>
                       <FormInput
-                        label="Price per Block"
-                        name="pricePerBlock"
-                        placeholder="Price per Block"
-                        type="number"
-                        endAdornment="VND"
+                        label='Price per Block'
+                        name='pricePerBlock'
+                        placeholder='Price per Block'
+                        type='number'
+                        endAdornment='VND'
                       />
                     </div>
                   </Grid>
                   <Grid xs={6}>
-                    <div className="min-w-full">
+                    <div className='min-w-full'>
                       <FormInput
-                        name="minPrice"
-                        label="Min Price"
-                        placeholder="Min Price"
-                        type="number"
-                        endAdornment="VND"
+                        name='minPrice'
+                        label='Min Price'
+                        placeholder='Min Price'
+                        type='number'
+                        endAdornment='VND'
                       />
                     </div>
                   </Grid>
                   <Grid xs={6}>
-                    <div className="min-w-full">
+                    <div className='min-w-full'>
                       <FormInput
-                        name="maxPrice"
-                        label="Max Price"
-                        placeholder="Max Price"
-                        type="number"
-                        endAdornment="VND"
+                        name='maxPrice'
+                        label='Max Price'
+                        placeholder='Max Price'
+                        type='number'
+                        required={false}
+                        endAdornment='VND'
                       />
                     </div>
                   </Grid>
@@ -227,11 +243,11 @@ export default function AddPriceTable({
                           onChange={handleRegisterPriceItemChange}
                         />
                       }
-                      label="Register Price Item"
+                      label='Register Price Item'
                     />
                   </Grid>
                   {registerPriceItem && (
-                    <div className="flex flex-col gap-5">
+                    <div className='flex flex-col gap-5'>
                       {fields.map((field, index) => (
                         <Grid
                           xs={12}
@@ -242,14 +258,14 @@ export default function AddPriceTable({
                           <Grid xs={1.5}>
                             {index > 0 ? (
                               <IconButton
-                                color="secondary"
+                                color='secondary'
                                 onClick={() => remove(index)}
                               >
                                 <RemoveIcon />
                               </IconButton>
                             ) : (
                               <IconButton
-                                color="primary"
+                                color='primary'
                                 onClick={() =>
                                   append({
                                     blockPricing: 0,
@@ -268,41 +284,42 @@ export default function AddPriceTable({
                             <Grid xs={3.9}>
                               <FormInput
                                 name={`priceItems[${index}].from`}
-                                label="From"
-                                type="number"
-                                placeholder="From"
+                                label='From'
+                                type='number'
+                                placeholder='From'
                               />
                             </Grid>
                             <Grid xs={3.9}>
                               <FormInput
                                 name={`priceItems[${index}].to`}
-                                label="To"
-                                type="number"
-                                placeholder="To"
+                                label='To'
+                                type='number'
+                                placeholder='To'
                               />
                             </Grid>
                             <Grid xs={3.9}>
                               <FormInput
                                 name={`priceItems[${index}].blockPricing`}
-                                label="Block Pricing"
-                                type="number"
-                                placeholder="Block Pricing"
+                                label='Block Pricing'
+                                type='number'
+                                placeholder='Block Pricing'
                               />
                             </Grid>
                             <Grid xs={3.9}>
                               <FormInput
                                 name={`priceItems[${index}].minPrice`}
-                                label="Min Price"
-                                type="number"
-                                placeholder="Min Price"
+                                label='Min Price'
+                                type='number'
+                                placeholder='Min Price'
                               />
                             </Grid>
                             <Grid xs={3.9}>
                               <FormInput
                                 name={`priceItems[${index}].maxPrice`}
-                                label="Max Price"
-                                type="number"
-                                placeholder="Max Price"
+                                label='Max Price'
+                                required={false}
+                                type='number'
+                                placeholder='Max Price'
                               />
                             </Grid>
                           </Grid>
@@ -310,11 +327,11 @@ export default function AddPriceTable({
                       ))}
                     </div>
                   )}
-                  <DialogActions className="flex justify-end min-w-full">
+                  <DialogActions className='flex justify-end min-w-full'>
                     <ComboFormButton
                       onClose={handleClose}
                       onReset={() => reset()}
-                      submitLabel="Create"
+                      submitLabel='Create'
                       isLoading={createTableMutation.isPending}
                     />
                   </DialogActions>
@@ -334,7 +351,7 @@ export default function AddPriceTable({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>
