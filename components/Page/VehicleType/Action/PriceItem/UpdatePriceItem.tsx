@@ -146,6 +146,7 @@ export default function UpdatePriceItem({
                       <FormInput
                         name='priceTableId'
                         label='Price Table Id'
+                        defaultValue={priceTableId}
                         disabled
                       />
                     </Grid>
@@ -255,6 +256,7 @@ export default function UpdatePriceItem({
                         submitLabel='Update'
                         onClose={onOpenChange}
                         onReset={reset}
+                        isDirty={isDirty}
                         isLoading={false}
                       />
                     </DialogActions>
