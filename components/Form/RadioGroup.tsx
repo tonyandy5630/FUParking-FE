@@ -16,9 +16,17 @@ interface Props extends RadioGroupProps {
   name: string;
   options: FormOptions[];
   label: string;
+  required?: boolean;
 }
 
-function FormRadioGroup({ name, defaultValue, options, row, label }: Props) {
+function FormRadioGroup({
+  name,
+  defaultValue,
+  options,
+  row,
+  label,
+  required = true,
+}: Props) {
   const radioOptions = useMemo(() => {
     if (options.length === 0) {
       return [];
@@ -27,6 +35,7 @@ function FormRadioGroup({ name, defaultValue, options, row, label }: Props) {
     return options.map((item) => {
       return (
         <FormControlLabel
+          disabled={item.disabled}
           key={item.value}
           value={item.value}
           control={<Radio />}
@@ -48,10 +57,10 @@ function FormRadioGroup({ name, defaultValue, options, row, label }: Props) {
               return (
                 <FormControl
                   fullWidth
-                  size="small"
+                  size='small'
                   error={errors[name]?.message !== undefined}
                 >
-                  <FormLabel>{label}</FormLabel>
+                  <FormLabel required={required}>{label}</FormLabel>
                   <RadioGroup
                     {...rest}
                     defaultValue={defaultValue ?? ""}

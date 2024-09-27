@@ -109,7 +109,7 @@ export default function UpdatePrice({
         maxWidth='md'
       >
         <div className='p-5 flex flex-col'>
-          <DialogTitle>Update price plan</DialogTitle>
+          <DialogTitle>Update Price Table</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleUpdatePrice)}>
               <DialogContent

@@ -9,6 +9,7 @@ import TextField from "@mui/material/TextField";
 export type FormOptions = {
   name: string;
   value: string | number;
+  disabled?: boolean;
 };
 
 interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {

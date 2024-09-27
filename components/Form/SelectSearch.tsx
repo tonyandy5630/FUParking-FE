@@ -5,11 +5,7 @@ import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-
-export type FormOptions = {
-  name: string;
-  value: string | number;
-};
+import { FormOptions } from "./Select";
 
 interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string;

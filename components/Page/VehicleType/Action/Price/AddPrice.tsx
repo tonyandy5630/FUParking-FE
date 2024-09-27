@@ -30,10 +30,14 @@ import {
   IconButton,
 } from "@mui/material";
 import { Checkbox } from "@mui/material";
+import { PriorityDictionary } from "../../VehicleTypeTable";
+import FormRadioGroup from "@/components/Form/RadioGroup";
+import { FormOptions } from "@/components/Form/Select";
 
 type Props = DialogProps & {
   VehicleTypeId: string | null;
   refetch: () => void;
+  availPriority: PriorityDictionary;
 };
 
 export default function AddPriceTable({
@@ -42,6 +46,7 @@ export default function AddPriceTable({
   onOpenChange,
   VehicleTypeId,
   refetch,
+  availPriority,
 }: Props) {
   const methods = useForm({ resolver: yupResolver(PriceTableTableSchema) });
   const {
@@ -64,6 +69,14 @@ export default function AddPriceTable({
     control,
     name: "priceItems",
   });
+
+  const PriorityOptions: FormOptions[] = useMemo(() => {
+    return Array.from({ length: 5 }, (_, i) => ({
+      name: (i + 1).toString(),
+      value: i + 1,
+      disabled: availPriority[i + 1],
+    }));
+  }, [availPriority]);
 
   const handleRegisterPriceItemChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -123,12 +136,10 @@ export default function AddPriceTable({
       onOpenChange();
     }
   };
+
   if (VehicleTypeId === null) {
     return null;
   }
-  console.log(
-    getValues("applyToDate") !== undefined || getValues("applyToDate") !== null
-  );
   return (
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
@@ -165,13 +176,13 @@ export default function AddPriceTable({
                       />
                     </div>
                   </Grid>
-                  <Grid xs={6}>
+                  <Grid xs={12}>
                     <div className='w-full'>
-                      <FormInput
+                      <FormRadioGroup
                         label='Priority'
                         name='priority'
-                        type='number'
-                        placeholder='Priority'
+                        options={PriorityOptions}
+                        row={true}
                       />
                     </div>
                   </Grid>

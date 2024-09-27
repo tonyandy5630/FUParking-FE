@@ -1,5 +1,5 @@
 import { PaginationType } from "@/types/pagination.type";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useState } from "react";
 
 const defaultPagination: PaginationType = {
   pageSize: 5,
@@ -21,21 +21,24 @@ export default function usePagination({
     pageIndex,
   });
 
-  const handlePageChange = (newPage: number) => {
-    setPagination((prev) => ({ ...prev, pageIndex: newPage }));
-  };
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setPagination((prev) => ({ ...prev, pageIndex: newPage }));
+    },
+    [setPagination]
+  );
 
-  const handleChangeRowsPerPage = (size: number) => {
+  const handleChangeRowsPerPage = useCallback((size: number) => {
     setPagination((prev) => ({
       ...prev,
       pageSize: size,
       pageIndex: 0,
     }));
-  };
+  }, []);
 
-  const goToFirstPage = () => {
+  const goToFirstPage = useCallback(() => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  };
+  }, []);
 
   return {
     pagination,
