@@ -211,6 +211,7 @@ export default function UserTable() {
           userId={selectedUserId}
           isOpen={openDeleteDialog}
           setIsOpen={setOpenDeleteDialog}
+          refetch={refetch}
         />
       )}
       <SearchContainer>

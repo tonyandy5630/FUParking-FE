@@ -23,6 +23,7 @@ import toLocaleDate, { getLocalISOString } from "@/utils/date";
 import dynamic from "next/dynamic";
 import { Moment } from "moment";
 import CustomDatePicker from "@/components/DatePicker";
+import { formatPlateNumber } from "@/utils/plateNumberFormat";
 const initDateFilter = {
   startDate: null,
   endDate: null,
@@ -117,11 +118,11 @@ export default function SessionTable() {
       <TableRow
         key={session.id}
         hover={true}
-        className='cursor-pointer'
+        className="cursor-pointer"
         onClick={() => handleClickOpen(session.id)}
       >
         <TableCell>{session.cardNumber}</TableCell>
-        <TableCell>{session.plateNumber}</TableCell>
+        <TableCell>{formatPlateNumber(session.plateNumber)}</TableCell>
         <TableCell>{toLocaleDate(session.timeIn)}</TableCell>
         <TableCell>
           {session.timeOut ? toLocaleDate(session.timeOut) : ""}
@@ -148,7 +149,7 @@ export default function SessionTable() {
   }, [data?.data.data]);
 
   return (
-    <div className='flex flex-col gap-5'>
+    <div className="flex flex-col gap-5">
       <SearchContainer>
         <SelectFilter
           filterAttribute={filterAttribute}
@@ -156,7 +157,7 @@ export default function SessionTable() {
           listFilter={filterOptions}
         />
         <CustomDatePicker
-          label='From Date'
+          label="From Date"
           value={apiDateFilter.startDate}
           onValueChange={handleFromDateChange}
           maxDate={
@@ -164,7 +165,7 @@ export default function SessionTable() {
           }
         />
         <CustomDatePicker
-          label='To Date'
+          label="To Date"
           value={apiDateFilter.endDate}
           onValueChange={handleToDateChange}
           minDate={
@@ -178,10 +179,10 @@ export default function SessionTable() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className='flex flex-row gap-3 items-center justify-end w-full'>
+      <div className="flex flex-row gap-3 items-center justify-end w-full">
         <Button
-          variant='outlined'
-          color='primary'
+          variant="outlined"
+          color="primary"
           onClick={() => refetch()}
           disabled={false}
         >
