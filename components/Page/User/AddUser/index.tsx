@@ -16,14 +16,19 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useMutation } from "@tanstack/react-query";
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import FormInput from "@/components/Form/Input";
 import FormRadioGroup from "@/components/Form/RadioGroup";
-import { FormOptions } from "@/components/Form/Select";
 import { RoleOptions } from "../UserTable";
 import ComboFormButton from "@/components/Dialog/ComboButton";
+import { IconButton } from "@mui/material";
+const VisibilityOffIcon = dynamic(
+  () => import("@mui/icons-material/VisibilityOff")
+);
+const VisibilityIcon = dynamic(() => import("@mui/icons-material/Visibility"));
+import dynamic from "next/dynamic";
 
 interface Props extends DialogProps {
   successCallback: () => void;
@@ -37,6 +42,7 @@ export default function AddUserDialog({
 }: Props) {
   const { openDialog: openAlertDialog, handleToggleDialog: toggleAlertDialog } =
     useHandleDialog(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const methods = useForm({ resolver: yupResolver(SystemUserSchema) });
   const { reset, handleSubmit } = methods;
@@ -72,6 +78,10 @@ export default function AddUserDialog({
     toggleAlertDialog();
     if (onClose) onClose();
   };
+
+  const handleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
   return (
     <>
       {openAlertDialog && (
@@ -79,12 +89,12 @@ export default function AddUserDialog({
           open={openAlertDialog}
           onCancel={toggleAlertDialog}
           onConfirm={handleConfirmAlertDialog}
-          title="Confirm cancel Add User?"
-          content="Click OK will CLOSE and RESET the form"
+          title='Confirm cancel Add User?'
+          content='Click OK will CLOSE and RESET the form'
           onOpenChange={toggleAlertDialog}
         />
       )}
-      <Dialog open={open} maxWidth="sm" onClose={handleAddUserClose}>
+      <Dialog open={open} maxWidth='sm' onClose={handleAddUserClose}>
         <DialogTitle>Add User</DialogTitle>
         <FormProvider {...methods}>
           <form onSubmit={handleSubmit(handleAddUser)}>
@@ -92,39 +102,48 @@ export default function AddUserDialog({
               <Grid container spacing={2}>
                 <Grid xs={12}>
                   <FormInput
-                    name="email"
-                    label="Email"
-                    placeholder="Enter email"
+                    name='email'
+                    label='Email'
+                    placeholder='Enter email'
                   />
                 </Grid>
                 <Grid xs={12}>
                   <FormInput
-                    name="fullName"
-                    label="Full Name"
-                    placeholder="Enter fullname"
+                    name='fullName'
+                    label='Full Name'
+                    placeholder='Enter fullname'
                   />
                 </Grid>
                 <Grid xs={12}>
                   <FormInput
-                    type="password"
-                    name="password"
-                    label="Password"
-                    placeholder="Enter password"
+                    type={showPassword ? "text" : "password"}
+                    name='password'
+                    label='Password'
+                    placeholder='Enter password'
+                    endAdornment={
+                      <IconButton onClick={() => handleShowPassword()}>
+                        {showPassword ? (
+                          <VisibilityOffIcon />
+                        ) : (
+                          <VisibilityIcon />
+                        )}
+                      </IconButton>
+                    }
                   />
                 </Grid>
                 <Grid>
                   <FormRadioGroup
                     row={true}
                     options={RoleOptions}
-                    name="role"
-                    label="Role"
+                    name='role'
+                    label='Role'
                   />
                 </Grid>
               </Grid>
               <Grid>
                 <DialogActions>
                   <ComboFormButton
-                    submitLabel="Create"
+                    submitLabel='Create'
                     onClose={onOpenChange}
                     onReset={reset}
                     isLoading={isPendingAddUser}
