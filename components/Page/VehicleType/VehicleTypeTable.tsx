@@ -323,7 +323,7 @@ export default function VehicleTypeTable() {
                       </Button>
                       <Button
                         variant='outlined'
-                        color='primary'
+                        color='error'
                         onClick={() => handleDeletePriceTable(priceTable.id)}
                         size='small'
                       >
