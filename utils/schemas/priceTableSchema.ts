@@ -67,7 +67,6 @@ const PriceTableTableSchema = object({
     .required(REQUIRED_MESSAGE),
   maxPrice: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
-    .required(REQUIRED_MESSAGE)
     .min(price.min.value, price.min.message),
   minPrice: number()
     .required(REQUIRED_MESSAGE)
