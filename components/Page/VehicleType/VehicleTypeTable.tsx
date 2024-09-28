@@ -288,7 +288,7 @@ export default function VehicleTypeTable() {
                 <IconButton
                   onClick={() => handlePriceTableExpandClick(priceTable.id)}
                   aria-expanded={priceTableExpandId === priceTable.id}
-                  aria-label='show more'
+                  aria-label="show more"
                 >
                   {priceTableExpandId === priceTable.id ? (
                     <ExpandLessIcon />
@@ -311,44 +311,44 @@ export default function VehicleTypeTable() {
                   : "None"}
               </TableCell>
               <TableCell>
-                <div className='flex flex-row space-x-2'>
+                <div className="flex flex-row space-x-2">
                   {priceTable.priority !== 1 && (
                     <>
                       <Button
-                        variant='outlined'
-                        color='primary'
+                        variant="outlined"
+                        color="primary"
                         onClick={() => handleUpdatePriceTable(priceTable)}
-                        size='small'
+                        size="small"
                       >
                         Update
                       </Button>
                       <Button
-                        variant='outlined'
-                        color='error'
+                        variant="outlined"
+                        color="error"
                         onClick={() => handleDeletePriceTable(priceTable.id)}
-                        size='small'
+                        size="small"
                       >
                         Delete
                       </Button>
                       {priceTable.statusPriceTable === "ACTIVE" ? (
                         <Button
-                          variant='outlined'
-                          color='error'
+                          variant="outlined"
+                          color="error"
                           onClick={() =>
                             handleUpdatePriceTableStatus(priceTable)
                           }
-                          size='small'
+                          size="small"
                         >
                           Inactive
                         </Button>
                       ) : (
                         <Button
-                          variant='outlined'
-                          color='success'
+                          variant="outlined"
+                          color="success"
                           onClick={() =>
                             handleUpdatePriceTableStatus(priceTable)
                           }
-                          size='small'
+                          size="small"
                         >
                           Active
                         </Button>
@@ -365,12 +365,12 @@ export default function VehicleTypeTable() {
               >
                 <Collapse
                   in={priceTableExpandId === priceTable.id}
-                  timeout='auto'
+                  timeout="auto"
                   unmountOnExit
                 >
-                  <Grid container spacing={1} className='py-1'>
+                  <Grid container spacing={1} className="py-1">
                     <Grid item xs={12}>
-                      <Typography variant='h6' component='div'>
+                      <Typography variant="h6" component="div">
                         Price Items
                       </Typography>
                     </Grid>
@@ -379,12 +379,12 @@ export default function VehicleTypeTable() {
                         item
                         xs={12}
                         container
-                        className='gap-1'
-                        justifyContent='flex-end'
+                        className="gap-1"
+                        justifyContent="flex-end"
                       >
                         <Button
-                          variant='outlined'
-                          color='primary'
+                          variant="outlined"
+                          color="primary"
                           onClick={() => priceItemRefetch()}
                           disabled={priceItemIsPending}
                         >
@@ -392,8 +392,8 @@ export default function VehicleTypeTable() {
                         </Button>
                         {priceTable.priority !== 1 && (
                           <Button
-                            variant='outlined'
-                            color='primary'
+                            variant="outlined"
+                            color="primary"
                             onClick={() =>
                               handleUpdatePriceItem(
                                 priceItemData?.data?.data ?? [],
@@ -407,7 +407,7 @@ export default function VehicleTypeTable() {
                       </Grid>
                       <Grid item xs={12}>
                         {priceItemData?.data?.data?.length === 0 ? (
-                          <Typography variant='body1' component='div'>
+                          <Typography variant="body1" component="div">
                             No price item
                           </Typography>
                         ) : (
@@ -417,7 +417,7 @@ export default function VehicleTypeTable() {
                               "Apply To",
                               "Min Price",
                               "Max Price",
-                              "BlockPrrice",
+                              "Price per block",
                             ]}
                             tableRows={getPriceItemTableRows(
                               priceItemData?.data?.data
@@ -471,7 +471,7 @@ export default function VehicleTypeTable() {
                 handleExpandClick(vehicleType.id);
               }}
               aria-expanded={vehicleTypeExpandId === vehicleType.id}
-              aria-label='show more'
+              aria-label="show more"
             >
               {vehicleTypeExpandId === vehicleType.id ? (
                 <ExpandLessIcon />
@@ -484,7 +484,7 @@ export default function VehicleTypeTable() {
           <TableCell>{vehicleType.description ?? "Nan"}</TableCell>
           <TableCell>{toVNDateString(vehicleType.createDatetime)}</TableCell>
           <TableCell>
-            <div className='flex flex-row space-x-2'>
+            <div className="flex flex-row space-x-2">
               <EditVehicleType
                 id={vehicleType.id}
                 refetch={refetch}
@@ -493,10 +493,10 @@ export default function VehicleTypeTable() {
                 value={vehicleType}
               />
               <Button
-                variant='outlined'
-                color='error'
+                variant="outlined"
+                color="error"
                 onClick={() => handleDeleteVehicleType(vehicleType.id)}
-                size='small'
+                size="small"
               >
                 Delete
               </Button>
@@ -507,12 +507,12 @@ export default function VehicleTypeTable() {
           <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
             <Collapse
               in={vehicleTypeExpandId === vehicleType.id}
-              timeout='auto'
+              timeout="auto"
               unmountOnExit
             >
-              <Grid container spacing={1} className='py-1'>
+              <Grid container spacing={1} className="py-1">
                 <Grid item xs={12}>
-                  <Typography variant='h6' component='div'>
+                  <Typography variant="h6" component="div">
                     Price Tables
                   </Typography>
                 </Grid>
@@ -521,20 +521,20 @@ export default function VehicleTypeTable() {
                     item
                     xs={12}
                     container
-                    className='gap-5'
-                    justifyContent='flex-end'
+                    className="gap-5"
+                    justifyContent="flex-end"
                   >
                     <Button
-                      variant='outlined'
-                      color='primary'
+                      variant="outlined"
+                      color="primary"
                       onClick={() => priceTableRefetch()}
                       disabled={priceTableIsPending}
                     >
                       Refresh
                     </Button>
                     <Button
-                      variant='contained'
-                      color='primary'
+                      variant="contained"
+                      color="primary"
                       onClick={() => handleAddPriceTable(vehicleType.id)}
                       disabled={priceTableIsPending}
                     >
@@ -543,7 +543,7 @@ export default function VehicleTypeTable() {
                   </Grid>
                   <Grid item xs={12}>
                     {priceTableData?.data?.data?.length === 0 ? (
-                      <Typography variant='body1' component='div'>
+                      <Typography variant="body1" component="div">
                         No price table
                       </Typography>
                     ) : (
@@ -648,7 +648,7 @@ export default function VehicleTypeTable() {
           onOpenChange={handletoggleCreateDialog}
         />
       )}
-      <div className='flex flex-col gap-5'>
+      <div className="flex flex-col gap-5">
         <SearchContainer>
           <SelectFilter
             filterAttribute={filterAttribute}
@@ -660,10 +660,10 @@ export default function VehicleTypeTable() {
             setInputValue={handleSearchTextChange}
           />
         </SearchContainer>
-        <div className='flex flex-row gap-3 items-center justify-end w-full'>
+        <div className="flex flex-row gap-3 items-center justify-end w-full">
           <Button
-            variant='outlined'
-            color='primary'
+            variant="outlined"
+            color="primary"
             onClick={() => refetch()}
             disabled={false}
           >
