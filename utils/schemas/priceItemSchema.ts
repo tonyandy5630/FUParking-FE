@@ -22,9 +22,7 @@ const PriceItemSchema = object({
         : schema;
     })
     .required(REQUIRED_MESSAGE),
-  maxPrice: number()
-    .min(price.min.value, price.min.message)
-    .required(REQUIRED_MESSAGE),
+  maxPrice: number().min(price.min.value, price.min.message),
   minPrice: number()
     .min(price.min.value, price.min.message)
     .when("maxPrice", ([maxPrice], schema) =>
