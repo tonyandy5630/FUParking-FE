@@ -166,7 +166,7 @@ export default function PackageTable() {
     }
 
     return packages.map((packs: Packages, index) => (
-      <TableRow key={packs.id} hover={true} className="cursor-pointer">
+      <TableRow key={packs.id} hover={true} className='cursor-pointer'>
         <TableCell>{packs.name}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.coinAmount))}</TableCell>
         <TableCell>{formatPrice(parseInt(packs.extraCoin))}</TableCell>
@@ -175,7 +175,7 @@ export default function PackageTable() {
             ? `${packs.expPackage} days`
             : `${packs.expPackage} day`}
         </TableCell>
-        <TableCell>{formatPrice(parseInt(packs.price))}</TableCell>
+        <TableCell>{formatPrice(parseInt(packs.price), true)}</TableCell>
         <TableCell>
           <Chip
             variant={packs.packageStatus === "ACTIVE" ? "success" : "error"}
@@ -185,22 +185,22 @@ export default function PackageTable() {
         </TableCell>
         <TableCell>{packs.createDate}</TableCell>
         <TableCell>
-          <div className="flex gap-2">
+          <div className='flex gap-2'>
             {packs.packageStatus === "ACTIVE" ? (
               <ActionButton
-                variant="outlined"
+                variant='outlined'
                 onClick={(e) => {
                   e.stopPropagation();
                   handleClickActiveOrDeactivate(packs);
                 }}
-                color="error"
+                color='error'
               >
                 Deactivate
               </ActionButton>
             ) : (
               <ActionButton
-                variant="outlined"
-                color="primary"
+                variant='outlined'
+                color='primary'
                 onClick={async (e) => {
                   e.stopPropagation();
                   handleClickActiveOrDeactivate(packs);
@@ -210,8 +210,8 @@ export default function PackageTable() {
               </ActionButton>
             )}
             <ActionButton
-              variant="outlined"
-              color="error"
+              variant='outlined'
+              color='error'
               onClick={(e) => {
                 e.stopPropagation();
                 handleDeletePackage(packs.id);
@@ -220,12 +220,12 @@ export default function PackageTable() {
               Delete
             </ActionButton>
             <ActionButton
-              variant="outlined"
+              variant='outlined'
               onClick={(e) => {
                 e.stopPropagation();
                 handleEditPackage(packs);
               }}
-              color="primary"
+              color='primary'
             >
               Edit
             </ActionButton>
@@ -300,11 +300,11 @@ export default function PackageTable() {
         />
       </SearchContainer>
       <ActionArea>
-        <div className="flex gap-2 items-center justify-end w-full py-2">
-          <Button variant="outlined" onClick={() => toggleAddDialog()}>
+        <div className='flex gap-2 items-center justify-end w-full py-2'>
+          <Button variant='outlined' onClick={() => toggleAddDialog()}>
             New Package
           </Button>
-          <Button variant="outlined" onClick={() => refetch()}>
+          <Button variant='outlined' onClick={() => refetch()}>
             Refresh
           </Button>
         </div>

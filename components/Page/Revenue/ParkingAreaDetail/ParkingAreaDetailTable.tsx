@@ -51,7 +51,7 @@ export default function ParkingAreaDetailTable({ data }: Props) {
           {detail.paymentMethod.toLowerCase()}
         </TableCell>
         {getGatesRevenue(detail.gates)}
-        <TableCell>{formatPrice(detail.total)}</TableCell>
+        <TableCell>{formatPrice(detail.total, true)}</TableCell>
       </TableRow>
     ));
   }, [data, getGatesRevenue]);

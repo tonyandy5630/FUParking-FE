@@ -5,4 +5,4 @@ import { AuthResponse } from "@/types/auth.type";
 export const loginAPI = (body: { email: string; password: string }) =>
   http.post<AuthResponse>(LOGIN_API_URL, body);
 
-export const roleAPI = () => http.get<AuthResponse>(ROLE_API_URL);
+export const roleAPI = ({}) => http.get<AuthResponse>(ROLE_API_URL);

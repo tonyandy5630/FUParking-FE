@@ -38,6 +38,7 @@ import DeletePriceTable from "./Action/Price/DeletePrice";
 import UpdatePrice from "./Action/Price/UpdatePrice";
 import InactiveAndActivePrice from "./Action/Price/InactiveAndActivePrice";
 import UpdatePriceItem from "./Action/PriceItem/UpdatePriceItem";
+import { formatPrice } from "@/utils/price";
 export interface PriorityDictionary {
   [key: number]: boolean;
 }
@@ -241,9 +242,9 @@ export default function VehicleTypeTable() {
           <TableRow hover={true}>
             <TableCell>{priceItem.applyFromHour ?? "NaN"}</TableCell>
             <TableCell>{priceItem.applyToHour ?? "NaN"}</TableCell>
-            <TableCell>{priceItem.minPrice}</TableCell>
-            <TableCell>{priceItem.maxPrice}</TableCell>
-            <TableCell>{priceItem.blockPricing}</TableCell>
+            <TableCell>{formatPrice(priceItem.minPrice, true)}</TableCell>
+            <TableCell>{formatPrice(priceItem.maxPrice, true)}</TableCell>
+            <TableCell>{formatPrice(priceItem.blockPricing, true)}</TableCell>
           </TableRow>
         </React.Fragment>
       ));
@@ -301,12 +302,12 @@ export default function VehicleTypeTable() {
               <TableCell>{priceTable.statusPriceTable}</TableCell>
               <TableCell>
                 {priceTable.applyFromDate
-                  ? toLocaleDate(priceTable.applyFromDate)
+                  ? toVNDateString(priceTable.applyFromDate)
                   : "None"}
               </TableCell>
               <TableCell>
                 {priceTable.applyToDate
-                  ? toLocaleDate(priceTable.applyToDate)
+                  ? toVNDateString(priceTable.applyToDate)
                   : "None"}
               </TableCell>
               <TableCell>

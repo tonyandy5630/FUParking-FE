@@ -18,11 +18,12 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
-import FormSelectSearch, { FormOptions } from "@/components/Form/SelectSearch";
+import FormSelectSearch from "@/components/Form/SelectSearch";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 import FormInput from "@/components/Form/Input";
 import { toast } from "react-toastify";
 import { updateVehicleAPI } from "@/api/vehicle";
+import { FormOptions } from "@/components/Form/Select";
 
 type EditVehicleProps = DialogProps & {
   refresh: () => void;
@@ -109,7 +110,7 @@ export default function EditVehicle({
   return (
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogTitle>Update vehicle information</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleUpdateVehicle)}>
@@ -123,7 +124,7 @@ export default function EditVehicle({
                 <Grid item xs={12}>
                   <FormInput
                     name={"plateNumber"}
-                    label="Plate Number"
+                    label='Plate Number'
                     disabled={isLoading}
                     defaultValue={EditVehicleForm?.plateNumber}
                   />
@@ -131,7 +132,7 @@ export default function EditVehicle({
                 <Grid item xs={12}>
                   <FormSelectSearch
                     name={"vehicleTypeId"}
-                    label="Vehicle Type"
+                    label='Vehicle Type'
                     options={vehicleTypesOptions}
                     disabled={isLoading}
                     value={EditVehicleForm?.vehicleTypeId}
@@ -140,7 +141,7 @@ export default function EditVehicle({
                 <Grid item xs={12}>
                   <DialogActions>
                     <ComboFormButton
-                      submitLabel="Create"
+                      submitLabel='Create'
                       onClose={onOpenChange}
                       onReset={reset}
                       isLoading={false}
@@ -162,7 +163,7 @@ export default function EditVehicle({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

@@ -1,6 +1,7 @@
 "use client";
 import { getTotalRevenue } from "@/api/statistic";
 import porter from "@/public/Bai_poster.png";
+import { formatPrice } from "@/utils/price";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 
@@ -22,7 +23,7 @@ export default function Revenue() {
       <div className='flex flex-col items-start justify-center gap-2'>
         <p className='text-wrap'>Total revenue today</p>
         <p className='text-3xl font-extrabold'>
-          {Intl.NumberFormat("de-DE").format(data?.data.data)}
+          {formatPrice(data?.data.data, true)}
         </p>
         <p style={{ color: "#D9D9D9" }}>
           Last update at: {getCurrentDateTime()}

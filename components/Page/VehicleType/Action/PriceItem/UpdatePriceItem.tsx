@@ -187,7 +187,7 @@ export default function UpdatePriceItem({
                         <Grid item xs={2.4}>
                           <FormInput
                             name={`priceItems[${index}].blockPricing`}
-                            label='Block Pricing'
+                            label='Price per Block'
                             defaultValue={field.blockPricing}
                             error={
                               errors.priceItems

@@ -22,6 +22,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import CustomDatePicker from "@/components/DatePicker";
 import { Moment } from "moment";
 import { getLocalISOString } from "@/utils/date";
+import { formatPrice } from "@/utils/price";
 
 type FilterOption = {
   display: string;
@@ -118,7 +119,9 @@ export default function TransactionTable() {
           {transaction.packageName === "" ? "None" : transaction.packageName}
         </TableCell>
         <TableCell>
-          {transaction.amount === "" ? "None" : transaction.amount}
+          {transaction.amount === ""
+            ? "None"
+            : formatPrice(parseInt(transaction.amount), true)}
         </TableCell>
         <TableCell>{transaction.transactionDescription}</TableCell>
         <TableCell>
@@ -146,7 +149,7 @@ export default function TransactionTable() {
           listFilter={filterOptions}
         />
         <CustomDatePicker
-          label="From Date"
+          label='From Date'
           value={apiDateFilter.startDate}
           onValueChange={handleFromDateChange}
           maxDate={
@@ -154,7 +157,7 @@ export default function TransactionTable() {
           }
         />
         <CustomDatePicker
-          label="To Date"
+          label='To Date'
           value={apiDateFilter.endDate}
           onValueChange={handleToDateChange}
           minDate={
@@ -168,8 +171,8 @@ export default function TransactionTable() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className="flex flex-row gap-3 items-center justify-end w-full py-2">
-        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+      <div className='flex flex-row gap-3 items-center justify-end w-full py-2'>
+        <Button variant='outlined' color='primary' onClick={() => refetch()}>
           Refresh
         </Button>
       </div>
