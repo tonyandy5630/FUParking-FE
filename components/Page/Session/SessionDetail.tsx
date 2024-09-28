@@ -11,6 +11,7 @@ import ButtonCancelSession from "./ButtonCancelSession";
 import dynamic from "next/dynamic";
 import logo from "@/public/Bai_Logo.svg";
 import CloseIcon from "@mui/icons-material/Close";
+import { formatPlateNumber } from "@/utils/plateNumberFormat";
 import { Typography } from "@mui/material";
 
 export default function SessionDetail({
@@ -94,7 +95,7 @@ export default function SessionDetail({
                   </p>
                   <p>
                     <strong>Plate Number:</strong>{" "}
-                    {data?.data.data?.plateNumber}
+                    {formatPlateNumber(data?.data.data?.plateNumber as string)}
                   </p>
                   <p>
                     <strong>Check In Staff:</strong>{" "}

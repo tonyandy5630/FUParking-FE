@@ -9,6 +9,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import Modal from "@/components/modal/modal";
 import { toast } from "react-toastify";
+import { on } from "events";
 
 type DeleteVehicleTypeProps = DialogProps & {
   id: string;
@@ -41,10 +42,13 @@ export default function DeleteVehicleType({
           toast.success("Vehicle type deleted successfully");
           refetch();
           setIsPending(false);
+          onOpenChange();
         },
       });
     } catch (error) {
       setIsPending(false);
+      toast.error("Failed to delete vehicle type");
+      onOpenChange();
     }
   };
 

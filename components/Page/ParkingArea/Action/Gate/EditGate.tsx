@@ -1,5 +1,4 @@
 import { deleteGateAPI, updateGateAPI } from "@/api/gate";
-import { getAllParkingAreaAPI } from "@/api/parkingArea";
 import Modal from "@/components/modal/modal";
 import { DialogProps } from "@/types/dialog.type";
 import EditGateSchema, {
@@ -19,7 +18,6 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import FormInput from "@/components/Form/Input";
-import FormSelect from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 
 type EditGateProps = DialogProps & {
@@ -69,11 +67,6 @@ export default function EditGate({
     mutationFn: updateGateAPI,
   });
 
-  const { data: parkingAreaOption, isLoading: parkingAreaLoading } = useQuery({
-    queryKey: ["/parkingArea/options"],
-    queryFn: async () => await getAllParkingAreaAPI(),
-  });
-
   const handleConfirmClose = () => {
     setShowConfirmDialog(false);
     onClose && onClose();
@@ -100,7 +93,7 @@ export default function EditGate({
   return (
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className='p-5 flex flex-col'>
+        <div className="p-5 flex flex-col">
           <DialogTitle>Update gate information</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleEditGate)}>
@@ -113,38 +106,32 @@ export default function EditGate({
               >
                 <Grid item xs={12}>
                   <FormInput
-                    name='name'
-                    label='Name'
+                    name="name"
+                    label="Name"
                     defaultValue={EditGateForm?.name}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <FormInput
-                    name='description'
-                    label='Description'
+                    name="description"
+                    label="Description"
                     required={false}
                     defaultValue={EditGateForm?.description}
                   />
                 </Grid>
-                <Grid item xs={12}>
-                  <FormSelect
-                    name='parkingAreaId'
-                    label='Parking Area'
-                    options={
-                      parkingAreaLoading
-                        ? [{ name: "Loading...", value: "" }]
-                        : parkingAreaOption?.data?.data?.map((item) => ({
-                            name: item.name,
-                            value: item.id,
-                          })) || []
-                    }
-                    defaultValue={EditGateForm?.parkingAreaId}
-                  />
-                </Grid>
+                <div className="hidden">
+                  <Grid item xs={12}>
+                    <FormInput
+                      name="parkingAreaId"
+                      label="Parking Area"
+                      defaultValue={EditGateForm?.parkingAreaId}
+                    />
+                  </Grid>
+                </div>
                 <Grid item xs={12}>
                   <DialogActions>
                     <ComboFormButton
-                      submitLabel='Update'
+                      submitLabel="Update"
                       onClose={onOpenChange}
                       onReset={reset}
                       isLoading={false}
@@ -166,7 +153,7 @@ export default function EditGate({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color='primary'>
+          <Button onClick={handleConfirmClose} color="primary">
             Confirm
           </Button>
         </DialogActions>

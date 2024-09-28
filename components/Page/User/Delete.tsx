@@ -14,10 +14,12 @@ export default function Delete({
   userId,
   setIsOpen,
   isOpen,
+  refetch,
 }: {
   userId: string;
   setIsOpen: (isOpen: boolean) => void;
   isOpen: boolean;
+  refetch: () => void;
 }) {
   const [isPending, setIsPending] = useState(false);
 
