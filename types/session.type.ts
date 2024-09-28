@@ -11,7 +11,9 @@ export interface SessionProps {
   gateOutName: string;
   plateNumber: string;
   imageInUrl: string;
+  imageInBodyUrl: string;
   imageOutUrl: string;
+  imageOutBodyUrl: string;
   timeIn: string;
   timeOut: string;
   mode: string;
