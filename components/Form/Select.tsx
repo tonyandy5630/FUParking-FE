@@ -33,11 +33,11 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
                     fullWidth
                     size='small'
                     error={errors[name]?.message !== undefined}
-                    required={required}
                   >
                     <TextField
                       select
                       size='small'
+                      required={required}
                       // defaultValue={props.defaultValue ?? ""}
                       label={label}
                       {...field}
