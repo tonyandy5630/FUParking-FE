@@ -64,7 +64,8 @@ export default function AddPackageDialog({
   };
 
   const handleIncrementClick = (value: number) => {
-    const exp = getValues("expPackage");
+    let exp = getValues("expPackage");
+    if (!exp || exp === null) exp = 0;
     const newExp = incrementValue(exp, value);
     setValue("expPackage", newExp);
   };
@@ -139,6 +140,7 @@ export default function AddPackageDialog({
                     <FormInput
                       type='number'
                       name='extraCoin'
+                      required={false}
                       label='Extra coin package'
                       placeholder='Enter extra coin'
                     />
@@ -148,6 +150,7 @@ export default function AddPackageDialog({
                   <div className='min-w-full'>
                     <FormInput
                       name='expPackage'
+                      required={false}
                       label='Extra coin duration'
                       placeholder='Enter extra coin duration'
                       endAdornment='Days'
