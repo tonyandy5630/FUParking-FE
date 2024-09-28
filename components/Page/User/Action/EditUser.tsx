@@ -23,6 +23,12 @@ import { toast } from "react-toastify";
 import FormInput from "@/components/Form/Input";
 import FormSelect from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
+import { IconButton } from "@mui/material";
+const VisibilityOffIcon = dynamic(
+  () => import("@mui/icons-material/VisibilityOff")
+);
+const VisibilityIcon = dynamic(() => import("@mui/icons-material/Visibility"));
+import dynamic from "next/dynamic";
 
 type EditUserProps = DialogProps & {
   user: User | undefined;
@@ -46,6 +52,7 @@ export default function EditUser({
       password: "",
     },
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const editUserMuation = useMutation({
     mutationKey: ["/update-user"],
@@ -94,10 +101,14 @@ export default function EditUser({
     } catch (error) {}
   };
 
+  const handleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogTitle>Edit User Information</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleEditUser)}>
@@ -108,11 +119,11 @@ export default function EditUser({
                 }}
               >
                 <Grid container spacing={2}>
-                  <div className="hidden">
+                  <div className='hidden'>
                     <Grid item xs={12}>
                       <FormInput
-                        name="id"
-                        label="Id"
+                        name='id'
+                        label='Id'
                         disabled
                         defaultValue={user?.id}
                       />
@@ -120,22 +131,22 @@ export default function EditUser({
                   </div>
                   <Grid item xs={12}>
                     <FormInput
-                      name="fullName"
-                      label="Full Name"
+                      name='fullName'
+                      label='Full Name'
                       defaultValue={user?.fullName}
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <FormInput
-                      name="email"
-                      label="Email"
+                      name='email'
+                      label='Email'
                       defaultValue={user?.email}
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <FormSelect
-                      name="roleId"
-                      label="Role"
+                      name='roleId'
+                      label='Role'
                       options={
                         roleIsPending
                           ? [{ name: "Loading...", value: "" }]
@@ -150,16 +161,26 @@ export default function EditUser({
                   </Grid>
                   <Grid item xs={12}>
                     <FormInput
-                      name="password"
-                      label="Password"
-                      type="password"
-                      placeholder="Enter new password"
+                      type={showPassword ? "text" : "password"}
+                      name='password'
+                      required={false}
+                      label='New Password'
+                      placeholder='Enter new password'
+                      endAdornment={
+                        <IconButton onClick={() => handleShowPassword()}>
+                          {showPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      }
                     />
                   </Grid>
                   <Grid item xs={12}>
                     <DialogActions>
                       <ComboFormButton
-                        submitLabel="Update"
+                        submitLabel='Update'
                         onClose={onOpenChange}
                         onReset={reset}
                         isLoading={false}
@@ -182,7 +203,7 @@ export default function EditUser({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

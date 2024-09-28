@@ -99,7 +99,7 @@ export default function EditCustomer({
   return (
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogTitle>Update customer information</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleEditCustomer)}>
@@ -113,7 +113,7 @@ export default function EditCustomer({
                 <Grid item xs={12}>
                   <FormInput
                     name={"fullName"}
-                    label="Full Name"
+                    label='Full Name'
                     disabled={customerTypesLoading}
                     defaultValue={EditCustomerForm?.fullName}
                   />
@@ -121,7 +121,7 @@ export default function EditCustomer({
                 <Grid item xs={12}>
                   <FormInput
                     name={"email"}
-                    label="Email"
+                    label='Email'
                     disabled={customerTypesLoading}
                     defaultValue={EditCustomerForm?.email}
                   />
@@ -129,7 +129,8 @@ export default function EditCustomer({
                 <Grid item xs={12}>
                   <FormSelectSearch
                     name={"customerTypeId"}
-                    label="Customer Type"
+                    label='Customer Type'
+                    required={true}
                     options={
                       customerTypesLoading
                         ? [{ name: "Loading...", value: "" }]
@@ -145,7 +146,7 @@ export default function EditCustomer({
                 <Grid item xs={12}>
                   <DialogActions>
                     <ComboFormButton
-                      submitLabel="Update"
+                      submitLabel='Update'
                       onClose={onOpenChange}
                       onReset={reset}
                       isLoading={false}
@@ -167,7 +168,7 @@ export default function EditCustomer({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

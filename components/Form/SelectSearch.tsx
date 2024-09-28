@@ -5,11 +5,7 @@ import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-
-export type FormOptions = {
-  name: string;
-  value: string | number;
-};
+import { FormOptions } from "./Select";
 
 interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string;
@@ -19,7 +15,7 @@ interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 const FormSelectSearch = React.forwardRef<HTMLSelectElement, Props>(
-  ({ label, error, options, name, ...props }, ref) => {
+  ({ label, error, options, name, required = true, ...props }, ref) => {
     return (
       <ConnectForm>
         {({
@@ -44,7 +40,7 @@ const FormSelectSearch = React.forwardRef<HTMLSelectElement, Props>(
                 return (
                   <FormControl
                     fullWidth
-                    size="small"
+                    size='small'
                     error={errors[name]?.message !== undefined}
                   >
                     <Autocomplete
@@ -63,7 +59,8 @@ const FormSelectSearch = React.forwardRef<HTMLSelectElement, Props>(
                         <TextField
                           {...params}
                           label={label}
-                          size="small"
+                          required={required}
+                          size='small'
                           error={errors[name]?.message !== undefined}
                         />
                       )}

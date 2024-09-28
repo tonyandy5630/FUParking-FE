@@ -110,47 +110,52 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: DialogProps) {
             >
               <Grid container spacing={2}>
                 <Grid xs={12}>
-                  <div className="min-w-full">
+                  <div className='min-w-full'>
                     <FormInput
-                      name="name"
+                      name='name'
                       autoFocus={true}
-                      label="Parking Area Name"
-                      placeholder="Enter parking area name"
+                      label='Parking Area Name'
+                      placeholder='Enter parking area name'
                     />
                   </div>
                 </Grid>
                 <Grid xs={12}>
                   <FormInput
-                    name="description"
+                    name='description'
                     multiline={true}
-                    label="Description"
+                    required={false}
+                    label='Description'
                     minRow={3}
-                    placeholder="Enter Description"
+                    placeholder='Enter Description'
                   />
                 </Grid>
                 <Grid xs={6}>
-                  <div className="min-w-full">
+                  <div className='min-w-full'>
                     <FormInput
-                      name="maxCapacity"
-                      type="number"
-                      label="Estimate Maximum Capacity"
-                      placeholder="Enter Maximum Capacity"
+                      name='maxCapacity'
+                      type='number'
+                      label='Estimate Maximum Capacity'
+                      placeholder='Enter Maximum Capacity'
                     />
                   </div>
                 </Grid>
                 <Grid xs={6}>
-                  <div className="min-w-full">
-                    <FormSelect name="mode" label="Mode" options={MODES} />
+                  <div className='min-w-full'>
+                    <FormSelect
+                      name='mode'
+                      label='Price Mode'
+                      options={MODES}
+                    />
                   </div>
                 </Grid>
                 <Grid xs={12}>
-                  <div className="min-w-full">
+                  <div className='min-w-full'>
                     <FormInput
-                      name="block"
-                      type="number"
-                      label="Block"
-                      placeholder="Enter Block"
-                      endAdornment="Minutes"
+                      name='block'
+                      type='number'
+                      label='Block'
+                      placeholder='Enter Block'
+                      endAdornment='Minutes'
                       positive={true}
                       minLength={10}
                       maxLength={100000}
@@ -165,7 +170,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: DialogProps) {
                         onChange={handleRegisterGateChange}
                       />
                     }
-                    label="Register Gate"
+                    label='Register Gate'
                   />
                 </Grid>
                 {registerGate && (
@@ -181,14 +186,14 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: DialogProps) {
                         <Grid xs={1.5}>
                           {index > 0 ? (
                             <IconButton
-                              color="secondary"
+                              color='secondary'
                               onClick={() => remove(index)}
                             >
                               <RemoveIcon />
                             </IconButton>
                           ) : (
                             <IconButton
-                              color="primary"
+                              color='primary'
                               onClick={() =>
                                 append({
                                   name: "",
@@ -204,15 +209,15 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: DialogProps) {
                           <Grid xs={12}>
                             <FormInput
                               name={`gates[${index}].name`}
-                              label="Gate Name"
-                              placeholder="Enter gate name"
+                              label='Gate Name'
+                              placeholder='Enter gate name'
                             />
                           </Grid>
                           <Grid xs={12}>
                             <FormInput
                               name={`gates[${index}].description`}
-                              label="Description"
-                              placeholder="Enter Description"
+                              label='Description'
+                              placeholder='Enter Description'
                             />
                           </Grid>
                         </Grid>
@@ -220,7 +225,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: DialogProps) {
                     ))}
                   </>
                 )}
-                <DialogActions className="flex justify-end min-w-full">
+                <DialogActions className='flex justify-end min-w-full'>
                   <ComboFormButton
                     onClose={handleClose}
                     onReset={reset}
@@ -243,7 +248,7 @@ function AddParkingAreaDialog({ open, onOpenChange, onClose }: DialogProps) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

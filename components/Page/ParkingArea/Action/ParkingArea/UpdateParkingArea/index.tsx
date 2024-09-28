@@ -142,6 +142,7 @@ function UpdateParkingAreaDialog({
                   <FormInput
                     name='description'
                     multiline={true}
+                    required={false}
                     label='Description'
                     minRow={3}
                     placeholder='Enter Description'

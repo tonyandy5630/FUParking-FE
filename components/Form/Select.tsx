@@ -9,6 +9,7 @@ import TextField from "@mui/material/TextField";
 export type FormOptions = {
   name: string;
   value: string | number;
+  disabled?: boolean;
 };
 
 interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
@@ -19,7 +20,7 @@ interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
-  ({ label, error, options, name, ...props }, ref) => {
+  ({ label, error, options, name, required = true, ...props }, ref) => {
     return (
       <ConnectForm>
         {({ control, formState: { errors } }: UseFormReturn) => {
@@ -37,7 +38,7 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
                     <TextField
                       select
                       size='small'
-                      required={props.required}
+                      required={required}
                       // defaultValue={props.defaultValue ?? ""}
                       label={label}
                       {...field}

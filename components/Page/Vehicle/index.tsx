@@ -292,7 +292,7 @@ export default function VehiclePage() {
               height={0}
               priority
               src={item.plateImage}
-              alt="vehicle"
+              alt='vehicle'
               loader={() => item.plateImage as string}
               unoptimized={true}
               style={{ width: "100px", height: "auto" }}
@@ -312,6 +312,7 @@ export default function VehiclePage() {
             </Typography>
           )}
         </TableCell>
+
         <TableCell>
           <Chip
             variant={
@@ -325,45 +326,46 @@ export default function VehiclePage() {
             {item.statusVehicle}
           </Chip>
         </TableCell>
+        <TableCell>{item.lastModifyBy}</TableCell>
         <TableCell>
-          <div className="flex justify-start items-center gap-2">
+          <div className='flex justify-start items-center gap-2'>
             <ActionButton
-              variant="outlined"
+              variant='outlined'
               onClick={(e) => {
                 e.stopPropagation();
                 handleUpdateVehicle(item);
               }}
-              color="primary"
+              color='primary'
             >
               Edit
             </ActionButton>
             {item.statusVehicle === "ACTIVE" ? (
               <ActionButton
-                variant="outlined"
+                variant='outlined'
                 onClick={(e) => {
                   e.stopPropagation();
                   handleOpenConfirmBox(item.id, false);
                 }}
-                color="warning"
+                color='warning'
               >
                 Deactivate
               </ActionButton>
             ) : (
               <ActionButton
-                variant="outlined"
+                variant='outlined'
                 onClick={(e) => {
                   e.stopPropagation();
                   handleOpenConfirmBox(item.id, true);
                 }}
-                color="primary"
+                color='primary'
               >
                 Activate
               </ActionButton>
             )}
             <ActionButton
-              variant="outlined"
+              variant='outlined'
               onClick={() => handleDeleteVehicle(item.id)}
-              color="error"
+              color='error'
             >
               Delete
             </ActionButton>
@@ -417,7 +419,7 @@ export default function VehiclePage() {
       <PageTitle>Vehicle List</PageTitle>
       <SearchContainer>
         <SelectFilter
-          label="Vehicle Type"
+          label='Vehicle Type'
           filterAttribute={selectedVehicleTypes}
           listFilter={formatVehicleTypesFilter ?? []}
           setFilterAttribute={handleVehicleTypeChange}
@@ -432,9 +434,9 @@ export default function VehiclePage() {
           setInputValue={handleSearchTextChange}
         />
       </SearchContainer>
-      <div className="min-w-full flex justify-end items-center py-2 gap-5">
+      <div className='min-w-full flex justify-end items-center py-2 gap-5'>
         <ExportToCSVButton data={vehicleList} />
-        <Button variant="outlined" color="primary" onClick={() => refetch()}>
+        <Button variant='outlined' color='primary' onClick={() => refetch()}>
           Refresh
         </Button>
       </div>

@@ -18,7 +18,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import CloseIcon from "@mui/icons-material/Close";
 import FormInput from "@/components/Form/Input";
 import FormSelect from "@/components/Form/Select";
 import ComboFormButton from "@/components/Dialog/ComboButton";
@@ -101,7 +100,7 @@ export default function EditGate({
   return (
     <>
       <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogTitle>Update gate information</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleEditGate)}>
@@ -114,22 +113,23 @@ export default function EditGate({
               >
                 <Grid item xs={12}>
                   <FormInput
-                    name="name"
-                    label="Name"
+                    name='name'
+                    label='Name'
                     defaultValue={EditGateForm?.name}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <FormInput
-                    name="description"
-                    label="Description"
+                    name='description'
+                    label='Description'
+                    required={false}
                     defaultValue={EditGateForm?.description}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <FormSelect
-                    name="parkingAreaId"
-                    label="Parking Area"
+                    name='parkingAreaId'
+                    label='Parking Area'
                     options={
                       parkingAreaLoading
                         ? [{ name: "Loading...", value: "" }]
@@ -144,7 +144,7 @@ export default function EditGate({
                 <Grid item xs={12}>
                   <DialogActions>
                     <ComboFormButton
-                      submitLabel="Update"
+                      submitLabel='Update'
                       onClose={onOpenChange}
                       onReset={reset}
                       isLoading={false}
@@ -166,7 +166,7 @@ export default function EditGate({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

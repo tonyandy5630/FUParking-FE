@@ -74,6 +74,8 @@ export default function UpdatePrice({
     setFocus,
     formState,
     control,
+    getValues,
+    watch,
   } = methods;
 
   const handleConfirmClose = () => {
@@ -102,9 +104,14 @@ export default function UpdatePrice({
 
   return (
     <>
-      <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
-          <DialogTitle>Update price plan</DialogTitle>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        setOpen={onOpenChange}
+        maxWidth='md'
+      >
+        <div className='p-5 flex flex-col'>
+          <DialogTitle>Update Price Table</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleUpdatePrice)}>
               <DialogContent
@@ -117,15 +124,25 @@ export default function UpdatePrice({
                 <Grid item xs={12}>
                   <FormInput
                     name={"name"}
-                    label="Name"
+                    label='Name'
                     defaultValue={priceTable?.name}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <FormDatePicker
                     name={"applyFromDate"}
-                    label="Apply From"
-                    minDate={moment.utc()}
+                    label='Apply From'
+                    required={false}
+                    minDate={
+                      priceTable?.applyFromDate
+                        ? moment(priceTable.applyFromDate)
+                        : moment()
+                    }
+                    maxDate={
+                      watch("applyToDate") !== undefined
+                        ? moment(watch("applyToDate"))
+                        : undefined
+                    }
                     defaultValue={
                       priceTable?.applyFromDate
                         ? moment.utc(priceTable.applyFromDate)
@@ -136,8 +153,14 @@ export default function UpdatePrice({
                 <Grid item xs={12}>
                   <FormDatePicker
                     name={"applyToDate"}
-                    label="Apply To"
-                    minDate={moment.utc()}
+                    label='Apply To'
+                    minDate={
+                      getValues("applyFromDate") !== undefined ||
+                      getValues("applyFromDate") !== null
+                        ? moment(getValues("applyFromDate"))
+                        : undefined
+                    }
+                    required={false}
                     defaultValue={
                       priceTable?.applyToDate
                         ? moment.utc(priceTable.applyToDate)
@@ -151,7 +174,7 @@ export default function UpdatePrice({
                       isDirty={formState.isDirty}
                       onClose={handleClose}
                       onReset={() => reset()}
-                      submitLabel="Update"
+                      submitLabel='Update'
                     />
                   </DialogActions>
                 </Grid>
@@ -170,7 +193,7 @@ export default function UpdatePrice({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

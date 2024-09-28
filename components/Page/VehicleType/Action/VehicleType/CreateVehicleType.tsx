@@ -20,7 +20,6 @@ import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 
-
 export default function CreateVehicleType({
   setIsPending,
   disable,
@@ -95,15 +94,15 @@ export default function CreateVehicleType({
   return (
     <>
       <Button
-        variant="outlined"
-        color="primary"
+        variant='outlined'
+        color='primary'
         disabled={disable}
         onClick={() => setIsOpen(true)}
       >
         Create Vehicle Type
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogContent>Vehicle Type</DialogContent>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -116,56 +115,57 @@ export default function CreateVehicleType({
                 <Grid container spacing={1}>
                   <Grid item xs={12} sm={6}>
                     <FormInput
-                      name="name"
-                      label="Name Vehicle Type"
-                      placeholder="Enter Name"
+                      name='name'
+                      label='Name Vehicle Type'
+                      placeholder='Enter Name'
                       autoFocus={true}
-                      key="name"
+                      key='name'
                       required={true}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <FormInput
-                      name="description"
-                      label="Description"
-                      placeholder="Enter description"
-                      key="description"
+                      name='description'
+                      label='Description'
+                      placeholder='Enter description'
+                      key='description'
                       required={false}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <FormInput
-                      name="blockPricing"
-                      label="Block Pricing"
-                      placeholder="Enter block pricing"
-                      key="blockPricing"
+                      name='blockPricing'
+                      label='Block Pricing'
+                      placeholder='Enter block pricing'
+                      key='blockPricing'
                       required={true}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <FormInput
-                      name="maxPrice"
-                      label="Max Price"
-                      placeholder="Enter max price"
-                      key="maxPrice"
+                      name='minPrice'
+                      label='Min Price'
+                      placeholder='Enter min price'
+                      key='minPrice'
                       required={true}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <FormInput
-                      name="minPrice"
-                      label="Min Price"
-                      placeholder="Enter min price"
-                      key="minPrice"
-                      required={true}
+                      name='maxPrice'
+                      label='Max Price'
+                      placeholder='Enter max price'
+                      key='maxPrice'
+                      required={false}
                     />
                   </Grid>
+
                   <Grid item xs={12}>
-                    <DialogActions className="flex justify-end min-w-full">
+                    <DialogActions className='flex justify-end min-w-full'>
                       <ComboFormButton
                         onClose={handleClose}
                         onReset={() => reset()}
-                        submitLabel="Create"
+                        submitLabel='Create'
                       />
                     </DialogActions>
                   </Grid>
@@ -185,7 +185,7 @@ export default function CreateVehicleType({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

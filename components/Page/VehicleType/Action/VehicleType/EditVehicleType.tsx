@@ -17,7 +17,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import CloseIcon from "@mui/icons-material/Close";
 import ComboFormButton from "@/components/Dialog/ComboButton";
 
 export default function EditVehicleType({
@@ -97,20 +96,20 @@ export default function EditVehicleType({
   return (
     <>
       <Button
-        size="small"
+        size='small'
         onClick={() => setIsOpen(true)}
         disabled={disable}
-        variant="outlined"
+        variant='outlined'
       >
         Edit
       </Button>
       <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogContent>Vehicle Type</DialogContent>
           <FormProvider {...methods}>
             <FormControl>
               <form
-                className="flex flex-col space-y-2"
+                className='flex flex-col space-y-2'
                 onSubmit={handleSubmit(onSubmit)}
               >
                 <DialogContent
@@ -122,29 +121,29 @@ export default function EditVehicleType({
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
                       <FormInput
-                        name="name"
-                        label="Name Vehicle Type"
-                        placeholder="Enter Name"
+                        name='name'
+                        label='Name Vehicle Type'
+                        placeholder='Enter Name'
                         autoFocus={true}
-                        key="name"
+                        key='name'
                         defaultValue={value.name}
                       />
                     </Grid>
                     <Grid item xs={12}>
                       <FormInput
-                        name="description"
-                        label="Description"
-                        placeholder="Enter description"
-                        key="description"
+                        name='description'
+                        label='Description'
+                        placeholder='Enter description'
+                        key='description'
                         defaultValue={value.description}
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      <DialogActions className="flex justify-end min-w-full">
+                      <DialogActions className='flex justify-end min-w-full'>
                         <ComboFormButton
                           onClose={handleClose}
                           onReset={() => reset()}
-                          submitLabel="Update"
+                          submitLabel='Update'
                         />
                       </DialogActions>
                     </Grid>

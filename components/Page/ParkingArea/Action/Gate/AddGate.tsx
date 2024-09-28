@@ -94,7 +94,7 @@ export default function AddGate({
   return (
     <>
       <Modal open={open} onClose={onClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
+        <div className='p-5 flex flex-col'>
           <DialogTitle>Register Gate</DialogTitle>
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleAddGate)}>
@@ -116,14 +116,14 @@ export default function AddGate({
                       <Grid item xs={1.5}>
                         {index > 0 ? (
                           <IconButton
-                            color="secondary"
+                            color='secondary'
                             onClick={() => remove(index)}
                           >
                             <RemoveIcon />
                           </IconButton>
                         ) : (
                           <IconButton
-                            color="primary"
+                            color='primary'
                             onClick={() =>
                               append({
                                 name: "",
@@ -139,15 +139,16 @@ export default function AddGate({
                         <Grid item xs={12}>
                           <FormInput
                             name={`gates[${index}].name`}
-                            label="Name"
-                            placeholder="Enter name"
+                            label='Name'
+                            placeholder='Enter name'
                           />
                         </Grid>
                         <Grid item xs={12}>
                           <FormInput
+                            required={false}
                             name={`gates[${index}].description`}
-                            label="Description"
-                            placeholder="Enter description"
+                            label='Description'
+                            placeholder='Enter description'
                           />
                         </Grid>
                       </Grid>
@@ -157,7 +158,7 @@ export default function AddGate({
                 <Grid item xs={12}>
                   <DialogActions>
                     <ComboFormButton
-                      submitLabel="Create"
+                      submitLabel='Create'
                       onClose={onOpenChange}
                       onReset={reset}
                       isLoading={false}
@@ -179,7 +180,7 @@ export default function AddGate({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

@@ -12,12 +12,11 @@ const PackageSchema = object({
   name: string().required(REQUIRED_MESSAGE),
   extraCoin: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
-    .min(extraCoin.min.value, extraCoin.min.message)
-    .required(REQUIRED_MESSAGE),
+    .nullable()
+    .min(extraCoin.min.value, extraCoin.min.message),
   expPackage: number()
-    .transform((value) => (Number.isNaN(value) ? null : value))
-    .min(expPackage.min.value, expPackage.min.message)
-    .required(REQUIRED_MESSAGE),
+    .transform((value) => (Number.isNaN(value) ? 0 : value))
+    .min(expPackage.min.value, expPackage.min.message),
   price: number()
     .transform((value) => (Number.isNaN(value) ? null : value))
     .min(price.min.value, price.min.message)

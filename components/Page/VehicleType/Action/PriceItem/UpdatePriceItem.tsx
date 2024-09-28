@@ -105,9 +105,14 @@ export default function UpdatePriceItem({
 
   return (
     <>
-      <Modal open={open} onClose={handleClose} setOpen={onOpenChange}>
-        <div className="p-5 flex flex-col">
-          <div className="flex justify-end">
+      <Modal
+        open={open}
+        onClose={handleClose}
+        setOpen={onOpenChange}
+        maxWidth='md'
+      >
+        <div className='p-5 flex flex-col'>
+          <div className='flex justify-end'>
             <Button
               sx={{
                 position: "absolute",
@@ -133,15 +138,15 @@ export default function UpdatePriceItem({
               <DialogContent
                 sx={{
                   maxHeight: "70vh",
-                  width: "30vw",
                 }}
               >
                 <Grid container spacing={1}>
-                  <div className="hidden">
+                  <div className='hidden'>
                     <Grid item xs={12}>
                       <FormInput
-                        name="priceTableId"
-                        label="Price Table Id"
+                        name='priceTableId'
+                        label='Price Table Id'
+                        defaultValue={priceTableId}
                         disabled
                       />
                     </Grid>
@@ -151,19 +156,19 @@ export default function UpdatePriceItem({
                       item
                       xs={12}
                       key={field.id}
-                      className="flex gap-2 items-center"
+                      className='flex gap-2 items-center'
                     >
                       <Grid item xs={1.5}>
                         {index > 0 ? (
                           <IconButton
-                            color="secondary"
+                            color='secondary'
                             onClick={() => remove(index)}
                           >
                             <RemoveIcon />
                           </IconButton>
                         ) : (
                           <IconButton
-                            color="primary"
+                            color='primary'
                             onClick={() =>
                               append({
                                 blockPricing: 0,
@@ -182,36 +187,64 @@ export default function UpdatePriceItem({
                         <Grid item xs={2.4}>
                           <FormInput
                             name={`priceItems[${index}].blockPricing`}
-                            label="Block Pricing"
+                            label='Block Pricing'
                             defaultValue={field.blockPricing}
+                            error={
+                              errors.priceItems
+                                ? errors.priceItems[index]?.blockPricing
+                                    ?.message
+                                : ""
+                            }
                           />
                         </Grid>
                         <Grid item xs={2.4}>
                           <FormInput
                             name={`priceItems[${index}].from`}
-                            label="From"
+                            label='From'
                             defaultValue={field.applyFromHour}
+                            error={
+                              errors.priceItems
+                                ? errors.priceItems[index]?.applyFromHour
+                                    ?.message
+                                : ""
+                            }
                           />
                         </Grid>
                         <Grid item xs={2.4}>
                           <FormInput
                             name={`priceItems[${index}].to`}
-                            label="To"
+                            label='To'
                             defaultValue={field.applyToHour}
+                            error={
+                              errors.priceItems
+                                ? errors.priceItems[index]?.applyToHour?.message
+                                : ""
+                            }
                           />
                         </Grid>
                         <Grid item xs={2.4}>
                           <FormInput
                             name={`priceItems[${index}].minPrice`}
-                            label="Min Price"
+                            label='Min Price'
                             defaultValue={field.minPrice}
+                            error={
+                              errors.priceItems
+                                ? errors.priceItems[index]?.minPrice?.message
+                                : ""
+                            }
                           />
                         </Grid>
                         <Grid item xs={2.4}>
                           <FormInput
                             name={`priceItems[${index}].maxPrice`}
-                            label="Max Price"
+                            label='Max Price'
+                            required={false}
                             defaultValue={field.maxPrice}
+                            error={
+                              errors.priceItems
+                                ? errors.priceItems[index]?.maxPrice?.message
+                                : ""
+                            }
                           />
                         </Grid>
                       </Grid>
@@ -220,9 +253,10 @@ export default function UpdatePriceItem({
                   <Grid item xs={12}>
                     <DialogActions>
                       <ComboFormButton
-                        submitLabel="Update"
+                        submitLabel='Update'
                         onClose={onOpenChange}
                         onReset={reset}
+                        isDirty={isDirty}
                         isLoading={false}
                       />
                     </DialogActions>
@@ -243,7 +277,7 @@ export default function UpdatePriceItem({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-          <Button onClick={handleConfirmClose} color="primary">
+          <Button onClick={handleConfirmClose} color='primary'>
             Confirm
           </Button>
         </DialogActions>

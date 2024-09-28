@@ -18,10 +18,10 @@ export default function TotalCarParkedToday() {
   };
 
   return (
-    <div className="flex flex-col items-end justify-center rounded-md border shadow-lg bg-white h-full gap-2 pr-5 pl-5">
+    <div className='flex flex-col items-end justify-center rounded-md border shadow-lg bg-white h-full gap-2 pr-5 pl-5'>
       <p>Total vehicles in parking</p>
-      <p className="text-3xl font-extrabold">{data?.data.data}</p>
-      <p style={{ color: "#D9D9D9" }}>Update: {getCurrentDateTime()}</p>
+      <p className='text-3xl font-extrabold'>{data?.data.data}</p>
+      <p style={{ color: "#D9D9D9" }}>Last update at: {getCurrentDateTime()}</p>
     </div>
   );
 }
