@@ -11,6 +11,7 @@ import ButtonCancelSession from "./ButtonCancelSession";
 import dynamic from "next/dynamic";
 import logo from "@/public/Bai_Logo.svg";
 import CloseIcon from "@mui/icons-material/Close";
+import { Typography } from "@mui/material";
 
 export default function SessionDetail({
   isOpen,
@@ -44,9 +45,14 @@ export default function SessionDetail({
   }, [isOpen]);
 
   return (
-    <Modal onClose={handleClose} open={isOpen} setOpen={setIsOpen}>
+    <Modal
+      onClose={handleClose}
+      open={isOpen}
+      setOpen={setIsOpen}
+      maxWidth='md'
+    >
       {sessionId ? (
-        <div className="pl-5 pr-5 pt-10 pb-10">
+        <div className='pl-5 pr-5 pt-10 pb-10'>
           <Button
             sx={{
               position: "absolute",
@@ -60,9 +66,9 @@ export default function SessionDetail({
                 backgroundColor: "white",
               },
             }}
-            className="cursor-pointer"
+            className='cursor-pointer'
             onClick={handleClose}
-            color="error"
+            color='error'
           >
             <CloseIcon />
           </Button>
@@ -70,9 +76,9 @@ export default function SessionDetail({
           {isError && <p>Server Error</p>}
           {isSuccess && (
             <>
-              <div className="p-4 flex flex-row gap-5 min-h-fit">
-                <div className="mb-4">
-                  <p className="text-xl font-bold mb-2">Session Detail</p>
+              <div className='p-4 flex flex-row gap-5 min-h-fit'>
+                <div className='mb-4'>
+                  <p className='text-xl font-bold mb-2'>Session Detail</p>
                   <p>
                     <strong>Session ID:</strong> {data?.data.data?.id}
                   </p>
@@ -123,36 +129,108 @@ export default function SessionDetail({
                     <strong>Status:</strong> {data?.data.data?.status}
                   </p>
                 </div>
-                <div className="flex flex-col gap-5">
-                  <div>
-                    <p className="font-semibold mb-2">Image In:</p>
-                    {data?.data.data?.imageInUrl && (
-                      <Image
-                        loader={() => data?.data.data?.imageInUrl as string}
-                        src={(data?.data.data?.imageInUrl as string) ?? logo}
-                        alt="session image in"
-                        width={200}
-                        height={200}
-                        className="rounded-lg"
-                      />
-                    )}
+                <div className='flex flex-col gap-5'>
+                  <div className='flex gap-1  '>
+                    <div className='min-w-24'>
+                      <p className='font-semibold mb-2'>Plate Image In:</p>
+                      {data?.data.data?.imageInUrl ? (
+                        <Image
+                          loader={() => data?.data.data?.imageInUrl as string}
+                          src={(data?.data.data?.imageInUrl as string) ?? logo}
+                          alt='session image in'
+                          width={200}
+                          height={200}
+                          className='rounded-lg'
+                        />
+                      ) : (
+                        <Typography
+                          height={70}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyItems={"center"}
+                        >
+                          No image
+                        </Typography>
+                      )}
+                    </div>
+                    <div className='min-w-24'>
+                      <p className='font-semibold mb-2'>Other Image In:</p>
+                      {data?.data.data?.imageInBodyUrl ? (
+                        <Image
+                          loader={() =>
+                            data?.data.data?.imageInBodyUrl as string
+                          }
+                          src={
+                            (data?.data.data?.imageInBodyUrl as string) ?? logo
+                          }
+                          alt='session image in'
+                          width={200}
+                          height={200}
+                          className='rounded-lg'
+                        />
+                      ) : (
+                        <Typography
+                          height={70}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyItems={"center"}
+                        >
+                          No image
+                        </Typography>
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold mb-2">Image Out:</p>
-                    {data?.data.data?.imageOutUrl && (
-                      <Image
-                        loader={() => data?.data.data?.imageOutUrl as string}
-                        src={data?.data.data?.imageOutUrl as string}
-                        alt="session image out"
-                        width={200}
-                        height={200}
-                        className="rounded-lg"
-                      />
-                    )}
+                  <div className='flex gap-1'>
+                    <div className='min-w-24'>
+                      <p className='font-semibold mb-2'>Plate Image Out:</p>
+                      {data?.data.data?.imageOutUrl ? (
+                        <Image
+                          loader={() => data?.data.data?.imageOutUrl as string}
+                          src={data?.data.data?.imageOutUrl as string}
+                          alt='session image out'
+                          width={200}
+                          height={200}
+                          className='rounded-lg'
+                        />
+                      ) : (
+                        <Typography
+                          height={70}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyItems={"center"}
+                        >
+                          No image
+                        </Typography>
+                      )}
+                    </div>
+                    <div className='min-w-24'>
+                      <p className='font-semibold mb-2'>Other Image Out:</p>
+                      {data?.data.data?.imageOutBodyUrl ? (
+                        <Image
+                          loader={() =>
+                            data?.data.data?.imageOutBodyUrl as string
+                          }
+                          src={data?.data.data?.imageOutBodyUrl as string}
+                          alt='session image out'
+                          width={200}
+                          height={200}
+                          className='rounded-lg'
+                        />
+                      ) : (
+                        <Typography
+                          height={70}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyItems={"center"}
+                        >
+                          No image
+                        </Typography>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="w-full justify-center items-center flex gap-5">
+              <div className='w-full justify-center items-center flex gap-5'>
                 {statusSession === "PARKED" && (
                   <>
                     <ButtonCheckOut
@@ -174,7 +252,7 @@ export default function SessionDetail({
           )}
         </div>
       ) : (
-        <div className="pl-5 pr-5 pt-10 pb-10">
+        <div className='pl-5 pr-5 pt-10 pb-10'>
           <Button
             onClick={handleClose}
             sx={{
