@@ -206,7 +206,7 @@ export default function AddPriceTable({
                       minDate={
                         getValues("applyFromDate") !== undefined ||
                         getValues("applyFromDate") !== null
-                          ? moment(getValues("applyFromDate"))
+                          ? moment.utc(getValues("applyFromDate"))
                           : undefined
                       }
                       required={false}

@@ -121,3 +121,11 @@ export const getStartEndDateOfTime = (timeLength: DateFilterType) => {
       };
   }
 };
+
+export const utcTransform = (_: unknown, value: unknown) => {
+  if (typeof value === "string" || typeof value === "object") {
+    console.log(moment.utc(value as Date).toDate());
+    return moment.utc(value as Date).toDate();
+  }
+  return value;
+};

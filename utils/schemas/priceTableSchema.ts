@@ -5,6 +5,8 @@ import {
   MUST_BE_NUMBER_MESSAGE,
   REQUIRED_MESSAGE,
 } from "@/constant/message";
+import { utcTransform } from "../date";
+import moment, { Moment } from "moment";
 
 const { name, priority, price } = getRules();
 
@@ -39,7 +41,19 @@ const PriceTableTableSchema = object({
   name: string()
     .required(REQUIRED_MESSAGE)
     .max(name.maxLength.value, name.maxLength.message),
-  applyFromDate: date().nullable(),
+  applyFromDate: date()
+    .transform((value, originalValue, context) => {
+      const formats = "DD/MM/YYYY";
+      // check to see if the previous transform already parsed the date
+      // if (context.isType(value)) return moment(originalValue).format(formats);
+
+      // the default coercion failed so let's try it with Moment.js instead
+      value = moment.utc(originalValue);
+
+      // if it's valid return the date object, otherwise return an `InvalidDate`
+      return value.isValid() ? value.toDate() : new Date("");
+    })
+    .nullable(),
   applyToDate: date()
     .nullable()
     .when("applyFromDate", ([applyFromDate], schema) => {

@@ -4,6 +4,7 @@ const VehicleTableHeaders = [
   "VehicleType",
   "Image",
   "Status",
+  "Last modified by",
   "Action",
 ];
 
