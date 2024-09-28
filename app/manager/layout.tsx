@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Headers from "@/components/layout/header";
 import LeftNavbar from "@/components/layout/navbar";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { roleAPI } from "@/api/auth";
 import { EnumAuthRole } from "@/constant/enum";
 import Loading from "@/components/Page/LoadingPage/Loading";
@@ -18,16 +18,34 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [fullName, setFullName] = useState("");
   const headerHeight = 80;
+  const triggerRoleValidation = useRef(false);
 
-  const authMutation = useMutation({
-    mutationKey: ["/auth"],
-    mutationFn: roleAPI,
+  const {
+    isPending: isLoadingUserData,
+    isError: isErrorUserData,
+    error,
+  } = useQuery({
+    queryKey: ["/auth"],
+    queryFn: roleAPI,
+    enabled: triggerRoleValidation.current,
   });
 
   useEffect(() => {
-    isAuth();
+    triggerRoleValidation.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    console.log(isErrorUserData);
+    if (isErrorUserData) {
+      triggerRoleValidation.current = false;
+      setIsAuthRole(false);
+      setIsLoading(false);
+      return;
+    }
+    triggerRoleValidation.current = false;
+    setIsAuthRole(true);
+    setIsLoading(false);
+  }, [isErrorUserData]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 900px)");
@@ -55,33 +73,33 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     };
   }, []);
 
-  const isAuth = async () => {
-    try {
-      await authMutation.mutateAsync(
-        {},
-        {
-          onSuccess: (data) => {
-            if (data.data.data.role == EnumAuthRole.MANAGER) {
-              setIsAuthRole(true);
-            } else {
-              setIsAuthRole(false);
-            }
-            if (data.data.data.name !== null) {
-              setFullName(data.data.data.name);
-            }
-            setIsLoading(false);
-          },
-        }
-      );
-    } catch (error) {
-      setIsAuthRole(false);
-      setIsLoading(false);
-    }
-  };
+  // async function isAuth() {
+  //   try {
+  //     await authMutation.mutateAsync(
+  //       {},
+  //       {
+  //         onSuccess: (data) => {
+  //           if (data.data.data.role == EnumAuthRole.MANAGER) {
+  //             setIsAuthRole(true);
+  //           } else {
+  //             setIsAuthRole(false);
+  //           }
+  //           if (data.data.data.name !== null) {
+  //             setFullName(data.data.data.name);
+  //           }
+  //           setIsLoading(false);
+  //         },
+  //       }
+  //     );
+  //   } catch (error) {
+  //     setIsAuthRole(false);
+  //     setIsLoading(false);
+  //   }
+  // }
 
   if (isLoading) {
     return (
-      <div className="h-screen">
+      <div className='h-screen'>
         <Loading />
       </div>
     );
@@ -92,7 +110,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   return (
-    <div className="h-screen">
+    <div className='h-screen'>
       <div>
         <Headers
           isOpen={isOpen}
@@ -102,14 +120,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         />
       </div>
       <div
-        className="flex flex-row h-full"
+        className='flex flex-row h-full'
         style={{ height: `calc(100vh - ${headerHeight}px` }}
       >
-        <div className="bg-gray-800">
+        <div className='bg-gray-800'>
           <LeftNavbar open={isOpen} />
         </div>
-        <main className="flex-grow overflow-auto mt-5 mb-5 pt-2 pb-2 pl-10 pr-10">
-          <div className="w-full bg-white rounded-md border shadow-lg gap-4 flex flex-col p-5">
+        <main className='flex-grow overflow-auto mt-5 mb-5 pt-2 pb-2 pl-10 pr-10'>
+          <div className='w-full bg-white rounded-md border shadow-lg gap-4 flex flex-col p-5'>
             {children}
           </div>
         </main>

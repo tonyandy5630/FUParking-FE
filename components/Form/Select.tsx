@@ -19,7 +19,7 @@ interface Props extends React.SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
-  ({ label, error, options, name, ...props }, ref) => {
+  ({ label, error, options, name, required = true, ...props }, ref) => {
     return (
       <ConnectForm>
         {({ control, formState: { errors } }: UseFormReturn) => {
@@ -33,11 +33,11 @@ const FormSelect = React.forwardRef<HTMLSelectElement, Props>(
                     fullWidth
                     size='small'
                     error={errors[name]?.message !== undefined}
+                    required={required}
                   >
                     <TextField
                       select
                       size='small'
-                      required={props.required}
                       // defaultValue={props.defaultValue ?? ""}
                       label={label}
                       {...field}

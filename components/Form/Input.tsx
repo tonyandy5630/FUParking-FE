@@ -34,6 +34,7 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
       positive,
       maxNumber,
       minNumber,
+      required = true,
       ...props
     },
     ref
@@ -65,9 +66,9 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
                   validate: type === "number" ? validateNumber : undefined,
                 })}
                 error={errors[name]?.message !== undefined}
-                className="w-full border rounded-sm"
-                size="small"
-                required={props.required}
+                className='w-full border rounded-sm'
+                size='small'
+                required={required}
                 type={type}
                 id={name}
                 label={label}
@@ -85,7 +86,7 @@ const FormInput = forwardRef<HTMLInputElement, Props>(
                     max: maxNumber,
                   },
                   endAdornment: endAdornment ? (
-                    <InputAdornment position="end">
+                    <InputAdornment position='end'>
                       {endAdornment}
                     </InputAdornment>
                   ) : (
